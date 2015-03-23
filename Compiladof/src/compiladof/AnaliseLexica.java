@@ -1,0 +1,305 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+hh * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ocompilador;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+/**
+ *
+ * @author Daniel
+ */
+public class AnaliseLexica {
+
+    HashMap<String, String> lexema = new HashMap<>();
+    Scanner scanner = null;
+    String codigo = "";
+    LinkedHashMap<Integer, ArrayList<Lexema>> tokens = new LinkedHashMap<>();
+    ArrayList<Lexema> tokenList = null;
+    Lexema simbolos = new Lexema();
+
+    public AnaliseLexica(String txt) throws FileNotFoundException {
+        FileReader teste = new FileReader(txt);
+        scanner = new Scanner(teste);
+
+        lexema.put("+", "sum");
+        lexema.put("-", "sub");
+        lexema.put("*", "mult");
+        lexema.put("x", "mult");
+        lexema.put("/", "div");
+        lexema.put(":", "div");
+        lexema.put("[", "[");
+        lexema.put("]", "]");
+        lexema.put("(", "(");
+        lexema.put(")", ")");
+//Comparativos
+        lexema.put(">", "gt");
+        lexema.put(">=", "gte");
+        lexema.put("=>", "gte");
+        lexema.put("<", "lt");
+        lexema.put("=<", "lte");
+        lexema.put("<=", "lte");
+        lexema.put("==", "eq");
+        lexema.put("!=", "neq");
+//Gerais
+        lexema.put("=", "atrib");
+        lexema.put("int", "int");
+        lexema.put("float", "float");
+        lexema.put("str", "str");
+        lexema.put("var", "id");
+        lexema.put("var", "id");
+        lexema.put("fun", "fun");
+        lexema.put("vetor", "vet");
+//Palavras-chave
+//Condicionais
+        lexema.put("se", "cond");
+        lexema.put("então", "initcond");
+        lexema.put("senão", "altcond");
+        lexema.put("fim-se", "endcond");
+        lexema.put("ou", "or");
+//Loops
+        lexema.put("para", "forloop");
+        lexema.put("de", "rng1forloop");
+        lexema.put("até", "rng2forloop");
+        lexema.put("faça", "initforloop");
+        lexema.put("fim-para", "endforloop");
+        lexema.put("enquanto", "whileloop");
+        lexema.put("fim-enquanto", "endwhileloop");
+    }
+
+    public boolean ValidaLetra(char letra) {
+        return Character.isLetter(letra);
+    }
+
+    public boolean ValidaHifen(char simbolo, int indice) {
+        if (codigo.charAt(indice) == '-' && ValidaLetra(codigo.charAt(indice - 1)) && ValidaLetra(codigo.charAt(indice + 1))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean ValidaNumero(char simbolo) {
+        if (simbolo == '0' || simbolo == '1' || simbolo == '2' || simbolo == '3' || simbolo == '4' || simbolo == '5' || simbolo == '6' || simbolo == '7' || simbolo == '8' || simbolo == '9') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void Analisar() {
+        String token = "";
+        boolean comentario = false;
+        int linha = 0;
+        boolean funcao = false;
+
+        //Coloco toda a linha na variavel codigo
+        while (scanner.hasNext()) {
+            tokenList = new ArrayList<Lexema>();
+            linha++;
+            codigo = scanner.nextLine();
+            
+            //Analiso caracter por caracter da linha
+            for (int i = 0; i < codigo.length(); i++) {
+                String simbolo = "";
+                simbolo = simbolo + codigo.charAt(i);
+
+                //Retira comentarios
+                if (codigo.charAt(i) == '#') {
+                    if (comentario == false) {
+                        comentario = true;
+                    } else {
+                        comentario = false;
+                    }
+                } 
+
+                //Analisa Aspas
+                else if (codigo.charAt(i) == '"' && comentario == false) {
+                    i++;
+                    token = "";
+                    do {
+                        token = token + codigo.charAt(i);
+                        i++;
+                    } while (i < codigo.length() && codigo.charAt(i) != '"');
+                    simbolos.setTipo("String");
+                    simbolos.setNome(token);
+                    tokenList.add(simbolos);
+                    token = "";
+                } 
+
+                //Analisa comparadores e atrbuição
+                else if (codigo.charAt(i) == '=' || codigo.charAt(i) == '<' || codigo.charAt(i) == '>' || codigo.charAt(i) == '!' && comentario == false) {
+                    
+                    //Analisa qual o proximo simbolo para saber se pode ser <=,=<,...
+                    String simboloProximo = "";
+                    if ((i + 1) < codigo.length() && (codigo.charAt(i + 1) == '<' || codigo.charAt(i + 1) == '>' || codigo.charAt(i + 1) == '=')) {
+                        simboloProximo = simboloProximo + codigo.charAt(i) + codigo.charAt(i + 1);
+                        if (lexema.containsKey(simboloProximo)) {
+                            token = token + simboloProximo;
+                            i++;
+                        }
+                    } else {
+                        token = token + codigo.charAt(i);
+                    }
+                    simbolos.setTipo(lexema.get(token));
+                    simbolos.setNome(token);
+                    tokenList.add(simbolos);
+                    token = "";
+                    simbolo = "";
+                    simboloProximo = "";
+                } 
+
+                //Analise numeros e pontos flutuantes, verificando se a frente do ponto ou virgula
+                //tem numero
+                else if (ValidaNumero(codigo.charAt(i)) && comentario == false) {
+                    
+                    //Analisa se o x eh de variavel ou se eh uma multiplicação
+                    if ((i != 0 && ValidaLetra(codigo.charAt(i - 1)) && codigo.charAt(i - 1) != 'x')) {
+                        while (ValidaNumero(codigo.charAt(i))){
+                            token = token + codigo.charAt(i);
+                            i++;
+                        } 
+                        i--;
+                        simbolos.setTipo("var");
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                    } else {
+                        boolean inteiro = true;
+                        do {
+                            token = token + codigo.charAt(i);
+                            i++;
+                            if (i < codigo.length() && (codigo.charAt(i) == '.' || codigo.charAt(i) == ',') && (i + 1) < codigo.length() && codigo.charAt(i + 1) >= 48 && codigo.charAt(i + 1) <= 57 && inteiro == true) {
+                                token = token + codigo.charAt(i);
+                                i++;
+                                inteiro = false;
+                            }
+                            if (i < codigo.length() && !ValidaNumero(codigo.charAt(i))) {
+                                i--;
+                                break;
+                            }
+                        } while (i < codigo.length() && ValidaNumero(codigo.charAt(i)));
+                        if (inteiro == true) {
+                            simbolos.setTipo("Int");
+                            simbolos.setNome(token);
+                        } else {
+                            simbolos.setTipo("Float");
+                            simbolos.setNome(token);
+                        }
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                }
+                
+                //Identifica se x eh multiplicação
+                else if (codigo.charAt(i) == 'x' && comentario == false) {
+                    if (i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))))) {
+
+                        simbolos.setTipo(lexema.get("x"));
+                        simbolos.setNome("x");
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                    else if (codigo.length() == 1) {
+                        simbolos.setTipo(lexema.get("x"));
+                        simbolos.setNome("x");
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                    else if((i+1)<codigo.length() && !ValidaLetra(codigo.charAt(i+1)) && !ValidaNumero(codigo.charAt(i+1))){
+                        token = token + codigo.charAt(i);
+                        simbolos.setTipo("id");
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                    else{
+                       token = token + codigo.charAt(i); 
+                    }
+                }
+                
+                //Analisa se - é um hifen de palavra reservada
+                else if (codigo.charAt(i) == '-' && (i + 1) < codigo.length() && token.equals("fim") && comentario == false) {
+                    token = token + codigo.charAt(i);
+                } 
+
+                //Analisa o´. de concatenação
+                else if (codigo.charAt(i) == '.' && comentario == false) {
+                    simbolos.setTipo(".");
+                    simbolos.setNome(".");
+                    tokenList.add(simbolos);
+                    token = "";
+                } 
+                
+                //Analisa se "e" eh um id ou and
+                else if(codigo.charAt(i) == 'e' && i>0  && (i+1)<codigo.length() && (codigo.charAt(i+1)==' ' || codigo.charAt(i+1)=='(') && !tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo() == ")" && comentario==false){
+                        simbolos.setTipo("and");
+                        simbolos.setNome("e");
+                        tokenList.add(simbolos);
+                        token = "";
+                }
+
+                //Analisa qualquer simbolo unico na tabela de lexemas
+                else if (codigo.charAt(i) != 'e' && lexema.containsKey(simbolo) && comentario == false) {
+                    simbolos.setTipo(lexema.get(simbolo));
+                    simbolos.setNome(simbolo);
+                    tokenList.add(simbolos);
+                    token = "";
+                } 
+
+                //Analisa palavras reservadas da linguagem como: se, para, então...
+                else if ((ValidaLetra(codigo.charAt(i)) || ValidaNumero(codigo.charAt(i))) && comentario == false) {
+                    token = token + codigo.charAt(i);
+                    
+                    //Analisa se a palavra esta na tabela de lexemas e se o proximo token
+                    //é um caracterer especial
+                    if (lexema.containsKey(token) && ((codigo.length() > (i + 1) && (!ValidaLetra(codigo.charAt(i + 1)))) || (codigo.length() == (i + 1)))) {
+                        simbolos.setTipo(lexema.get(token));
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                    
+                    //Analisa se a acabou a palavra e se ela é um var
+                    if (!token.equals(" ") && !token.equals("") && (i + 1) < codigo.length() && !ValidaLetra(codigo.charAt(i + 1)) && !ValidaNumero(codigo.charAt(i + 1)) && !token.equals("fim")) {
+                        simbolos.setTipo("id");
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                    
+                    //Analisa se for a ultima palavra, entao eh adicionada como variavel
+                    if (!token.equals(" ") && !token.equals("") && (i + 1) == codigo.length()) {
+                        simbolos.setTipo("id");
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+
+                } else {
+                }
+                simbolos = new Lexema();
+            }
+            tokens.put(linha, tokenList);
+        }
+
+        for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
+            Integer key = entrySet.getKey();
+            ArrayList<Lexema> value = entrySet.getValue();
+            System.out.print(key);
+            for (Lexema value1 : value) {
+                System.out.print("  <" + value1.getTipo() + "," + value1.getNome() + ">");
+            }
+            System.out.println("");
+        }
+
+    }
+}
