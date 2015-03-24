@@ -1,5 +1,5 @@
 /*---------- O Senhor é o meu Pastor e nada me faltará. Sal(23:1)-------------*/
-package ocompilador;
+package OCompilador;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

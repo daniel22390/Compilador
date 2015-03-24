@@ -3,7 +3,7 @@
 hh * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ocompilador;
+package OCompilador;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  *
@@ -25,6 +26,7 @@ public class AnaliseLexica {
     LinkedHashMap<Integer, ArrayList<Lexema>> tokens = new LinkedHashMap<>();
     ArrayList<Lexema> tokenList = null;
     Lexema simbolos = new Lexema();
+    Stack pilha = new Stack();
 
     public AnaliseLexica(String txt) throws FileNotFoundException {
         FileReader teste = new FileReader(txt);
@@ -168,7 +170,7 @@ public class AnaliseLexica {
                             i++;
                         } 
                         i--;
-                        simbolos.setTipo("var");
+                        simbolos.setTipo("id");
                         simbolos.setNome(token);
                         tokenList.add(simbolos);
                         token = "";
@@ -178,9 +180,14 @@ public class AnaliseLexica {
                             token = token + codigo.charAt(i);
                             i++;
                             if (i < codigo.length() && (codigo.charAt(i) == '.' || codigo.charAt(i) == ',') && (i + 1) < codigo.length() && codigo.charAt(i + 1) >= 48 && codigo.charAt(i + 1) <= 57 && inteiro == true) {
-                                token = token + codigo.charAt(i);
-                                i++;
-                                inteiro = false;
+                                if(funcao==true && codigo.charAt(i)==','){
+                                    
+                                }
+                                else{
+                                    token = token + codigo.charAt(i);
+                                    i++;
+                                    inteiro = false;
+                                }
                             }
                             if (i < codigo.length() && !ValidaNumero(codigo.charAt(i))) {
                                 i--;
@@ -246,14 +253,65 @@ public class AnaliseLexica {
                         tokenList.add(simbolos);
                         token = "";
                 }
+                
+                //Analisa se houver ( e antes for um id, entao eh funcao
+                else if(codigo.charAt(i)=='(' && !tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo()=="id"){
+                    tokenList.get(tokenList.size()-1).setTipo("fun");
+                    simbolos.setTipo("(");
+                    simbolos.setNome("(");
+                    tokenList.add(simbolos);
+                    token = "";
+                    pilha.push("((");
+                    funcao=true;
+                }
+                
+                //Analisa se é um ) e se o antepenultimo ( da pilha eh d uma funcao, entao
+                //a funcao eh setada como true
+                else if(codigo.charAt(i)==')' && pilha.size()>=2 && pilha.get(pilha.size()-2)=="(("){
+                    pilha.pop();
+                    simbolos.setTipo(")");
+                    simbolos.setNome(")");
+                    tokenList.add(simbolos);
+                    token = "";
+                    funcao=true;
+                }
+                
+                //Analisa se é um ) e se so existe um elemento na pilha, entao a funcao é setada como false
+                else if(codigo.charAt(i)==')' && pilha.size()==1){
+                    pilha.pop();
+                    simbolos.setTipo(")");
+                    simbolos.setNome(")");
+                    tokenList.add(simbolos);
+                    token = "";
+                    funcao=false;
+                }    
 
                 //Analisa qualquer simbolo unico na tabela de lexemas
                 else if (codigo.charAt(i) != 'e' && lexema.containsKey(simbolo) && comentario == false) {
+                //se for (, entao a funcao é setada como falsa
+                if(codigo.charAt(i)=='('){
+                    pilha.push("(");
+                    simbolos.setTipo("(");
+                    simbolos.setNome("(");
+                    tokenList.add(simbolos);
+                    token = "";
+                    funcao=false;
+                }
+                //se é ), retira um elemento da pilha
+                else if(codigo.charAt(i)==')'){
+                    pilha.pop();
+                    simbolos.setTipo(")");
+                    simbolos.setNome(")");
+                    tokenList.add(simbolos);
+                    token = "";
+                }
+                else{
                     simbolos.setTipo(lexema.get(simbolo));
                     simbolos.setNome(simbolo);
                     tokenList.add(simbolos);
                     token = "";
-                } 
+                }
+                }
 
                 //Analisa palavras reservadas da linguagem como: se, para, então...
                 else if ((ValidaLetra(codigo.charAt(i)) || ValidaNumero(codigo.charAt(i))) && comentario == false) {
