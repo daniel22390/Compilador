@@ -23,7 +23,7 @@ public class OCompilador {
         AnaliseLexica analisador = new AnaliseLexica("teste.txt");
         analisador.Analisar();
 
-        
+ 
         //Escrevendo em arquivo txt
 //        try (FileWriter arq = new FileWriter("teste2.txt")) {
 //            PrintWriter gravarArq = new PrintWriter(arq);
