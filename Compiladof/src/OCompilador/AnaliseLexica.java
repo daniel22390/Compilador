@@ -41,6 +41,7 @@ public class AnaliseLexica {
         lexema.put("]", "]");
         lexema.put("(", "(");
         lexema.put(")", ")");
+        lexema.put(",", ",");
 //Comparativos
         lexema.put(">", "gt");
         lexema.put(">=", "gte");
@@ -95,12 +96,14 @@ public class AnaliseLexica {
             return false;
         }
     }
+    
 
     public void Analisar() {
         String token = "";
         boolean comentario = false;
         int linha = 0;
         boolean funcao = false;
+        boolean and = false;
 
         //Coloco toda a linha na variavel codigo
         while (scanner.hasNext()) {
@@ -146,6 +149,9 @@ public class AnaliseLexica {
                         if (lexema.containsKey(simboloProximo)) {
                             token = token + simboloProximo;
                             i++;
+                        }
+                        else{
+                            token = token+codigo.charAt(i);
                         }
                     } else {
                         token = token + codigo.charAt(i);
@@ -236,11 +242,34 @@ public class AnaliseLexica {
                 } 
                 
                 //Analisa se "e" eh um id ou and
-                else if(codigo.charAt(i) == 'e' && i>0  && (i+1)<codigo.length() && (codigo.charAt(i+1)==' ' || codigo.charAt(i+1)=='(') && !tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo() == ")" && comentario==false){
+                else if(codigo.charAt(i) == 'e' && i>0  && (i+1)<codigo.length() && !tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo() == ")" && comentario==false){
+                     i++;
+                    while(codigo.charAt(i)==' ' && i<codigo.length()){
+                         i++;
+                     }
+                     i--;
+                    if(codigo.charAt(i+1)=='('){
                         simbolos.setTipo("and");
                         simbolos.setNome("e");
                         tokenList.add(simbolos);
                         token = "";
+                    }
+                    else if(!ValidaLetra(codigo.charAt(i+1)) && !ValidaNumero(codigo.charAt(i+1))){
+                        token = token + 'e';
+                        simbolos.setTipo("id");
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                    else{
+                        token = token+ 'e';
+                        if(codigo.charAt(i)==' '){
+                        simbolos.setTipo("id");
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = ""; 
+                        }
+                    }
                 }
                 
                 //Analisa se houver ( e antes for um id, entao eh funcao
@@ -295,6 +324,14 @@ public class AnaliseLexica {
                     tokenList.add(simbolos);
                     token = "";
                 }
+                else if(codigo.charAt(i)==','){
+                    if(funcao==false){
+                    simbolos.setTipo(lexema.get(simbolo));
+                    simbolos.setNome(",");
+                    tokenList.add(simbolos);
+                    token = "";
+                    }
+                }
                 else{
                     simbolos.setTipo(lexema.get(simbolo));
                     simbolos.setNome(simbolo);
@@ -332,7 +369,17 @@ public class AnaliseLexica {
                         token = "";
                     }
 
-                } else {
+                } 
+                
+                else if(comentario==false && !ValidaLetra(codigo.charAt(i)) && !ValidaNumero(codigo.charAt(i)) && codigo.charAt(i)!=' '){
+                    if(linha!=1 && i!=0){
+                    simbolos.setTipo("id");
+                    simbolos.setNome(simbolo);
+                    tokenList.add(simbolos);
+                    token = "";
+                    }
+                }
+                else{
                 }
                 simbolos = new Lexema();
             }
@@ -348,6 +395,5 @@ public class AnaliseLexica {
             }
             System.out.println("");
         }
-
     }
 }
