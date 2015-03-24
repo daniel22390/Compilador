@@ -35,7 +35,6 @@ public class AnaliseLexica {
         lexema.put("+", "sum");
         lexema.put("-", "sub");
         lexema.put("*", "mult");
-        lexema.put("x", "mult");
         lexema.put("/", "div");
         lexema.put(":", "div");
         lexema.put("[", "[");
@@ -164,8 +163,8 @@ public class AnaliseLexica {
                 else if (ValidaNumero(codigo.charAt(i)) && comentario == false) {
                     
                     //Analisa se o x eh de variavel ou se eh uma multiplicação
-                    if ((i != 0 && ValidaLetra(codigo.charAt(i - 1)) && codigo.charAt(i - 1) != 'x')) {
-                        while (ValidaNumero(codigo.charAt(i))){
+                    if (i > 0 && /*codigo.charAt(i - 1) == 'x')*/ ValidaLetra(codigo.charAt(i-1))) {
+                        while (i<codigo.length() && (ValidaNumero(codigo.charAt(i)) || ValidaLetra(codigo.charAt(i)))){
                             token = token + codigo.charAt(i);
                             i++;
                         } 
@@ -194,10 +193,11 @@ public class AnaliseLexica {
                                 break;
                             }
                         } while (i < codigo.length() && ValidaNumero(codigo.charAt(i)));
+                       
                         if (inteiro == true) {
                             simbolos.setTipo("Int");
-                            simbolos.setNome(token);
-                        } else {
+                            simbolos.setNome(token);}
+                        else{
                             simbolos.setTipo("Float");
                             simbolos.setNome(token);
                         }
@@ -207,31 +207,28 @@ public class AnaliseLexica {
                 }
                 
                 //Identifica se x eh multiplicação
-                else if (codigo.charAt(i) == 'x' && comentario == false) {
-                    if (i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))))) {
-
-                        simbolos.setTipo(lexema.get("x"));
+                else if (codigo.charAt(i) == 'x' && comentario == false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i+1)=='(' && (codigo.charAt(i-1)==' ' || ValidaNumero(codigo.charAt(i-1)))))) {
+                   
+                        simbolos.setTipo("mult");
                         simbolos.setNome("x");
                         tokenList.add(simbolos);
                         token = "";
-                    }
-                    else if (codigo.length() == 1) {
+                } 
+                
+                else if (codigo.length() == 1 && codigo.charAt(i) == 'x' && comentario == false) {
                         simbolos.setTipo(lexema.get("x"));
-                        simbolos.setNome("x");
+                        simbolos.setNome("mult");
                         tokenList.add(simbolos);
                         token = "";
                     }
-                    else if((i+1)<codigo.length() && !ValidaLetra(codigo.charAt(i+1)) && !ValidaNumero(codigo.charAt(i+1))){
+                   /* else if((i+1)<codigo.length() && !ValidaLetra(codigo.charAt(i+1)) && !ValidaNumero(codigo.charAt(i+1))){
                         token = token + codigo.charAt(i);
                         simbolos.setTipo("id");
                         simbolos.setNome(token);
                         tokenList.add(simbolos);
                         token = "";
-                    }
-                    else{
-                       token = token + codigo.charAt(i); 
-                    }
-                }
+                    }*/
+                
                 
                 //Analisa se - é um hifen de palavra reservada
                 else if (codigo.charAt(i) == '-' && (i + 1) < codigo.length() && token.equals("fim") && comentario == false) {
@@ -255,7 +252,7 @@ public class AnaliseLexica {
                 }
                 
                 //Analisa se houver ( e antes for um id, entao eh funcao
-                else if(codigo.charAt(i)=='(' && !tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo()=="id"){
+                else if(codigo.charAt(i)=='(' && !tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo()=="id" && comentario==false){
                     tokenList.get(tokenList.size()-1).setTipo("fun");
                     simbolos.setTipo("(");
                     simbolos.setNome("(");
@@ -267,7 +264,7 @@ public class AnaliseLexica {
                 
                 //Analisa se é um ) e se o antepenultimo ( da pilha eh d uma funcao, entao
                 //a funcao eh setada como true
-                else if(codigo.charAt(i)==')' && pilha.size()>=2 && pilha.get(pilha.size()-2)=="(("){
+                else if(codigo.charAt(i)==')' && pilha.size()>=2 && pilha.get(pilha.size()-2)=="((" && comentario==false){
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
@@ -277,7 +274,7 @@ public class AnaliseLexica {
                 }
                 
                 //Analisa se é um ) e se so existe um elemento na pilha, entao a funcao é setada como false
-                else if(codigo.charAt(i)==')' && pilha.size()==1){
+                else if(codigo.charAt(i)==')' && pilha.size()==1 && comentario==false){
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
@@ -287,7 +284,7 @@ public class AnaliseLexica {
                 }    
 
                 //Analisa qualquer simbolo unico na tabela de lexemas
-                else if (codigo.charAt(i) != 'e' && lexema.containsKey(simbolo) && comentario == false) {
+                else if (codigo.charAt(i) != 'e' && codigo.charAt(i)!='x' && lexema.containsKey(simbolo)  && comentario == false) {
                 //se for (, entao a funcao é setada como falsa
                 if(codigo.charAt(i)=='('){
                     pilha.push("(");
@@ -299,6 +296,7 @@ public class AnaliseLexica {
                 }
                 //se é ), retira um elemento da pilha
                 else if(codigo.charAt(i)==')'){
+                    if(!pilha.isEmpty())
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
