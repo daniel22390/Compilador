@@ -221,14 +221,6 @@ public class AnaliseLexica {
                         tokenList.add(simbolos);
                         token = "";
                     }
-                   /* else if((i+1)<codigo.length() && !ValidaLetra(codigo.charAt(i+1)) && !ValidaNumero(codigo.charAt(i+1))){
-                        token = token + codigo.charAt(i);
-                        simbolos.setTipo("id");
-                        simbolos.setNome(token);
-                        tokenList.add(simbolos);
-                        token = "";
-                    }*/
-                
                 
                 //Analisa se - é um hifen de palavra reservada
                 else if (codigo.charAt(i) == '-' && (i + 1) < codigo.length() && token.equals("fim") && comentario == false) {
