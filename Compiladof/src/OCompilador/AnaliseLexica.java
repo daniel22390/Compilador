@@ -58,7 +58,6 @@ public class AnaliseLexica {
         lexema.put("str", "str");
         lexema.put("var", "id");
         lexema.put("var", "id");
-        lexema.put("fun", "fun");
         lexema.put("vetor", "vet");
 //Palavras-chave
 //Condicionais
@@ -258,16 +257,23 @@ public class AnaliseLexica {
                         }
                     }
                 }
-                
-                //Analisa se houver ( e antes for um id, entao eh funcao
-                else if(codigo.charAt(i)=='(' && !tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo()=="id" && comentario==false){
+                else if(codigo.charAt(i)=='(' && i>0 && comentario==false){
+                    int k = i-1;
+                    while(k>0 && codigo.charAt(k)==' '){
+                        k--;
+                    }
+                    if(!ValidaLetra(codigo.charAt(k)) && !ValidaNumero(codigo.charAt(k))){
+                        funcao=false;
+                    }
+                    else if(!tokenList.isEmpty() && tokenList.get(tokenList.size()-1).getTipo()=="id"){
                     tokenList.get(tokenList.size()-1).setTipo("fun");
+                    pilha.push("((");
+                    funcao=true;
+                    }
                     simbolos.setTipo("(");
                     simbolos.setNome("(");
                     tokenList.add(simbolos);
                     token = "";
-                    pilha.push("((");
-                    funcao=true;
                 }
                 
                 //Analisa se é um ) e se o antepenultimo ( da pilha eh d uma funcao, entao
