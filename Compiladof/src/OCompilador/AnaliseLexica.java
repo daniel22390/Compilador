@@ -90,11 +90,7 @@ public class AnaliseLexica {
     }
 
     public boolean ValidaNumero(char simbolo) {
-        if (simbolo == '0' || simbolo == '1' || simbolo == '2' || simbolo == '3' || simbolo == '4' || simbolo == '5' || simbolo == '6' || simbolo == '7' || simbolo == '8' || simbolo == '9') {
-            return true;
-        } else {
-            return false;
-        }
+        return Character.isDigit(simbolo);
     }
     
 
@@ -163,23 +159,27 @@ public class AnaliseLexica {
                     simbolo = "";
                     simboloProximo = "";
                 } 
-
+                
+                //Identifica se x eh multiplicação
+                else if (codigo.charAt(i) == 'x' && comentario == false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i+1)=='(' && (codigo.charAt(i-1)==' ' || ValidaNumero(codigo.charAt(i-1))))) ) {
+                   
+                        simbolos.setTipo("mult");
+                        simbolos.setNome("x");
+                        tokenList.add(simbolos);
+                        token = "";
+                } 
+                
+                else if (codigo.length() == 1 && codigo.charAt(i) == 'x' && comentario == false) {
+                        simbolos.setTipo("id");
+                        simbolos.setNome("x");
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
                 //Analise numeros e pontos flutuantes, verificando se a frente do ponto ou virgula
                 //tem numero
                 else if (ValidaNumero(codigo.charAt(i)) && comentario == false) {
                     
                     //Analisa se o x eh de variavel ou se eh uma multiplicação
-                    if (i > 0 && /*codigo.charAt(i - 1) == 'x')*/ ValidaLetra(codigo.charAt(i-1))) {
-                        while (i<codigo.length() && (ValidaNumero(codigo.charAt(i)) || ValidaLetra(codigo.charAt(i)))){
-                            token = token + codigo.charAt(i);
-                            i++;
-                        } 
-                        i--;
-                        simbolos.setTipo("id");
-                        simbolos.setNome(token);
-                        tokenList.add(simbolos);
-                        token = "";
-                    } else {
                         boolean inteiro = true;
                         do {
                             token = token + codigo.charAt(i);
@@ -194,39 +194,26 @@ public class AnaliseLexica {
                                     inteiro = false;
                                 }
                             }
-                            if (i < codigo.length() && !ValidaNumero(codigo.charAt(i))) {
-                                i--;
-                                break;
-                            }
                         } while (i < codigo.length() && ValidaNumero(codigo.charAt(i)));
-                       
-                        if (inteiro == true) {
+                        i--;
+                        if(!token.isEmpty() && ValidaLetra(token.charAt(0))){
+                            simbolos.setTipo("id");
+                            simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                        }
+                        else if (inteiro == true) {
                             simbolos.setTipo("Int");
-                            simbolos.setNome(token);}
+                            simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";}
                         else{
                             simbolos.setTipo("Float");
                             simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
                         }
-                        tokenList.add(simbolos);
-                        token = "";
-                    }
-                }
-                
-                //Identifica se x eh multiplicação
-                else if (codigo.charAt(i) == 'x' && comentario == false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i+1)=='(' && (codigo.charAt(i-1)==' ' || ValidaNumero(codigo.charAt(i-1)))))) {
-                   
-                        simbolos.setTipo("mult");
-                        simbolos.setNome("x");
-                        tokenList.add(simbolos);
-                        token = "";
-                } 
-                
-                else if (codigo.length() == 1 && codigo.charAt(i) == 'x' && comentario == false) {
-                        simbolos.setTipo(lexema.get("x"));
-                        simbolos.setNome("mult");
-                        tokenList.add(simbolos);
-                        token = "";
-                    }
+            }
                 
                 //Analisa se - é um hifen de palavra reservada
                 else if (codigo.charAt(i) == '-' && (i + 1) < codigo.length() && token.equals("fim") && comentario == false) {
@@ -395,5 +382,6 @@ public class AnaliseLexica {
             }
             System.out.println("");
         }
+
     }
 }
