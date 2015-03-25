@@ -160,7 +160,7 @@ public class AnaliseLexica {
                 } 
                 
                 //Identifica se x eh multiplicação
-                else if (codigo.charAt(i) == 'x' && comentario == false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i+1)=='(' && (codigo.charAt(i-1)==' ' || ValidaNumero(codigo.charAt(i-1)) || codigo.charAt(i-1)==')')) || (codigo.charAt(i-1)==')' && (codigo.charAt(i+1)==' ' || ValidaNumero(codigo.charAt(i+1)) || codigo.charAt(i+1)=='('))) ) {
+                else if (codigo.charAt(i) == 'x' && comentario == false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i+1)=='(' && (codigo.charAt(i-1)==' ' || ValidaNumero(codigo.charAt(i-1)) || codigo.charAt(i-1)==' ')) || (codigo.charAt(i-1)==')' && (codigo.charAt(i+1)==' ' || ValidaNumero(codigo.charAt(i+1)) || codigo.charAt(i+1)=='(')) || (codigo.charAt(i+1)=='(' && (codigo.charAt(i-1)==' ' || ValidaNumero(codigo.charAt(i-1)) || codigo.charAt(i+1)==')'))) ) {
                    
                         simbolos.setTipo("mult");
                         simbolos.setNome("x");
