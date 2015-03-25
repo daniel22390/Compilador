@@ -312,7 +312,6 @@ public class AnaliseLexica {
                         simbolos.setNome(token);
                         tokenList.add(simbolos);
                         token = "";
-                            System.err.println("externo");
                         }
                     }
 //Analisa se for a ultima palavra, entao eh adicionada como variavel
