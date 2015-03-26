@@ -222,6 +222,7 @@ public class AnaliseLexica {
                     }
                     if (!ValidaLetra(codigo.charAt(k)) && !ValidaNumero(codigo.charAt(k))) {
                         funcao = false;
+                        pilha.push("(");
                     } else if (!tokenList.isEmpty() && tokenList.get(tokenList.size() - 1).getTipo() == "id") {
                         tokenList.get(tokenList.size() - 1).setTipo("fun");
                         pilha.push("((");
@@ -233,7 +234,7 @@ public class AnaliseLexica {
                     token = "";
                 } //Analisa se é um ) e se o antepenultimo ( da pilha eh d uma funcao, entao
                 //a funcao eh setada como true
-                else if (codigo.charAt(i) == ')' && pilha.size() >= 2 && pilha.get(pilha.size() - 2) == "((" && comentario == false) {
+                else if (codigo.charAt(i) == ')' && pilha.size() >= 2 && pilha.get(pilha.size() - 2).equals("((") && comentario == false) {
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
