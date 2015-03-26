@@ -268,6 +268,7 @@ public class AnaliseLexica {
                         simbolos.setNome(")");
                         tokenList.add(simbolos);
                         token = "";
+                        funcao=false;
                     } else {
                         simbolos.setTipo(lexema.get(simbolo));
                         simbolos.setNome(simbolo);
