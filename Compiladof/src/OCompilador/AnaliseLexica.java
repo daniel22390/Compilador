@@ -323,7 +323,7 @@ public class AnaliseLexica {
                         token = "";
                     }
                 } else if (comentario == false && !ValidaLetra(codigo.charAt(i)) && !ValidaNumero(codigo.charAt(i)) && codigo.charAt(i) != ' ') {
-                    if (linha != 1 && i != 0) {
+                    if (!(linha == 1 && i == 0)) {
                         simbolos.setTipo(simbolo);
                         simbolos.setNome(simbolo);
                         tokenList.add(simbolos);
