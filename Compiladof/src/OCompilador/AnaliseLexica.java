@@ -280,7 +280,7 @@ public class AnaliseLexica {
                     token = token + codigo.charAt(i);
 //Analisa se a palavra esta na tabela de lexemas e se o proximo token
 //é um caracterer especial
-                    if (lexema.containsKey(token) && ((codigo.length() > (i + 1) && (!ValidaLetra(codigo.charAt(i + 1)))) || (codigo.length() == (i + 1)))) {
+                    if (lexema.containsKey(token) && ((codigo.length() > (i + 1) && ((!ValidaLetra(codigo.charAt(i + 1)))) && !ValidaNumero(codigo.charAt(i+1))) || (codigo.length() == (i + 1)))) {
                         simbolos.setTipo(lexema.get(token));
                         simbolos.setNome(token);
                         tokenList.add(simbolos);
@@ -291,15 +291,14 @@ public class AnaliseLexica {
                     if (!token.equals(" ") && !token.equals("") && (i + 1) < codigo.length() && !ValidaLetra(codigo.charAt(i + 1)) && !ValidaNumero(codigo.charAt(i + 1))) {
                         if(token.equals("fim") && codigo.charAt(i+1)=='-'){
                             int k=i+2;
-                            hifen = token+'-';
-                            while(k<codigo.length() && ValidaLetra(codigo.charAt(k))){
+                            while(k<codigo.length() && (ValidaLetra(codigo.charAt(k)) || ValidaNumero(codigo.charAt(k)))){
                                 hifen = hifen + codigo.charAt(k);
                                 k++;
                             }
                             k--;
-                            if(lexema.containsKey(hifen)){
-                                simbolos.setTipo(lexema.get(hifen));
-                                simbolos.setNome(hifen);
+                            if(lexema.containsKey(token+'-'+hifen) && (((k+1)<codigo.length() && (!ValidaLetra(codigo.charAt(k+1)) || !ValidaNumero(codigo.charAt(k+1)))) || (k+1)==codigo.length())){
+                                simbolos.setTipo(lexema.get(token+'-'+hifen));
+                                simbolos.setNome(token+'-'+hifen);
                                 tokenList.add(simbolos);
                                 token = "";
                                 i=k;

@@ -11,7 +11,7 @@ public class OCompilador {
 
     public static void main(String[] args) throws IOException {
 
-        AnaliseLexica analisador = new AnaliseLexica("teste.txt");
+        AnaliseLexica analisador = new AnaliseLexica("teste2.txt");
         analisador.Analisar();
         
  
