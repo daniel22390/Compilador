@@ -229,6 +229,9 @@ public class AnaliseLexica {
                         tokenList.get(tokenList.size() - 1).setTipo("fun");
                         pilha.push("((");
                         funcao = true;
+                    } else{
+                        pilha.push("(");
+                        funcao = false;
                     }
                     simbolos.setTipo("(");
                     simbolos.setNome("(");
