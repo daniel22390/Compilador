@@ -27,6 +27,7 @@ public class AnaliseLexica {
     Stack pilha = new Stack();
     Scanner scanner = null;
     String codigo = "";
+    boolean string = false;
 
     public AnaliseLexica(String txt) throws FileNotFoundException {
         //Lendo o arquivo
@@ -62,7 +63,6 @@ public class AnaliseLexica {
         lexema.put("então", "initcond");
         lexema.put("senão", "altcond");
         lexema.put("fim-se", "endcond");
-        lexema.put("ou", "or");
         lexema.put("e", "and");
         lexema.put("para", "forloop");
         lexema.put("de", "rng1forloop");
@@ -112,19 +112,29 @@ public class AnaliseLexica {
                     }
                 }
                 //Analisa Aspas
-                else if (codigo.charAt(i) == '"' && comentario == false) {
-                    i++;
-                    token = "";
-                    do {
-                        token = token + codigo.charAt(i);
-                        i++;
-                    } while (i < codigo.length() && codigo.charAt(i) != '"');
+                else if ((codigo.charAt(i) == '"' || string==true) && comentario == false) {
+                    if(codigo.charAt(i)=='"' && string == true){
                     simbolos.setTipo("String");
                     simbolos.setNome(token);
                     tokenList.add(simbolos);
                     token = "";
+                    string = false;
+                    }
+                    else if(codigo.charAt(i) == '"' && string == false){
+                        string = true;
+                    }
+                    else if(!scanner.hasNext() && (i+1)==codigo.length()){
+                        token=token+codigo.charAt(i);
+                        simbolos.setTipo("String");
+                        simbolos.setNome(token);
+                        tokenList.add(simbolos);
+                        token = "";
+                    }
+                    else{
+                        token = token + codigo.charAt(i);
+                    }
                 } //Analisa comparadores e atrbuição
-                else if ((codigo.charAt(i) == '=' || codigo.charAt(i) == '<' || codigo.charAt(i) == '>' || codigo.charAt(i) == '!') && comentario == false) {
+                else if ((codigo.charAt(i) == '=' || codigo.charAt(i) == '<' || codigo.charAt(i) == '>' || codigo.charAt(i) == '!') && comentario == false && string==false) {
                     //Analisa qual o proximo simbolo para saber se pode ser <=,=<,...
                     String simboloProximo = "";
                     if ((i + 1) < codigo.length() && (codigo.charAt(i + 1) == '<' || codigo.charAt(i + 1) == '>' || codigo.charAt(i + 1) == '=')) {
@@ -145,20 +155,20 @@ public class AnaliseLexica {
                     simbolo = "";
                     simboloProximo = "";
                 } //Identifica se x eh multiplicação
-                else if (codigo.charAt(i) == 'x' && comentario == false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' '))/* || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)) || codigo.charAt(i - 1) == ' ')) || (codigo.charAt(i - 1) == ')' && (codigo.charAt(i + 1) == ' ' || ValidaNumero(codigo.charAt(i + 1)) || codigo.charAt(i + 1) == '(')) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)) || codigo.charAt(i + 1) == ')')))*/) {
+                else if (codigo.charAt(i) == 'x' && comentario == false && string==false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)) || codigo.charAt(i - 1) == ' ')) || (codigo.charAt(i - 1) == ')' && (codigo.charAt(i + 1) == ' ' || ValidaNumero(codigo.charAt(i + 1)) || codigo.charAt(i + 1) == '(')) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)) || codigo.charAt(i + 1) == ')')))) {
                     simbolos.setTipo("mult");
                     simbolos.setNome("x");
                     tokenList.add(simbolos);
                     token = "";
                 }// se x isolado, entao eh uma multiplicação
-                else if (((codigo.length() == 1 && codigo.charAt(i)=='x') || ((i==0) && codigo.length() >= 2 && codigo.charAt(i)=='x' && codigo.charAt(i+1)==' ') || ((i>0) && codigo.length() == (i+1) && codigo.charAt(i)=='x' && codigo.charAt(i-1)==' ')) && comentario == false) {
+                else if (((codigo.length() == 1 && codigo.charAt(i)=='x') || ((i==0) && codigo.length() >= 2 && codigo.charAt(i)=='x' && codigo.charAt(i+1)==' ') || ((i>0) && codigo.length() == (i+1) && codigo.charAt(i)=='x' && codigo.charAt(i-1)==' ')) && comentario == false && string==false) {
                 simbolos.setTipo("mult");
                 simbolos.setNome("x");
                 tokenList.add(simbolos);
                 token = "";
                 } //Analise numeros e pontos flutuantes, verificando se a frente do ponto ou virgula
                   //tem numero
-                else if (ValidaNumero(codigo.charAt(i)) && comentario == false) {
+                else if (ValidaNumero(codigo.charAt(i)) && comentario == false && string==false) {
                     boolean inteiro = true;
                     do {
                         token = token + codigo.charAt(i);
@@ -207,17 +217,17 @@ public class AnaliseLexica {
                         token = "";
                     }
                 } //Analisa se - é um hifen de palavra reservada
-                else if (codigo.charAt(i) == '-' && (i + 1) < codigo.length() && token.equals("fim") && comentario == false) {
+                else if (codigo.charAt(i) == '-' && (i + 1) < codigo.length() && token.equals("fim") && comentario == false && string==false) {
                     token = token + codigo.charAt(i);
                 } //Analisa o´. de concatenação
-                else if (codigo.charAt(i) == '.' && comentario == false) {
+                else if (codigo.charAt(i) == '.' && comentario == false && string==false) {
                     simbolos.setTipo(".");
                     simbolos.setNome(".");
                     tokenList.add(simbolos);
                     token = "";
                 }//Se ler (, ele verifica se o ultimo lexema eh um id, se for adiciona seu tipo
                  //como fun e seta funcao como true, senao, adiciona funcao como false
-                else if (codigo.charAt(i) == '(' && i > 0 && comentario == false) {
+                else if (codigo.charAt(i) == '(' && i > 0 && comentario == false && string==false) {
                     int k = i - 1;
                     while (k > 0 && codigo.charAt(k) == ' ') {
                         k--;
@@ -239,7 +249,7 @@ public class AnaliseLexica {
                     token = "";
                 } //Analisa se é um ) e se o antepenultimo ( da pilha eh d uma funcao, entao
                   //a funcao eh setada como true
-                else if (codigo.charAt(i) == ')' && pilha.size() >= 2 && pilha.get(pilha.size() - 2).equals("((") && comentario == false) {
+                else if (codigo.charAt(i) == ')' && pilha.size() >= 2 && pilha.get(pilha.size() - 2).equals("((") && comentario == false && string==false) {
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
@@ -247,7 +257,7 @@ public class AnaliseLexica {
                     token = "";
                     funcao = true;
                 }//Analisa se é um ) e se so existe um elemento na pilha, entao a funcao é setada como false
-                else if (codigo.charAt(i) == ')' && pilha.size() == 1 && comentario == false) {
+                else if (codigo.charAt(i) == ')' && pilha.size() == 1 && comentario == false && string==false) {
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
@@ -255,7 +265,7 @@ public class AnaliseLexica {
                     token = "";
                     funcao = false;
                 } //Analisa qualquer simbolo unico na tabela de lexemas
-                else if (codigo.charAt(i) != 'e' && codigo.charAt(i) != 'x' && lexema.containsKey(simbolo) && comentario == false) {
+                else if (codigo.charAt(i) != 'e' && codigo.charAt(i) != 'x' && lexema.containsKey(simbolo) && comentario == false && string==false) {
                     //se for (, entao a funcao é setada como falsa
                     if (codigo.charAt(i) == '(') {
                         pilha.push("(");
@@ -281,7 +291,7 @@ public class AnaliseLexica {
                         token = "";
                     }
                 }//Analisa palavras reservadas da linguagem como: se, para, então...
-                else if ((ValidaLetra(codigo.charAt(i)) || ValidaNumero(codigo.charAt(i))) && comentario == false) {
+                else if ((ValidaLetra(codigo.charAt(i)) || ValidaNumero(codigo.charAt(i))) && comentario == false && string==false) {
                     token = token + codigo.charAt(i);
                     //Analisa se a palavra esta na tabela de lexemas e se o proximo token
                     //é um caracterer especial
@@ -332,7 +342,7 @@ public class AnaliseLexica {
                     }
                 }//se o caracter nao eh numero e nem letra e nao eh espaço em branco ou TAB, eu o adiciono
                  //como um simbolo comum
-                else if (comentario == false && !ValidaLetra(codigo.charAt(i)) && !ValidaNumero(codigo.charAt(i)) && codigo.charAt(i) != ' ' && codigo.charAt(i)!=9) {
+                else if (comentario == false && string==false && !ValidaLetra(codigo.charAt(i)) && !ValidaNumero(codigo.charAt(i)) && codigo.charAt(i) != ' ' && codigo.charAt(i)!=9) {
                     if (!(linha == 1 && i == 0)) {
                         simbolos.setTipo(simbolo);
                         simbolos.setNome(simbolo);

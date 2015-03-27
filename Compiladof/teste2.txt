@@ -1,14 +1,14 @@
 ﻿#inicio codigo###
 int dez=30.5;
 se (a(3,3)<=30,5) então
-dez++
+a123"dez++
 ve[30][30]=i
-fim-se1
+fim-se1"a123
 para ide1 até 40 faça
-fim=dez+30,30,x123
+fim=dez+30,30x123
 fim-para
 enquanto- (2,3<=fun(3,(4,4),2,2)){
-strca="Isso nao faz sentido kkkk"
+strca="Isso nao faz sentido kkkk
 fun(a,b,fun2((4,15+(7+d)), (8.9+e)))
 }fim-enquantos
 se i===40,3 entao
@@ -20,3 +20,5 @@ fun(a,
 (4,3),
 3,2)
 tr65.56,3
+rtf23.r34.56.7"
+3x3x4,2x6x(3,2) ou3
