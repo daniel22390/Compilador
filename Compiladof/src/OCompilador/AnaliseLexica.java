@@ -164,7 +164,7 @@ public class AnaliseLexica {
                         token = token + codigo.charAt(i);
                         i++;
                         if (i < codigo.length() && (codigo.charAt(i) == '.' || codigo.charAt(i) == ',') && (i + 1) < codigo.length() && codigo.charAt(i + 1) >= 48 && codigo.charAt(i + 1) <= 57 && inteiro == true) {
-                            if ((funcao == true || ValidaLetra(token.charAt(0))) && codigo.charAt(i) == ',') {}
+                            if (((funcao == true || ValidaLetra(token.charAt(0))) && codigo.charAt(i) == ',') || (ValidaLetra(token.charAt(0)) && codigo.charAt(i)=='.')) {}
                             else {
                                 token = token + codigo.charAt(i);
                                 i++;
