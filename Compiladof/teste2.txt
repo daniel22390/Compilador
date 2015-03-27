@@ -1,4 +1,4 @@
-﻿#inicio codigo#
+﻿#inicio codigo###
 int i=30.5;
 se (a(3,3)<=30,5) então
 i++
@@ -13,4 +13,5 @@ strca="Isso nao faz sentido kkkk"
 se i===40,3 entao
 mensagem="i==40,3"
 fim-se1
-&&&&%%%%
+&&&&%%%%wqeoip7xcrm,8sa,.c´234r7c573=1tc9rx3.
+								KEFCR9I13-
