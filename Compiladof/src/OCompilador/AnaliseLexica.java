@@ -7,6 +7,9 @@ package OCompilador;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,7 +33,7 @@ public class AnaliseLexica {
     boolean string = false;
 
     public AnaliseLexica(String txt) throws FileNotFoundException {
-        //Lendo o arquivo
+        //Lendo o arquivo teste
         FileReader teste = new FileReader(txt);
         scanner = new Scanner(teste);
         //Adicionando em uma tabela tds os lexemas conhecidos
@@ -85,7 +88,7 @@ public class AnaliseLexica {
         return Character.isDigit(simbolo);
     }
 
-    public void Analisar() {
+    public void Analisar() throws IOException {
         String token = "";
         int linha = 0;
         boolean comentario = false;
@@ -355,15 +358,28 @@ public class AnaliseLexica {
             }
             tokens.put(linha, tokenList);
         }
-        //for para exibir tokens
+        //for para exibir tokens em terminal
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
             Integer key = entrySet.getKey();
             ArrayList<Lexema> value = entrySet.getValue();
             System.out.print(key);
             for (Lexema value1 : value) {
-                System.out.print(" <" + value1.getTipo() + "," + value1.getNome() + ">");
+                System.out.print(" <"/* + value1.getTipo() + ","*/ + value1.getNome() + ">");
             }
             System.out.println("");
+        }
+        //Escrevendo em arquivo teste3
+        try (FileWriter arq = new FileWriter("teste3.txt")) {
+            PrintWriter gravarArq = new PrintWriter(arq);
+            for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
+                Integer key = entrySet.getKey();
+                ArrayList<Lexema> value = entrySet.getValue();
+                gravarArq.print(key);
+                for (Lexema value1 : value) {
+                    gravarArq.print(" <"/* + value1.getTipo() + ","*/ + value1.getNome() + ">");
+                }
+                gravarArq.println("");
+            }
         }
     }
 }

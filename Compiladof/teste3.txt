@@ -1,0 +1,59 @@
+1
+2
+3 <a> <=> <3> <x> <3,2>
+4 <b> <=> <(> <8> <+> <7> <)> <x> <4,1>
+5 <c> <=> <91> <-> <3> <*> <2.4>
+6 <d> <=> <41> <:> <(> <4> </> <2> <)>
+7 <e> <=> <(> <a> <*> <(> <(> <(> <b> <x> <c> <)> <:> <d> <)> </> <2> <)> <)>
+8
+9 <se> <a> <>> <10> <então>
+10 <tela> <.> <mensagem> <=> <A é maior que 10>
+11 <fim-se>
+12
+13 <se> <b> <<> <30> <então>
+14 <tela> <.> <mensagem2> <=> <B é menor que 30>
+15 <fim-se>
+16
+17 <se> <(> <c> <<=> <40> <)> <então>
+18 <tela> <.> <mensagem3> <=> <C é menor ou igual a 40>
+19 <fim-se>
+20
+21 <se> <(> <d> <>=> <20> <)> <e> <(> <d> <=<> <60> <)> <então>
+22 <tela> <.> <mensagem4> <=> <D está entre 20 e 60>
+23 <fim-se>
+24
+25 <se> <(> <e> <=<> <30,5> <)> <e> <(> <e> <!=> <20> <)> <então>
+26 <tela> <.> <mensagem5> <=> <E é menor que 30 e meio, mas é diferente de 20>
+27 <se> <(> <e> <==> <0> <)> <então>
+28 <tela> <.> <mensagem5> <=> <E é zero>
+29 <senão>
+30 <se> <(> <e> <<> <0> <)> <então>
+31 <tela> <.> <mensagem5> <=> <E é negativo>
+32 <apaga> <(> <tela> <.> <mensagem> <,> <telamensagem2> <,> <telamensagem3> <,> <telamensagem4> <)>
+33 <fim-se>
+34 <fim-se>
+35 <fim-se>
+36
+37 <fat> <=> <1>
+38 <para> <i> <de> <1> <até> <10> <faça>
+39 <fat> <=> <fat> <x> <i>
+40 <fim-para>
+41 <tela> <=> <10! = > <+> <fat>
+42
+43 <fat> <=> <1>
+44 <i> <=> <1>
+45 <enquanto> <i> <<=> <5> <faça>
+46 <fat> <=> <fat> <x> <i>
+47 <i> <=> <i> <+> <1>
+48 <fim-enquanto>
+49 <tela> <=> <5! = > <+> <fat>
+50
+51 <vetor> <m> <[> <10> <]> <[> <10> <]>
+52
+53 <m> <[> <1> <]> <[> <1> <]> <=> <1.5>
+54 <m> <[> <1> <]> <[> <2> <]> <=> <3.2>
+55 <m> <[> <2> <]> <[> <1> <]> <=> <3,3>
+56 <m> <[> <2> <]> <[> <i> <]> <=> <2,9>
+57
+58
+59
