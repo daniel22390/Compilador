@@ -158,7 +158,7 @@ public class AnaliseLexica {
                     simbolo = "";
                     simboloProximo = "";
                 } //Identifica se x eh multiplicação
-                else if (codigo.charAt(i) == 'x' && comentario == false && string==false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)) || codigo.charAt(i - 1) == ' ')) || (codigo.charAt(i - 1) == ')' && (codigo.charAt(i + 1) == ' ' || ValidaNumero(codigo.charAt(i + 1)) || codigo.charAt(i + 1) == '(')) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)) || codigo.charAt(i + 1) == ')')))) {
+                else if (codigo.charAt(i) == 'x' && comentario == false && string==false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)))) || (codigo.charAt(i - 1) == ')' && (codigo.charAt(i + 1) == ' ' || ValidaNumero(codigo.charAt(i + 1)) || codigo.charAt(i + 1) == '(')) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)))))) {
                     simbolos.setTipo("mult");
                     simbolos.setNome("x");
                     tokenList.add(simbolos);
@@ -169,7 +169,14 @@ public class AnaliseLexica {
                 simbolos.setNome("x");
                 tokenList.add(simbolos);
                 token = "";
-                } //Analise numeros e pontos flutuantes, verificando se a frente do ponto ou virgula
+                }
+                else if(i==0 && codigo.charAt(i)=='x' && (i+1)<codigo.length() && codigo.charAt(i+1)=='('){
+                    simbolos.setTipo("mult");
+                    simbolos.setNome("x");
+                    tokenList.add(simbolos);
+                    token = "";
+                }
+                  //Analise numeros e pontos flutuantes, verificando se a frente do ponto ou virgula
                   //tem numero
                 else if (ValidaNumero(codigo.charAt(i)) && comentario == false && string==false) {
                     boolean inteiro = true;
