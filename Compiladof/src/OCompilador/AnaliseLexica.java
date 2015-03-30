@@ -77,7 +77,7 @@ public class AnaliseLexica {
     }
 
     public boolean ValidaLetra(char letra) {
-        return (Character.isLetter(letra) || letra=='_');
+        return (Character.isLetter(letra));
     }
 
     public boolean ValidaHifen(char simbolo, int indice) {
