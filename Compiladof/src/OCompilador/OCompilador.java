@@ -1,4 +1,4 @@
-/*---------- O Senhor é o meu Pastor e nada me faltará. Sal(23:1)-------------*/
+
 package OCompilador;
 
 import java.io.IOException;
