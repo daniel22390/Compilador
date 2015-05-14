@@ -372,6 +372,8 @@ public class AnaliseLexica {
             }
             System.out.println("");
         }
+        AnaliseSintatica analisador = new AnaliseSintatica(tokens);
+        analisador.Analisa();
         //Escrevendo em arquivo teste3
         /*try (FileWriter arq = new FileWriter("teste3.txt")) {
             PrintWriter gravarArq = new PrintWriter(arq);
