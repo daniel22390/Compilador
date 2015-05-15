@@ -28,8 +28,7 @@ public class AnaliseSintatica {
         this.lexemas = listao;
     }
 
-    public boolean verificaCondicao(ArrayList<Lexema> token) {
-        return true;
+    public void verificaCondicao(ArrayList<Lexema> token) {
     }
 
     //Analisa comandos
@@ -37,7 +36,6 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokencond = new ArrayList<Lexema>();
         ArrayList<Lexema> tokencomandos = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenEnquanto = new ArrayList<Lexema>();
-        boolean eCondicao = false;
         //percorre array com comandos
         for (int i = 0; i < token.size(); i++) {
             //verifica o comando se
@@ -45,46 +43,161 @@ public class AnaliseSintatica {
                 //le ate achar um entao
                 i++;
                 while ((i < token.size()) && (!token.get(i).getTipo().equals("altcond"))) {
-                    tokencond.add(token.get(i));
+                    if (!token.get(i).getTipo().equals("|n")) {
+                        tokencond.add(token.get(i));
+                    }
                     i++;
                 }
                 verificaCondicao(tokencond);
+                tokencond = null;
                 i++;
                 //le ate axar o fim-se
                 while ((i < token.size()) && (!token.get(i).getTipo().equals("endcond"))) {
-                    tokencomandos.add(token.get(i));
+                    if (!token.get(i).getTipo().equals("|n")) {
+                        tokencomandos.add(token.get(i));
+                    }
                     i++;
                 }
                 verificaComandos(tokencomandos);
+                tokencomandos = null;
                 i++;
-            }
-            
-            //le ate achar um enquanto
-            else if(token.get(i).getTipo().equals("whileloop")){
+                //se nao terminar com \n é erro
+                if (!token.get(i).getTipo().equals("|n")) {
+                    System.out.println("Erro");
+                }
+            } //le ate achar um enquanto
+            else if (token.get(i).getTipo().equals("whileloop")) {
                 i++;
+                //le ate axar um faça
                 while ((i < token.size()) && (!token.get(i).getTipo().equals("initforloop"))) {
-                    tokenEnquanto.add(token.get(i));
+                    if (!token.get(i).getTipo().equals("|n")) {
+                        tokenEnquanto.add(token.get(i));
+                    }
                     i++;
                 }
                 verificaCondicao(tokenEnquanto);
+                tokenEnquanto = null;
                 i++;
+                //le ate axar o fim-enquanto
+                while ((i < token.size()) && (!token.get(i).getTipo().equals("endwhileloop"))) {
+                    if (!token.get(i).getTipo().equals("|n")) {
+                        tokencomandos.add(token.get(i));
+                    }
+                    i++;
+                }
+                verificaComandos(tokencomandos);
+                tokencomandos = null;
+                i++;
+                //se nao terminar com \n é erro
+                if (!token.get(i).getTipo().equals("|n")) {
+                    System.out.println("Erro");
+                }
+            } //le ate achar um para
+            else if (token.get(i).getTipo().equals("forloop")) {
+                i++;
+                //le se proximo elemento é um id
+                if ((i) >= token.size() || !token.get(i).getTipo().equals("id")) {
+                    System.out.println("Erro");
+                } else {
+                    i++;
+                    //le se proximo elemento é um "de"
+                    if ((i) >= token.size() || !token.get(i).getTipo().equals("rng1forloop")) {
+                        System.out.println("Erro");
+                    } else {
+                        i++;
+                        //le se proximo elemento é um inteiro
+                        if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
+                            System.out.println("Erro");
+                        } else {
+                            i++;
+                            //le se proximo elemento é "até"
+                            if ((i) >= token.size() || !token.get(i).getTipo().equals("rng2forloop")) {
+                                System.out.println("Erro");
+                            } else {
+                                i++;
+                                //le se o próximo é um inteiro
+                                if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
+                                    System.out.println("Erro");
+                                } else {
+                                    i++;
+                                    //le se o próximo é um faça
+                                    if ((i) >= token.size() || !token.get(i).getTipo().equals("initforloop")) {
+                                        System.out.println("Erro");
+                                    } else {
+                                        i++;
+                                        //le ate axar um fim-para
+                                        while ((i < token.size()) && (!token.get(i).getTipo().equals("endforloop"))) {
+                                            if (!token.get(i).getTipo().equals("|n")) {
+                                                tokenEnquanto.add(token.get(i));
+                                            }
+                                            i++;
+                                        }
+                                        verificaComandos(tokenEnquanto);
+                                        tokenEnquanto = null;
+                                        i++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //se nao terminar com \n é erro
+                if (!token.get(i).getTipo().equals("|n")) {
+                    System.out.println("Erro");
+                }
+            } //se ler um id
+            else if (token.get(i).getTipo().equals("id")) {
+                i++;
+                //le se proximo elemento é um =
+                if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
+                    System.out.println("Erro");
+                } else {
+                    i++;
+                    //le ate axar um \n
+                    while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
+                        tokenEnquanto.add(token.get(i));
+                        i++;
+                    }
+                    verificaComandos(tokenEnquanto);
+                    tokenEnquanto = null;
+                    i++;
+                }
+                //se nao terminar com \n é erro
+                if (!token.get(i).getTipo().equals("|n")) {
+                    System.out.println("Erro");
+                }
+            }
+            //Analisa se é uma função
+            else if(token.get(i).getNome().equals("funcao")){
+                i++;
+                //le se o proximo é um fun
+                if ((i) >= token.size() || !token.get(i).getTipo().equals("fun")) {
+                    System.out.println("Erro");
+                }else{
+                    i++;
+                    //continuar aqui
+                }
             }
         }
     }
 
     public void Analisa() {
         pilha.push("programa");
+        boolean programa = false;
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
             Integer key = entrySet.getKey();
             ArrayList<Lexema> value = entrySet.getValue();
             for (Lexema value1 : value) {
                 if (value1.getNome().equals("fim")) {
                     verificaComandos(comandos);
+                    programa = true;
                 } else {
                     comandos.add(value1);
-                    cont++;
                 }
             }
+        }
+        if (programa == false) {
+            System.out.println("Erro");
         }
 
     }

@@ -27,6 +27,7 @@ public class AnaliseLexica {
     LinkedHashMap<Integer, ArrayList<Lexema>> tokens = new LinkedHashMap<>();
     ArrayList<Lexema> tokenList = null;
     Lexema simbolos = new Lexema();
+    Lexema simbolos3 = new Lexema();
     Stack pilha = new Stack();
     Scanner scanner = null;
     String codigo = "";
@@ -360,6 +361,9 @@ public class AnaliseLexica {
                 }
                 simbolos = new Lexema();
             }
+            simbolos3.setNome("|n");
+            simbolos3.setTipo("|n");
+            tokenList.add(simbolos3);
             tokens.put(linha, tokenList);
         }
         //for para exibir tokens em terminal

@@ -1,0 +1,4 @@
+para i de 1 até 10 faça
+    
+fim-para
+fim
