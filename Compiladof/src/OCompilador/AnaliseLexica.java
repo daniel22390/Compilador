@@ -368,7 +368,7 @@ public class AnaliseLexica {
             ArrayList<Lexema> value = entrySet.getValue();
             System.out.print(key);
             for (Lexema value1 : value) {
-                System.out.print(" <"/* + value1.getTipo() + ","*/ + value1.getNome() + ">");
+                System.out.print(" <" + value1.getTipo() + "," + value1.getNome() + ">");
             }
             System.out.println("");
         }
