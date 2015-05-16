@@ -1,5 +1,12 @@
-﻿enquanto a <= 3 faça
+﻿enquanto i<30 faça
 fim-enquanto
 para i de 1 até 10 faça
 fim-para
+se i<3 então
+fim-se
+as = 30
+funcao as(30, 40)
+funcao as(30, 40)
+fim-funcao
+fim-funcao
 fim

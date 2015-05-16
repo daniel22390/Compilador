@@ -27,6 +27,10 @@ public class AnaliseSintatica {
         this.lexemas = listao;
     }
 
+    public void verificaParametro(ArrayList<Lexema> token) {
+
+    }
+
     public void verificaCondicao(ArrayList<Lexema> token) {
     }
 
@@ -45,14 +49,14 @@ public class AnaliseSintatica {
                 pilha.clear();
                 pilha.push(token.get(i));
                 i++;
-                while ((i < token.size()) && (!token.get(i).getTipo().equals("altcond"))) {
+                while ((i < token.size()) && (!token.get(i).getTipo().equals("initcond"))) {
                     if (!token.get(i).getTipo().equals("|n")) {
                         tokencond.add(token.get(i));
                     }
                     i++;
                 }
                 verificaCondicao(tokencond);
-                tokencond = null;
+                tokencond.clear();
                 i++;
                 //le ate axar o fim-se
                 while ((i < token.size())) {
@@ -87,7 +91,7 @@ public class AnaliseSintatica {
                     i++;
                 }
                 verificaCondicao(tokenEnquanto);
-                tokenEnquanto = null;
+                tokenEnquanto.clear();
                 i++;
                 //le ate axar o fim-enquanto
                 while ((i < token.size())) {
@@ -183,11 +187,12 @@ public class AnaliseSintatica {
                         tokenEnquanto.add(token.get(i));
                         i++;
                     }
-                    verificaComandos(tokenEnquanto);
+                    verificaCondicao(tokenEnquanto);
                     tokenEnquanto.clear();
                 }
             } //Analisa se é uma função
-            else if (token.get(i).getNome().equals("funcao")) {
+            else if (token.get(i).getTipo().equals("function")) {
+                pilha.clear();
                 i++;
                 //le se o proximo é um fun
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("fun")) {
@@ -197,12 +202,36 @@ public class AnaliseSintatica {
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("(")) {
                         System.out.println("Erro");
                     } else {
+                        pilha.push(token.get(i));
                         i++;
+                        while (!token.get(i).getTipo().equals("|n"))  {
+                            if (token.get(i).getTipo().equals("(")) {
+                                pilha.push(token.get(i));
+                            } else if (token.get(i).getTipo().equals(")")) {
+                                pilha.pop();
+                                if (pilha.isEmpty()) {
+                                    break;
+                                }
+                            }
+                            tokenEnquanto.add(token.get(i));
+                            i++;
+                        }
+                        if (!pilha.isEmpty()) {
+                            System.out.println("Erro");
+                        }
+                        pilha.clear();
+                        if (i < token.size()) {
+                            pilha.push(token.get(i));
+                        }
+                        i++;
+                        verificaParametro(tokenEnquanto);
+                        tokenEnquanto.clear();
+
                         while ((i < token.size())) {
                             if (!token.get(i).getTipo().equals("|n")) {
-                                if (token.get(i).getTipo().equals("(")) {
+                                if (token.get(i).getTipo().equals("function")) {
                                     pilha.push(token.get(i));
-                                } else if (token.get(i).getTipo().equals(")")) {
+                                } else if (token.get(i).getTipo().equals("endfunction")) {
                                     pilha.pop();
                                     if (pilha.isEmpty()) {
                                         break;
