@@ -1,4 +1,5 @@
+﻿enquanto a <= 3 faça
+fim-enquanto
 para i de 1 até 10 faça
-    
 fim-para
 fim
