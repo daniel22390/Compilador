@@ -32,6 +32,7 @@ public class AnaliseSintatica {
     }
 
     public void verificaCondicao(ArrayList<Lexema> token) {
+
     }
 
     //Analisa comandos
@@ -74,7 +75,7 @@ public class AnaliseSintatica {
                     i++;
                 }
                 if (!pilha.isEmpty()) {
-                    System.out.println("Erro");
+                    System.out.println("Erro: faltou fim-se");
                 }
                 verificaComandos(tokencomandos);
                 tokencomandos.clear();
@@ -109,7 +110,7 @@ public class AnaliseSintatica {
                     i++;
                 }
                 if (!pilha.isEmpty()) {
-                    System.out.println("Erro");
+                    System.out.println("Erro: faltou fim-enquanto");
                 }
                 verificaComandos(tokencomandos);
                 tokencomandos.clear();
@@ -120,32 +121,32 @@ public class AnaliseSintatica {
                 i++;
                 //le se proximo elemento é um id
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("id")) {
-                    System.out.println("Erro");
+                    System.out.println("Erro: faltou id");
                 } else {
                     i++;
                     //le se proximo elemento é um "de"
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("rng1forloop")) {
-                        System.out.println("Erro");
+                        System.out.println("Erro: faltou de");
                     } else {
                         i++;
                         //le se proximo elemento é um inteiro
                         if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                            System.out.println("Erro");
+                            System.out.println("Erro: tipo nao inteiro");
                         } else {
                             i++;
                             //le se proximo elemento é "até"
                             if ((i) >= token.size() || !token.get(i).getTipo().equals("rng2forloop")) {
-                                System.out.println("Erro");
+                                System.out.println("Erro: faltou até");
                             } else {
                                 i++;
                                 //le se o próximo é um inteiro
                                 if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                                    System.out.println("Erro");
+                                    System.out.println("Erro: tipo nao inteiro");
                                 } else {
                                     i++;
                                     //le se o próximo é um faça
                                     if ((i) >= token.size() || !token.get(i).getTipo().equals("initforloop")) {
-                                        System.out.println("Erro");
+                                        System.out.println("Erro: nao iniciou para");
                                     } else {
                                         i++;
                                         //le ate axar um fim-para
@@ -164,7 +165,7 @@ public class AnaliseSintatica {
                                             i++;
                                         }
                                         if (!pilha.isEmpty()) {
-                                            System.out.println("Erro");
+                                            System.out.println("Erro: faltou fim-para");
                                         }
                                         verificaComandos(tokenEnquanto);
                                         tokenEnquanto.clear();
@@ -179,7 +180,7 @@ public class AnaliseSintatica {
                 i++;
                 //le se proximo elemento é um =
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
-                    System.out.println("Erro");
+                    System.out.println("Erro: nao contem atribuição");
                 } else {
                     i++;
                     //le ate axar um \n
@@ -196,7 +197,7 @@ public class AnaliseSintatica {
                 i++;
                 //le se o proximo é um fun
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("fun")) {
-                    System.out.println("Erro");
+                    System.out.println("Erro: erro em parametros");
                 } else {
                     i++;
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("(")) {
@@ -204,7 +205,7 @@ public class AnaliseSintatica {
                     } else {
                         pilha.push(token.get(i));
                         i++;
-                        while (!token.get(i).getTipo().equals("|n"))  {
+                        while (!token.get(i).getTipo().equals("|n")) {
                             if (token.get(i).getTipo().equals("(")) {
                                 pilha.push(token.get(i));
                             } else if (token.get(i).getTipo().equals(")")) {
@@ -242,15 +243,53 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if (!pilha.isEmpty()) {
-                            System.out.println("Erro");
+                            System.out.println("Erro: faltou fim-funcao");
                         }
                         verificaComandos(tokenEnquanto);
                         tokenEnquanto.clear();
                     }
                 }
+            } //Analisa se eh declaração de vetor
+            else if (token.get(i).getTipo().equals("vet")) {
+                i++;
+                if ((i) < token.size() && token.get(i).getTipo().equals("id")) {
+                    i++;
+                    //analisa se é uma declaração de vetor
+                    if ((i) < token.size() && token.get(i).getTipo().equals("[")) {
+                        i++;
+                        while ((i < token.size()) && !("|n").equals(token.get(i).getTipo()) && !("]").equals(token.get(i).getTipo())) {
+                            tokenEnquanto.add(token.get(i));
+                            i++;
+                        }
+                        if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
+                            System.out.println("Erro: token esperado ']'");
+                        }
+                        verificaCondicao(tokenEnquanto);
+                        tokenEnquanto.clear();
+
+                        i++;
+                        //analisa se é declaração de matriz
+                        if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
+                            while ((i < token.size()) && !token.get(i).getTipo().equals("|n") && !token.get(i).getTipo().equals("]")) {
+                                tokenEnquanto.add(token.get(i));
+                                i++;
+                            }
+                            if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
+                                System.out.println("Erro: token esperado ']'");
+                            }
+                            verificaCondicao(tokenEnquanto);
+                            tokenEnquanto.clear();
+
+                        }
+                    } else {
+                        System.out.println("Erro: token [ esperado");
+                    }
+                } else {
+                    System.out.println("Erro: declaração de vetor sem id");
+                }
             } else {
                 if (!token.get(i).getTipo().equals("|n")) {
-                    System.out.println("Erro");
+                    System.out.println("Erro: token inesperado");
                 }
             }
         }
@@ -271,7 +310,7 @@ public class AnaliseSintatica {
             }
         }
         if (programa == false) {
-            System.out.println("Erro");
+            System.out.println("Erro: faltou fim");
         }
 
     }

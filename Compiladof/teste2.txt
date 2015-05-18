@@ -6,7 +6,8 @@ se i<3 então
 fim-se
 as = 30
 funcao as(30, 40)
-funcao as(30, 40)
-fim-funcao
+	enquanto a<30 faça
+		
+	fim-enquanto
 fim-funcao
 fim
