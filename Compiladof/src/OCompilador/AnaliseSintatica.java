@@ -19,7 +19,6 @@ public class AnaliseSintatica {
 
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas;
     ArrayList<Lexema> comandos = new ArrayList<Lexema>();
-    ArvoreBinaria arvore = new ArvoreBinaria();
     Lexema l = null;
     int cont = 0;
 
@@ -33,9 +32,12 @@ public class AnaliseSintatica {
 
     public void verificaCondicao(ArrayList<Lexema> token) {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
+        ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         for (int i = 0; i < token.size(); i++) {
-            
-            
+            if(i<token.size() && !token.get(i).getTipo().equals("|n")){
+                tokenCond.add(token.get(i));
+                
+            }
         }
     }
 

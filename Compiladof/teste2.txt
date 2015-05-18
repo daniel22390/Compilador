@@ -7,7 +7,7 @@ fim-se
 as = 30
 funcao as(30, 40)
 	enquanto a<30 faça
-		
+	vetor v[2][3]
 	fim-enquanto
 fim-funcao
 fim
