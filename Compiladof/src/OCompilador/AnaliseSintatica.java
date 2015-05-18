@@ -32,7 +32,11 @@ public class AnaliseSintatica {
     }
 
     public void verificaCondicao(ArrayList<Lexema> token) {
-
+        ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
+        for (int i = 0; i < token.size(); i++) {
+            
+            
+        }
     }
 
     //Analisa comandos
@@ -178,8 +182,48 @@ public class AnaliseSintatica {
             } //se ler um id
             else if (token.get(i).getTipo().equals("id")) {
                 i++;
-                //le se proximo elemento é um =
-                if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
+                //analisa se é um vetor
+                if ((i) < token.size() && token.get(i).getTipo().equals("[")) {
+                    i++;
+                    while ((i < token.size()) && !("|n").equals(token.get(i).getTipo()) && !("]").equals(token.get(i).getTipo())) {
+                        tokenEnquanto.add(token.get(i));
+                        i++;
+                    }
+                    if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
+                        System.out.println("Erro: token esperado ']'");
+                    }
+                    verificaCondicao(tokenEnquanto);
+                    tokenEnquanto.clear();
+
+                    i++;
+                    //analisa se é uma matriz
+                    if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
+                        while ((i < token.size()) && !token.get(i).getTipo().equals("|n") && !token.get(i).getTipo().equals("]")) {
+                            tokenEnquanto.add(token.get(i));
+                            i++;
+                        }
+                        if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
+                            System.out.println("Erro: token esperado ']'");
+                        }
+                        verificaCondicao(tokenEnquanto);
+                        tokenEnquanto.clear();
+                        i++;
+                        if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
+                            System.out.println("Erro: nao contem atribuição");
+                        } else {
+                            i++;
+                            //le ate axar um \n
+                            while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
+                                tokenEnquanto.add(token.get(i));
+                                i++;
+                            }
+                            verificaCondicao(tokenEnquanto);
+                            tokenEnquanto.clear();
+                        }
+                    }
+
+                } //le se proximo elemento é um =
+                else if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
                     System.out.println("Erro: nao contem atribuição");
                 } else {
                     i++;
@@ -280,6 +324,20 @@ public class AnaliseSintatica {
                             verificaCondicao(tokenEnquanto);
                             tokenEnquanto.clear();
 
+                        }
+                        i++;
+                        if ((i < token.size()) && token.get(i).getTipo().equals("atrib")) {
+                            i++;
+                            //le ate axar um \n
+                            while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
+                                tokenEnquanto.add(token.get(i));
+                                i++;
+                            }
+                            verificaCondicao(tokenEnquanto);
+                            tokenEnquanto.clear();
+                        }
+                        else if((i < token.size()) && !token.get(i).getTipo().equals("|n")){
+                            System.out.println("Erro: Token inesperado");
                         }
                     } else {
                         System.out.println("Erro: token [ esperado");
