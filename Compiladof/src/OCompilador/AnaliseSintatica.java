@@ -52,15 +52,15 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean empilha = false;
         boolean isCondicao = false;
+
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
-                if(condicoes(token.get(i)) && empilha==false){
+                if (condicoes(token.get(i)) && empilha == false) {
                     isCondicao = true;
-                    if(i==0 || i>=(token.size()-1)){
+                    if (i == 0 || i >= (token.size() - 1)) {
                         System.out.println("Erro: comparador " + token.get(i).getNome() + " inesperado");
-                    }
-                    else{
-                        if(token.get(i-1).getTipo().equals("|n") || token.get(i+1).getTipo().equals("|n")){
+                    } else {
+                        if (token.get(i - 1).getTipo().equals("|n") || token.get(i + 1).getTipo().equals("|n")) {
                             System.out.println("Erro: comparador " + token.get(i).getNome() + " inesperado");
                         }
                     }
@@ -90,7 +90,7 @@ public class AnaliseSintatica {
         if (!pilha.isEmpty()) {
             System.out.println("Erro: era esperado )");
         }
-        if(!isCondicao){
+        if (!isCondicao) {
             verificaExpressao(tokenExpr);
         }
         tokenExpr.clear();

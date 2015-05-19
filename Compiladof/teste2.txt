@@ -1,4 +1,4 @@
-﻿enquanto i<30 faça
+﻿enquanto (a<10) e (b>2) faça
 fim-enquanto
 para i de 1 até 10 faça
 fim-para
