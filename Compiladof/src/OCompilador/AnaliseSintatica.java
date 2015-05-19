@@ -52,14 +52,18 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean eCondicao = false;
         int posCond = 0;
+        //Analiso o ArrayList
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
+                //empilha
                 if(token.get(i).getTipo().equals("(")){
                     pilha.push(token.get(i));
                 }
+                //desempilha
                 else if(token.get(i).getTipo().equals(")")){
                     pilha.pop();
                 }
+                //verifica se a condicao ta no nivel mais para fora
                 else if(condicoes(token.get(i)) && pilha.isEmpty()){
                     eCondicao = true;
                     posCond = i;
@@ -68,17 +72,20 @@ public class AnaliseSintatica {
         }
         pilha.clear();
         if (eCondicao) {
+            //antes da condicao envia para verificaCondicao
             for (int i = 0; i < posCond; i++) {
                 tokenCond.add(token.get(i));
             }
             verificaCondicao2(tokenCond);
             tokenCond.clear();
+            //depois da condicao envia para verificaExpressao
             for(int i = (posCond+1); i<token.size(); i++){
                 tokenExpr.add(token.get(i));
             }
             verificaExpressao(tokenExpr);
             tokenExpr.clear();
         }
+        //envia td para expressao
         else{
             for(int i = 0; i<token.size(); i++){
                 tokenExpr.add(token.get(i));
