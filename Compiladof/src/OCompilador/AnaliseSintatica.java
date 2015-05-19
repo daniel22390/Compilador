@@ -38,14 +38,53 @@ public class AnaliseSintatica {
             return false;
         }
     }
-    
+
     public void verificaTermo(ArrayList<Lexema> token) {
-        for (Lexema token1 : token) {
-            System.out.println(token1.getNome());
+        ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
+        ArrayList<Lexema> tokenParam = new ArrayList<Lexema>();
+        Stack<Lexema> pilha = new Stack<>();
+        if (token.size() > 1) {
+            if (token.get(0).getTipo().equals("(")) {
+                pilha.push(token.get(0));
+                for (int i = 1; i < token.size(); i++) {
+                    if (token.get(i).getTipo().equals(")")) {
+                        pilha.pop();
+                        if (pilha.isEmpty()) {
+                            break;
+                        }
+                    } else if (token.get(i).getTipo().equals("(")) {
+                        pilha.push(token.get(i));
+                    }
+                    tokenCond.add(token.get(i));
+                }
+                verificaCondicao(tokenCond);
+                verificaCondicao2(tokenCond);
+                tokenCond.clear();
+                pilha.clear();
+            } else if (token.get(0).getTipo().equals("fun")) {
+                if (token.get(1).getTipo().equals("(")) {
+                    pilha.push(token.get(1));
+                    for (int i = 2; i < token.size(); i++) {
+                        if (token.get(i).getTipo().equals(")")) {
+                            pilha.pop();
+                            if (pilha.isEmpty()) {
+                                break;
+                            }
+                        } else if (token.get(i).getTipo().equals("(")) {
+                            pilha.push(token.get(i));
+                        }
+                        tokenParam.add(token.get(i));
+                    }
+                    verificaParametro(tokenParam);
+                    tokenParam.clear();
+                    pilha.clear();
+                } else {
+                    System.out.println("Erro: Era esperado (");
+                }
+            }
         }
-        System.out.println("------");
     }
-    
+
     public void verificaExpressaoPrec(ArrayList<Lexema> token) {
         ArrayList<Lexema> tokenTermo = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
