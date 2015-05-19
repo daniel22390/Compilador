@@ -19,6 +19,7 @@ public class AnaliseSintatica {
 
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas;
     ArrayList<Lexema> comandos = new ArrayList<Lexema>();
+    ArvoreBinaria<Lexema> arvoreCond;
     Lexema l = null;
     int cont = 0;
 
@@ -30,15 +31,69 @@ public class AnaliseSintatica {
 
     }
 
+    public boolean condicoes(Lexema lexema) {
+        if (lexema.getTipo().equals("gt") || lexema.getTipo().equals("gte") || lexema.getTipo().equals("lt") || lexema.getTipo().equals("lte") || lexema.getTipo().equals("eq") || lexema.getTipo().equals("neq") || lexema.getTipo().equals("and") || lexema.getNome().equals("ou")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void verificaExpressao(ArrayList<Lexema> token) {
+        for (Lexema token1 : token) {
+            System.out.println(token1.getNome());
+        }
+    }
+
+    //Verifica o ArrayList de condicoes
     public void verificaCondicao(ArrayList<Lexema> token) {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
+        Stack<Lexema> pilha = new Stack<>();
+        boolean empilha = false;
+        boolean isCondicao = false;
         for (int i = 0; i < token.size(); i++) {
-            if(i<token.size() && !token.get(i).getTipo().equals("|n")){
-                tokenCond.add(token.get(i));
-                
+            if (!token.get(i).getTipo().equals("|n")) {
+                if(condicoes(token.get(i)) && empilha==false){
+                    isCondicao = true;
+                    if(i==0 || i>=(token.size()-1)){
+                        System.out.println("Erro: comparador " + token.get(i).getNome() + " inesperado");
+                    }
+                    else{
+                        if(token.get(i-1).getTipo().equals("|n") || token.get(i+1).getTipo().equals("|n")){
+                            System.out.println("Erro: comparador " + token.get(i).getNome() + " inesperado");
+                        }
+                    }
+                }
+                if (empilha == true && !token.get(i).getTipo().equals("(") && !token.get(i).getTipo().equals(")")) {
+                    tokenCond.add(token.get(i));
+                }
+                if (token.get(i).getTipo().equals("(")) {
+                    pilha.push(token.get(i));
+                    empilha = true;
+                }
+                if (token.get(i).getTipo().equals(")")) {
+                    if (pilha.isEmpty()) {
+                        System.out.println("Erro: era esperado (");
+                    } else {
+                        pilha.pop();
+                        if (pilha.isEmpty()) {
+                            verificaCondicao(tokenCond);
+                            tokenCond.clear();
+                            empilha = false;
+                        }
+                    }
+                }
+                tokenExpr.add(token.get(i));
             }
         }
+        if (!pilha.isEmpty()) {
+            System.out.println("Erro: era esperado )");
+        }
+        if(!isCondicao){
+            verificaExpressao(tokenExpr);
+        }
+        tokenExpr.clear();
     }
 
     //Analisa comandos
@@ -200,6 +255,7 @@ public class AnaliseSintatica {
                     i++;
                     //analisa se é uma matriz
                     if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
+                        i++;
                         while ((i < token.size()) && !token.get(i).getTipo().equals("|n") && !token.get(i).getTipo().equals("]")) {
                             tokenEnquanto.add(token.get(i));
                             i++;
@@ -316,6 +372,7 @@ public class AnaliseSintatica {
                         i++;
                         //analisa se é declaração de matriz
                         if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
+                            i++;
                             while ((i < token.size()) && !token.get(i).getTipo().equals("|n") && !token.get(i).getTipo().equals("]")) {
                                 tokenEnquanto.add(token.get(i));
                                 i++;
@@ -337,8 +394,7 @@ public class AnaliseSintatica {
                             }
                             verificaCondicao(tokenEnquanto);
                             tokenEnquanto.clear();
-                        }
-                        else if((i < token.size()) && !token.get(i).getTipo().equals("|n")){
+                        } else if ((i < token.size()) && !token.get(i).getTipo().equals("|n")) {
                             System.out.println("Erro: Token inesperado");
                         }
                     } else {
