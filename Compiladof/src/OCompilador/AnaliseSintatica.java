@@ -48,83 +48,43 @@ public class AnaliseSintatica {
 
     public void verificaCondicao2(ArrayList<Lexema> token) {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
+        ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
         boolean eCondicao = false;
-        boolean eCondicao2 = false;
+        int posCond = 0;
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
-                if (condicoes(token.get(i))) {
+                if(token.get(i).getTipo().equals("(")){
+                    pilha.push(token.get(i));
+                }
+                else if(token.get(i).getTipo().equals(")")){
+                    pilha.pop();
+                }
+                else if(condicoes(token.get(i)) && pilha.isEmpty()){
                     eCondicao = true;
-                    if (i > 0 && i < (token.size() - 1)) {
-                        if (!token.get(i - 1).getTipo().equals(")")) {
-                            tokenExpr.add(token.get(i - 1));
-                            verificaExpressao(tokenExpr);
-                            tokenExpr.clear();
-                        } else {
-                            if (i > 1) {
-                                pilha.push(token.get(i-1));
-                                for (int j = (i - 2); j >= 0; j--) {
-                                    if(token.get(j).getTipo().equals(")")){
-                                        pilha.push(token.get(j));
-                                    }
-                                    if (token.get(j).getTipo().equals("(")) {
-                                        pilha.pop();
-                                        if(pilha.isEmpty()){
-                                            break;
-                                        }
-                                    }
-                                    if (condicoes(token.get(j))) {
-                                        eCondicao2 = true;
-                                        break;
-                                    }
-                                    tokenExpr.add(token.get(j));
-                                }
-                                if (eCondicao2 == false) {
-                                    verificaCondicao2(tokenExpr);
-                                }
-                                tokenExpr.clear();
-                                pilha.clear();
-                                eCondicao2 = false;
-                            }
-                        }
-                        
-                        if (!token.get(i + 1).getTipo().equals("(")) {
-                            tokenExpr.add(token.get(i + 1));
-                            verificaExpressao(tokenExpr);
-                            tokenExpr.clear();
-                        } else {
-                            if (i + 2 < token.size()) {
-                                pilha.push(token.get(i+1));
-                                for (int j = (i + 2); j < token.size(); j++) {
-                                    if(token.get(j).getTipo().equals("(")){
-                                        pilha.push(token.get(j));
-                                    }
-                                    if (token.get(j).getTipo().equals(")")) {
-                                        pilha.pop();
-                                        if(pilha.isEmpty()){
-                                            break;
-                                        }
-                                    }
-                                    if (condicoes(token.get(j))) {
-                                        eCondicao2 = true;
-                                        break;
-                                    }
-                                    tokenExpr.add(token.get(j));
-                                }
-                                if (eCondicao2 == false) {
-                                    verificaCondicao2(tokenExpr);
-                                }
-                                tokenExpr.clear();
-                                pilha.clear();
-                            }
-                        }
-                        eCondicao2 = false;
-                    }
+                    posCond = i;
                 }
             }
         }
-        if (!eCondicao) {
-            verificaExpressao(token);
+        pilha.clear();
+        if (eCondicao) {
+            for (int i = 0; i < posCond; i++) {
+                tokenCond.add(token.get(i));
+            }
+            verificaCondicao2(tokenCond);
+            tokenCond.clear();
+            for(int i = (posCond+1); i<token.size(); i++){
+                tokenExpr.add(token.get(i));
+            }
+            verificaExpressao(tokenExpr);
+            tokenExpr.clear();
+        }
+        else{
+            for(int i = 0; i<token.size(); i++){
+                tokenExpr.add(token.get(i));
+            }
+            verificaExpressao(tokenExpr);
+            tokenExpr.clear();
         }
     }
 
