@@ -32,7 +32,7 @@ public class AnaliseSintatica {
     }
 
     public boolean condicoes(Lexema lexema) {
-        if (lexema.getTipo().equals("gt") || lexema.getTipo().equals("gte") || lexema.getTipo().equals("lt") || lexema.getTipo().equals("lte") || lexema.getTipo().equals("eq") || lexema.getTipo().equals("neq") || lexema.getTipo().equals("and") || lexema.getNome().equals("ou")) {
+        if (lexema.getTipo().equals("gt") || lexema.getTipo().equals("gte") || lexema.getTipo().equals("lt") || lexema.getTipo().equals("lte") || lexema.getTipo().equals("eq") || lexema.getTipo().equals("neq") || lexema.getTipo().equals("and") || lexema.getTipo().equals("or")) {
             return true;
         } else {
             return false;
@@ -42,6 +42,89 @@ public class AnaliseSintatica {
     public void verificaExpressao(ArrayList<Lexema> token) {
         for (Lexema token1 : token) {
             System.out.println(token1.getNome());
+        }
+        System.out.println("--------");
+    }
+
+    public void verificaCondicao2(ArrayList<Lexema> token) {
+        ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
+        Stack<Lexema> pilha = new Stack<>();
+        boolean eCondicao = false;
+        boolean eCondicao2 = false;
+        for (int i = 0; i < token.size(); i++) {
+            if (!token.get(i).getTipo().equals("|n")) {
+                if (condicoes(token.get(i))) {
+                    eCondicao = true;
+                    if (i > 0 && i < (token.size() - 1)) {
+                        if (!token.get(i - 1).getTipo().equals(")")) {
+                            tokenExpr.add(token.get(i - 1));
+                            verificaExpressao(tokenExpr);
+                            tokenExpr.clear();
+                        } else {
+                            if (i > 1) {
+                                pilha.push(token.get(i-1));
+                                for (int j = (i - 2); j >= 0; j--) {
+                                    if(token.get(j).getTipo().equals(")")){
+                                        pilha.push(token.get(j));
+                                    }
+                                    if (token.get(j).getTipo().equals("(")) {
+                                        pilha.pop();
+                                        if(pilha.isEmpty()){
+                                            break;
+                                        }
+                                    }
+                                    if (condicoes(token.get(j))) {
+                                        eCondicao2 = true;
+                                        break;
+                                    }
+                                    tokenExpr.add(token.get(j));
+                                }
+                                if (eCondicao2 == false) {
+                                    verificaCondicao2(tokenExpr);
+                                }
+                                tokenExpr.clear();
+                                pilha.clear();
+                                eCondicao2 = false;
+                            }
+                        }
+                        
+                        if (!token.get(i + 1).getTipo().equals("(")) {
+                            tokenExpr.add(token.get(i + 1));
+                            verificaExpressao(tokenExpr);
+                            tokenExpr.clear();
+                        } else {
+                            if (i + 2 < token.size()) {
+                                pilha.push(token.get(i+1));
+                                for (int j = (i + 2); j < token.size(); j++) {
+                                    if(token.get(j).getTipo().equals("(")){
+                                        pilha.push(token.get(j));
+                                    }
+                                    if (token.get(j).getTipo().equals(")")) {
+                                        pilha.pop();
+                                        if(pilha.isEmpty()){
+                                            break;
+                                        }
+                                    }
+                                    if (condicoes(token.get(j))) {
+                                        eCondicao2 = true;
+                                        break;
+                                    }
+                                    tokenExpr.add(token.get(j));
+                                }
+                                if (eCondicao2 == false) {
+                                    verificaCondicao2(tokenExpr);
+                                }
+                                tokenExpr.clear();
+                                pilha.clear();
+                            }
+                        }
+                        eCondicao2 = false;
+                    }
+                }
+            }
+        }
+        if (!eCondicao) {
+            verificaExpressao(token);
         }
     }
 
@@ -84,16 +167,11 @@ public class AnaliseSintatica {
                         }
                     }
                 }
-                tokenExpr.add(token.get(i));
             }
         }
         if (!pilha.isEmpty()) {
             System.out.println("Erro: era esperado )");
         }
-        if (!isCondicao) {
-            verificaExpressao(tokenExpr);
-        }
-        tokenExpr.clear();
     }
 
     //Analisa comandos
@@ -118,6 +196,7 @@ public class AnaliseSintatica {
                     i++;
                 }
                 verificaCondicao(tokencond);
+                verificaCondicao2(tokencond);
                 tokencond.clear();
                 i++;
                 //le ate axar o fim-se
@@ -153,6 +232,7 @@ public class AnaliseSintatica {
                     i++;
                 }
                 verificaCondicao(tokenEnquanto);
+                verificaCondicao2(tokenEnquanto);
                 tokenEnquanto.clear();
                 i++;
                 //le ate axar o fim-enquanto
@@ -250,6 +330,7 @@ public class AnaliseSintatica {
                         System.out.println("Erro: token esperado ']'");
                     }
                     verificaCondicao(tokenEnquanto);
+                    verificaCondicao2(tokenEnquanto);
                     tokenEnquanto.clear();
 
                     i++;
@@ -264,6 +345,7 @@ public class AnaliseSintatica {
                             System.out.println("Erro: token esperado ']'");
                         }
                         verificaCondicao(tokenEnquanto);
+                        verificaCondicao2(tokenEnquanto);
                         tokenEnquanto.clear();
                         i++;
                         if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
@@ -276,6 +358,7 @@ public class AnaliseSintatica {
                                 i++;
                             }
                             verificaCondicao(tokenEnquanto);
+                            verificaCondicao2(tokenEnquanto);
                             tokenEnquanto.clear();
                         }
                     }
@@ -291,6 +374,7 @@ public class AnaliseSintatica {
                         i++;
                     }
                     verificaCondicao(tokenEnquanto);
+                    verificaCondicao2(tokenEnquanto);
                     tokenEnquanto.clear();
                 }
             } //Analisa se é uma função
@@ -367,6 +451,7 @@ public class AnaliseSintatica {
                             System.out.println("Erro: token esperado ']'");
                         }
                         verificaCondicao(tokenEnquanto);
+                        verificaCondicao2(tokenEnquanto);
                         tokenEnquanto.clear();
 
                         i++;
@@ -381,6 +466,7 @@ public class AnaliseSintatica {
                                 System.out.println("Erro: token esperado ']'");
                             }
                             verificaCondicao(tokenEnquanto);
+                            verificaCondicao2(tokenEnquanto);
                             tokenEnquanto.clear();
 
                         }
@@ -393,6 +479,7 @@ public class AnaliseSintatica {
                                 i++;
                             }
                             verificaCondicao(tokenEnquanto);
+                            verificaCondicao2(tokenEnquanto);
                             tokenEnquanto.clear();
                         } else if ((i < token.size()) && !token.get(i).getTipo().equals("|n")) {
                             System.out.println("Erro: Token inesperado");
