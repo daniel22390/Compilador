@@ -77,6 +77,8 @@ public class AnaliseLexica {
         lexema.put("funcao", "function");
         lexema.put("fim-funcao", "endfunction");
         lexema.put("ou", "or");
+        lexema.put("verdadeiro", "true");
+        lexema.put("falso", "false");
     }
 
     public boolean ValidaLetra(char letra) {

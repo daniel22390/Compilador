@@ -39,10 +39,22 @@ public class AnaliseSintatica {
         }
     }
 
+    public boolean termos(Lexema lexema) {
+        if (lexema.getTipo().equals("id") || lexema.getTipo().equals("vet") || lexema.getTipo().equals("Int") || lexema.getTipo().equals("Float") || lexema.getTipo().equals("true") || lexema.getTipo().equals("false") || lexema.getTipo().equals("String")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void verificaTermo(ArrayList<Lexema> token) {
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenParam = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
+        for (Lexema pilha1 : token) {
+            System.out.println(pilha1.getNome());
+        }
+        System.out.println("--------");
         if (token.size() > 1) {
             if (token.get(0).getTipo().equals("(")) {
                 pilha.push(token.get(0));
@@ -78,9 +90,36 @@ public class AnaliseSintatica {
                     verificaParametro(tokenParam);
                     tokenParam.clear();
                     pilha.clear();
-                } else {
-                    System.out.println("Erro: Era esperado (");
                 }
+            } else if (token.get(0).getTipo().equals("id")) {
+                //analisa se é uma declaração de vetor
+                int i;
+                if (token.get(1).getTipo().equals("[")) {
+                    for (i = 2; i < token.size() && !token.get(i).getTipo().equals("]"); i++) {
+                        tokenCond.add(token.get(i));
+                    }
+                    verificaCondicao(tokenCond);
+                    verificaCondicao2(tokenCond);
+                    tokenCond.clear();
+                    if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
+                        for (int j = (i + 2); j < token.size() && !token.get(i).getTipo().equals("]"); i++) {
+                            tokenCond.add(token.get(i));
+                        }
+                        verificaCondicao(tokenCond);
+                        verificaCondicao2(tokenCond);
+                        tokenCond.clear();
+                    } else if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("[")) {
+                        System.out.println("Erro: token inesperado");
+                    }
+                } else {
+                    System.out.println("Erro: token inesperado");
+                }
+            } else {
+                System.out.println("Erro: token inesperado");
+            }
+        } else if (token.size() == 1) {
+            if(!termos(token.get(0))){
+                System.out.println("Erro: token nao aceito aqui");
             }
         }
     }
@@ -107,6 +146,9 @@ public class AnaliseSintatica {
             }
         }
         pilha.clear();
+        if(eTermo && (posTermo==(token.size()-1) || posTermo==0)){
+            System.out.println("Erro: token "+token.get(posTermo).getNome()+" inesperado");
+        }
         if (eTermo) {
             //antes do operador envia para verificaExpressao
             for (int i = 0; i < posTermo; i++) {
@@ -152,6 +194,9 @@ public class AnaliseSintatica {
             }
         }
         pilha.clear();
+        if(eExprPrec && (posPrec==(token.size()-1) || posPrec==0)){
+            System.out.println("Erro: token "+token.get(posPrec).getNome()+" inesperado");
+        }
         if (eExprPrec) {
             //antes do operador envia para verificaExpressao
             for (int i = 0; i < posPrec; i++) {
@@ -198,6 +243,9 @@ public class AnaliseSintatica {
             }
         }
         pilha.clear();
+        if(eCondicao && (posCond==(token.size()-1) || posCond==0)){
+            System.out.println("Erro: token "+token.get(posCond).getNome()+" inesperado");
+        }
         if (eCondicao) {
             //antes da condicao envia para verificaCondicao
             for (int i = 0; i < posCond; i++) {
@@ -228,7 +276,7 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean empilha = false;
         boolean isCondicao = false;
-
+        
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
                 if (condicoes(token.get(i)) && empilha == false) {

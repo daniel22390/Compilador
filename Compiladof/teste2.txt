@@ -1,4 +1,4 @@
-﻿enquanto (a<10) e (20 e (10<((10+2+(32))+50)>(30+(20+6))) ou (i>40<30)) faça
+﻿enquanto (a<10) e 20+30*40 ou (i>40) faça
 fim-enquanto
 para i de 1 até 10 faça
 fim-para
