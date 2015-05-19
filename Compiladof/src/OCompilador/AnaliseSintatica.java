@@ -38,12 +38,57 @@ public class AnaliseSintatica {
             return false;
         }
     }
-
-    public void verificaExpressao(ArrayList<Lexema> token) {
+    
+    public void verificaExpressaoPrec(ArrayList<Lexema> token) {
         for (Lexema token1 : token) {
             System.out.println(token1.getNome());
         }
-        System.out.println("--------");
+        System.out.println("------");
+    }
+
+    public void verificaExpressao(ArrayList<Lexema> token) {
+        ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
+        ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
+        Stack<Lexema> pilha = new Stack<>();
+        boolean eExprPrec = false;
+        int posPrec = 0;
+        for (int i = 0; i < token.size(); i++) {
+            if (!token.get(i).getTipo().equals("|n")) {
+                //empilha
+                if (token.get(i).getTipo().equals("(")) {
+                    pilha.push(token.get(i));
+                } //desempilha
+                else if (token.get(i).getTipo().equals(")")) {
+                    pilha.pop();
+                } //verifica se a condicao ta no nivel mais para fora
+                else if ((token.get(i).getTipo().equals("sum") || token.get(i).equals("sub")) && pilha.isEmpty()) {
+                    eExprPrec = true;
+                    posPrec = i;
+                }
+            }
+        }
+        pilha.clear();
+        if (eExprPrec) {
+            //antes da condicao envia para verificaCondicao
+            for (int i = 0; i < posPrec; i++) {
+                tokenExpr.add(token.get(i));
+            }
+            verificaExpressao(tokenExpr);
+            tokenExpr.clear();
+            //depois da condicao envia para verificaExpressao
+            for (int i = (posPrec + 1); i < token.size(); i++) {
+                tokenExprPrec.add(token.get(i));
+            }
+            verificaExpressaoPrec(tokenExprPrec);
+            tokenExprPrec.clear();
+        } //envia td para expressao
+        else {
+            for (int i = 0; i < token.size(); i++) {
+                tokenExprPrec.add(token.get(i));
+            }
+            verificaExpressaoPrec(tokenExprPrec);
+            tokenExprPrec.clear();
+        }
     }
 
     public void verificaCondicao2(ArrayList<Lexema> token) {
@@ -56,15 +101,13 @@ public class AnaliseSintatica {
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
                 //empilha
-                if(token.get(i).getTipo().equals("(")){
+                if (token.get(i).getTipo().equals("(")) {
                     pilha.push(token.get(i));
-                }
-                //desempilha
-                else if(token.get(i).getTipo().equals(")")){
+                } //desempilha
+                else if (token.get(i).getTipo().equals(")")) {
                     pilha.pop();
-                }
-                //verifica se a condicao ta no nivel mais para fora
-                else if(condicoes(token.get(i)) && pilha.isEmpty()){
+                } //verifica se a condicao ta no nivel mais para fora
+                else if (condicoes(token.get(i)) && pilha.isEmpty()) {
                     eCondicao = true;
                     posCond = i;
                 }
@@ -79,15 +122,14 @@ public class AnaliseSintatica {
             verificaCondicao2(tokenCond);
             tokenCond.clear();
             //depois da condicao envia para verificaExpressao
-            for(int i = (posCond+1); i<token.size(); i++){
+            for (int i = (posCond + 1); i < token.size(); i++) {
                 tokenExpr.add(token.get(i));
             }
             verificaExpressao(tokenExpr);
             tokenExpr.clear();
-        }
-        //envia td para expressao
-        else{
-            for(int i = 0; i<token.size(); i++){
+        } //envia td para expressao
+        else {
+            for (int i = 0; i < token.size(); i++) {
                 tokenExpr.add(token.get(i));
             }
             verificaExpressao(tokenExpr);
