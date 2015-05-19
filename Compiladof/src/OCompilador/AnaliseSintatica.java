@@ -51,10 +51,10 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenParam = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
-        for (Lexema pilha1 : token) {
-            System.out.println(pilha1.getNome());
-        }
-        System.out.println("--------");
+//        for (Lexema pilha1 : token) {
+//            System.out.println(pilha1.getNome());
+//        }
+//        System.out.println("--------");
         if (token.size() > 1) {
             if (token.get(0).getTipo().equals("(")) {
                 pilha.push(token.get(0));
