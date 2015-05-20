@@ -10,6 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 import OCompilador.ArvoreBinaria;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  *
@@ -22,6 +25,9 @@ public class AnaliseSintatica {
     ArvoreBinaria<Lexema> arvoreCond;
     Lexema l = null;
     int cont = 0;
+    
+     static BufferedReader in = new BufferedReader(
+            new InputStreamReader(System.in));
 
     public AnaliseSintatica(LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
         this.lexemas = listao;
@@ -47,7 +53,7 @@ public class AnaliseSintatica {
         }
     }
 
-    public void verificaTermo(ArrayList<Lexema> token) {
+    public void verificaTermo(ArrayList<Lexema> token) throws IOException {
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenParam = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
@@ -110,21 +116,25 @@ public class AnaliseSintatica {
                         tokenCond.clear();
                     } else if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("[")) {
                         System.out.println("Erro: token inesperado");
+                        in.readLine();
                     }
                 } else {
                     System.out.println("Erro: token inesperado");
+                    in.readLine();
                 }
             } else {
                 System.out.println("Erro: token inesperado");
+                in.readLine();
             }
         } else if (token.size() == 1) {
             if(!termos(token.get(0))){
                 System.out.println("Erro: token nao aceito aqui");
+                in.readLine();
             }
         }
     }
 
-    public void verificaExpressaoPrec(ArrayList<Lexema> token) {
+    public void verificaExpressaoPrec(ArrayList<Lexema> token) throws IOException {
         ArrayList<Lexema> tokenTermo = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
@@ -148,6 +158,7 @@ public class AnaliseSintatica {
         pilha.clear();
         if(eTermo && (posTermo==(token.size()-1) || posTermo==0)){
             System.out.println("Erro: token "+token.get(posTermo).getNome()+" inesperado");
+            in.readLine();
         }
         if (eTermo) {
             //antes do operador envia para verificaExpressao
@@ -172,7 +183,7 @@ public class AnaliseSintatica {
         }
     }
 
-    public void verificaExpressao(ArrayList<Lexema> token) {
+    public void verificaExpressao(ArrayList<Lexema> token) throws IOException {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
@@ -196,6 +207,7 @@ public class AnaliseSintatica {
         pilha.clear();
         if(eExprPrec && (posPrec==(token.size()-1) || posPrec==0)){
             System.out.println("Erro: token "+token.get(posPrec).getNome()+" inesperado");
+            in.readLine();
         }
         if (eExprPrec) {
             //antes do operador envia para verificaExpressao
@@ -220,7 +232,7 @@ public class AnaliseSintatica {
         }
     }
 
-    public void verificaCondicao2(ArrayList<Lexema> token) {
+    public void verificaCondicao2(ArrayList<Lexema> token) throws IOException {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
@@ -245,6 +257,7 @@ public class AnaliseSintatica {
         pilha.clear();
         if(eCondicao && (posCond==(token.size()-1) || posCond==0)){
             System.out.println("Erro: token "+token.get(posCond).getNome()+" inesperado");
+            in.readLine();
         }
         if (eCondicao) {
             //antes da condicao envia para verificaCondicao
@@ -270,7 +283,7 @@ public class AnaliseSintatica {
     }
 
     //Verifica o ArrayList de condicoes
-    public void verificaCondicao(ArrayList<Lexema> token) {
+    public void verificaCondicao(ArrayList<Lexema> token) throws IOException {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
@@ -283,9 +296,11 @@ public class AnaliseSintatica {
                     isCondicao = true;
                     if (i == 0 || i >= (token.size() - 1)) {
                         System.out.println("Erro: comparador " + token.get(i).getNome() + " inesperado");
+                        in.readLine();
                     } else {
                         if (token.get(i - 1).getTipo().equals("|n") || token.get(i + 1).getTipo().equals("|n")) {
                             System.out.println("Erro: comparador " + token.get(i).getNome() + " inesperado");
+                            in.readLine();
                         }
                     }
                 }
@@ -299,6 +314,7 @@ public class AnaliseSintatica {
                 if (token.get(i).getTipo().equals(")")) {
                     if (pilha.isEmpty()) {
                         System.out.println("Erro: era esperado (");
+                        in.readLine();
                     } else {
                         pilha.pop();
                         if (pilha.isEmpty()) {
@@ -312,11 +328,12 @@ public class AnaliseSintatica {
         }
         if (!pilha.isEmpty()) {
             System.out.println("Erro: era esperado )");
+            in.readLine();
         }
     }
 
     //Analisa comandos
-    public void verificaComandos(ArrayList<Lexema> token) {
+    public void verificaComandos(ArrayList<Lexema> token) throws IOException {
         ArrayList<Lexema> tokencond = new ArrayList<Lexema>();
         ArrayList<Lexema> tokencomandos = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenEnquanto = new ArrayList<Lexema>();
@@ -357,6 +374,7 @@ public class AnaliseSintatica {
                 }
                 if (!pilha.isEmpty()) {
                     System.out.println("Erro: faltou fim-se");
+                    in.readLine();
                 }
                 verificaComandos(tokencomandos);
                 tokencomandos.clear();
@@ -393,6 +411,7 @@ public class AnaliseSintatica {
                 }
                 if (!pilha.isEmpty()) {
                     System.out.println("Erro: faltou fim-enquanto");
+                    in.readLine();
                 }
                 verificaComandos(tokencomandos);
                 tokencomandos.clear();
@@ -404,31 +423,37 @@ public class AnaliseSintatica {
                 //le se proximo elemento é um id
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("id")) {
                     System.out.println("Erro: faltou id");
+                    in.readLine();
                 } else {
                     i++;
                     //le se proximo elemento é um "de"
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("rng1forloop")) {
-                        System.out.println("Erro: faltou de");
+                        System.out.println("Erro: faltou token 'de'");
+                        in.readLine();
                     } else {
                         i++;
                         //le se proximo elemento é um inteiro
                         if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
                             System.out.println("Erro: tipo nao inteiro");
+                            in.readLine();
                         } else {
                             i++;
                             //le se proximo elemento é "até"
                             if ((i) >= token.size() || !token.get(i).getTipo().equals("rng2forloop")) {
                                 System.out.println("Erro: faltou até");
+                                in.readLine();
                             } else {
                                 i++;
                                 //le se o próximo é um inteiro
                                 if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
                                     System.out.println("Erro: tipo nao inteiro");
+                                    in.readLine();
                                 } else {
                                     i++;
                                     //le se o próximo é um faça
                                     if ((i) >= token.size() || !token.get(i).getTipo().equals("initforloop")) {
                                         System.out.println("Erro: nao iniciou para");
+                                        in.readLine();
                                     } else {
                                         i++;
                                         //le ate axar um fim-para
@@ -448,6 +473,7 @@ public class AnaliseSintatica {
                                         }
                                         if (!pilha.isEmpty()) {
                                             System.out.println("Erro: faltou fim-para");
+                                            in.readLine();
                                         }
                                         verificaComandos(tokenEnquanto);
                                         tokenEnquanto.clear();
@@ -469,6 +495,7 @@ public class AnaliseSintatica {
                     }
                     if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
                         System.out.println("Erro: token esperado ']'");
+                        in.readLine();
                     }
                     verificaCondicao(tokenEnquanto);
                     verificaCondicao2(tokenEnquanto);
@@ -484,6 +511,7 @@ public class AnaliseSintatica {
                         }
                         if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
                             System.out.println("Erro: token esperado ']'");
+                            in.readLine();
                         }
                         verificaCondicao(tokenEnquanto);
                         verificaCondicao2(tokenEnquanto);
@@ -491,6 +519,7 @@ public class AnaliseSintatica {
                         i++;
                         if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
                             System.out.println("Erro: nao contem atribuição");
+                            in.readLine();
                         } else {
                             i++;
                             //le ate axar um \n
@@ -507,6 +536,7 @@ public class AnaliseSintatica {
                 } //le se proximo elemento é um =
                 else if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
                     System.out.println("Erro: nao contem atribuição");
+                    in.readLine();
                 } else {
                     i++;
                     //le ate axar um \n
@@ -525,10 +555,12 @@ public class AnaliseSintatica {
                 //le se o proximo é um fun
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("fun")) {
                     System.out.println("Erro: erro em parametros");
+                    in.readLine();
                 } else {
                     i++;
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("(")) {
                         System.out.println("Erro");
+                        in.readLine();
                     } else {
                         pilha.push(token.get(i));
                         i++;
@@ -545,7 +577,8 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if (!pilha.isEmpty()) {
-                            System.out.println("Erro");
+                            System.out.println("Erro: faltou token )");
+                            in.readLine();
                         }
                         pilha.clear();
                         if (i < token.size()) {
@@ -571,6 +604,7 @@ public class AnaliseSintatica {
                         }
                         if (!pilha.isEmpty()) {
                             System.out.println("Erro: faltou fim-funcao");
+                            in.readLine();
                         }
                         verificaComandos(tokenEnquanto);
                         tokenEnquanto.clear();
@@ -590,6 +624,7 @@ public class AnaliseSintatica {
                         }
                         if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
                             System.out.println("Erro: token esperado ']'");
+                            in.readLine();
                         }
                         verificaCondicao(tokenEnquanto);
                         verificaCondicao2(tokenEnquanto);
@@ -605,6 +640,7 @@ public class AnaliseSintatica {
                             }
                             if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
                                 System.out.println("Erro: token esperado ']'");
+                                in.readLine();
                             }
                             verificaCondicao(tokenEnquanto);
                             verificaCondicao2(tokenEnquanto);
@@ -624,22 +660,26 @@ public class AnaliseSintatica {
                             tokenEnquanto.clear();
                         } else if ((i < token.size()) && !token.get(i).getTipo().equals("|n")) {
                             System.out.println("Erro: Token inesperado");
+                            in.readLine();
                         }
                     } else {
                         System.out.println("Erro: token [ esperado");
+                        in.readLine();
                     }
                 } else {
                     System.out.println("Erro: declaração de vetor sem id");
+                    in.readLine();
                 }
             } else {
                 if (!token.get(i).getTipo().equals("|n")) {
                     System.out.println("Erro: token inesperado");
+                    in.readLine();
                 }
             }
         }
     }
 
-    public void Analisa() {
+    public void Analisa() throws IOException {
         boolean programa = false;
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
             Integer key = entrySet.getKey();
@@ -655,6 +695,7 @@ public class AnaliseSintatica {
         }
         if (programa == false) {
             System.out.println("Erro: faltou fim");
+            in.readLine();
         }
 
     }
