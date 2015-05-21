@@ -89,18 +89,22 @@ public class AnaliseSintatica {
 //        }
 //        System.out.println("--------");
         if (token.size() > 1) {
+            int k;
             if (token.get(0).getTipo().equals("(")) {
                 pilha.push(token.get(0));
-                for (int i = 1; i < token.size(); i++) {
-                    if (token.get(i).getTipo().equals(")")) {
+                for (k = 1; k < token.size(); k++) {
+                    if (token.get(k).getTipo().equals(")")) {
                         pilha.pop();
                         if (pilha.isEmpty()) {
                             break;
                         }
-                    } else if (token.get(i).getTipo().equals("(")) {
-                        pilha.push(token.get(i));
+                    } else if (token.get(k).getTipo().equals("(")) {
+                        pilha.push(token.get(k));
                     }
-                    tokenCond.add(token.get(i));
+                    tokenCond.add(token.get(k));
+                }
+                if(pilha.isEmpty() && k<(token.size()-1)){
+                    System.out.println("Erro: falta comparador");
                 }
                 verificaCondicao(tokenCond);
                 verificaCondicao2(tokenCond);
@@ -167,6 +171,10 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean eTermo = false;
         int posTermo = 0;
+//        for (Lexema pilha1 : token) {
+//            System.out.println(pilha1.getNome());
+//        }
+//        System.out.println("-----");
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
                 //empilha
@@ -216,6 +224,10 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean eExprPrec = false;
         int posPrec = 0;
+//        for (Lexema pilha1 : token) {
+//            System.out.println(pilha1.getNome());
+//        }
+//        System.out.println("------");
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
                 //empilha
@@ -265,23 +277,28 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean eCondicao = false;
         int posCond = 0;
+        int j;
+//        for (Lexema pilha1 : token) {
+//            System.out.println(pilha1.getNome());
+//        }
+//        System.out.println("----");
         //Analiso o ArrayList
-        for (int i = 0; i < token.size(); i++) {
-            if (!token.get(i).getTipo().equals("|n")) {
+        for (j = 0; j < token.size(); j++) {
+            if (!token.get(j).getTipo().equals("|n")) {
                 //empilha
-                if (token.get(i).getTipo().equals("(")) {
-                    pilha.push(token.get(i));
+                if (token.get(j).getTipo().equals("(")) {
+                    pilha.push(token.get(j));
                 } //desempilha
-                else if (token.get(i).getTipo().equals(")")) {
+                else if (token.get(j).getTipo().equals(")")) {
                     pilha.pop();
                 } //verifica se a condicao ta no nivel mais para fora
-                else if (condicoes(token.get(i)) && pilha.isEmpty()) {
+                else if (condicoes(token.get(j)) && pilha.isEmpty()) {
                     eCondicao = true;
-                    posCond = i;
+                    posCond = j;
                 }
             }
         }
-        pilha.clear();
+        
         if (eCondicao && (posCond == (token.size() - 1) || posCond == 0)) {
             System.out.println("Erro: token " + token.get(posCond).getNome() + " inesperado");
             in.readLine();
@@ -308,6 +325,7 @@ public class AnaliseSintatica {
             verificaExpressao(tokenExpr);
             tokenExpr.clear();
         }
+        pilha.clear();
     }
 
     //Verifica o ArrayList de condicoes
