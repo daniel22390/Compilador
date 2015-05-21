@@ -353,14 +353,6 @@ public class AnaliseSintatica {
                 }
             }
         }
-        if (pilha.isEmpty() && (i < token.size())) {
-            System.out.print("Erro: token inesperado após (");
-            for (Lexema tokencomandos1 : tokenCond) {
-                System.out.print(tokencomandos1.getNome());
-            }
-            System.out.println(")");
-            in.readLine();
-        }
         tokenCond.clear();
         if (!pilha.isEmpty()) {
             System.out.println("Erro: era esperado )");
