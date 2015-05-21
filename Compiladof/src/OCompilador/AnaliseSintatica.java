@@ -33,7 +33,35 @@ public class AnaliseSintatica {
         this.lexemas = listao;
     }
 
-    public void verificaParametro(ArrayList<Lexema> token) {
+    public void verificaParametro(ArrayList<Lexema> token) throws IOException {
+        ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
+        boolean isCondicao = false;
+        if(token.get(0).getTipo().equals(",")){
+            System.out.println("Erro: token , não esperado");
+            in.readLine();
+        }
+        for (int i = 0; i < token.size(); i++) {
+            if((i+1)<token.size() && token.get(i).getTipo().equals(",") && token.get(i+1).getTipo().equals(",")){
+                System.out.println("Erro: era esperado uma condição entre ,,");
+                in.readLine();
+            }
+            if (token.get(i).getTipo().equals(",")) {
+                verificaCondicao(tokenCond);
+                verificaCondicao2(tokenCond);
+                tokenCond.clear();
+            } else {
+                tokenCond.add(token.get(i));
+            }
+        }
+        if(!token.get(token.size()-1).getTipo().equals(",")){
+        verificaCondicao(tokenCond);
+        verificaCondicao2(tokenCond);
+        tokenCond.clear();
+        }
+        else{
+            System.out.println("Erro: token , não esperado");
+            in.readLine();
+        }
 
     }
 
@@ -198,7 +226,7 @@ public class AnaliseSintatica {
                 else if (token.get(i).getTipo().equals(")")) {
                     pilha.pop();
                 } //verifica se o + ou - ta no nivel mais para fora
-                else if ((token.get(i).getTipo().equals("sum") || token.get(i).equals("sub")) && pilha.isEmpty()) {
+                else if ((token.get(i).getTipo().equals("sum") || token.get(i).getTipo().equals("sub")) && pilha.isEmpty()) {
                     eExprPrec = true;
                     posPrec = i;
                 }
