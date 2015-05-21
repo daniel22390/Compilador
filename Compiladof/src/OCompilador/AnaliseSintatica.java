@@ -105,6 +105,7 @@ public class AnaliseSintatica {
                 }
                 if(pilha.isEmpty() && k<(token.size()-1)){
                     System.out.println("Erro: falta comparador");
+                    in.readLine();
                 }
                 verificaCondicao(tokenCond);
                 verificaCondicao2(tokenCond);
