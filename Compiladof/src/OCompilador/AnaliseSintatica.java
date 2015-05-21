@@ -25,8 +25,8 @@ public class AnaliseSintatica {
     ArvoreBinaria<Lexema> arvoreCond;
     Lexema l = null;
     int cont = 0;
-    
-     static BufferedReader in = new BufferedReader(
+
+    static BufferedReader in = new BufferedReader(
             new InputStreamReader(System.in));
 
     public AnaliseSintatica(LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
@@ -127,7 +127,7 @@ public class AnaliseSintatica {
                 in.readLine();
             }
         } else if (token.size() == 1) {
-            if(!termos(token.get(0))){
+            if (!termos(token.get(0))) {
                 System.out.println("Erro: token nao aceito aqui");
                 in.readLine();
             }
@@ -156,8 +156,8 @@ public class AnaliseSintatica {
             }
         }
         pilha.clear();
-        if(eTermo && (posTermo==(token.size()-1) || posTermo==0)){
-            System.out.println("Erro: token "+token.get(posTermo).getNome()+" inesperado");
+        if (eTermo && (posTermo == (token.size() - 1) || posTermo == 0)) {
+            System.out.println("Erro: token " + token.get(posTermo).getNome() + " inesperado");
             in.readLine();
         }
         if (eTermo) {
@@ -205,8 +205,8 @@ public class AnaliseSintatica {
             }
         }
         pilha.clear();
-        if(eExprPrec && (posPrec==(token.size()-1) || posPrec==0)){
-            System.out.println("Erro: token "+token.get(posPrec).getNome()+" inesperado");
+        if (eExprPrec && (posPrec == (token.size() - 1) || posPrec == 0)) {
+            System.out.println("Erro: token " + token.get(posPrec).getNome() + " inesperado");
             in.readLine();
         }
         if (eExprPrec) {
@@ -255,8 +255,8 @@ public class AnaliseSintatica {
             }
         }
         pilha.clear();
-        if(eCondicao && (posCond==(token.size()-1) || posCond==0)){
-            System.out.println("Erro: token "+token.get(posCond).getNome()+" inesperado");
+        if (eCondicao && (posCond == (token.size() - 1) || posCond == 0)) {
+            System.out.println("Erro: token " + token.get(posCond).getNome() + " inesperado");
             in.readLine();
         }
         if (eCondicao) {
@@ -289,7 +289,7 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean empilha = false;
         boolean isCondicao = false;
-        
+
         for (int i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
                 if (condicoes(token.get(i)) && empilha == false) {
@@ -539,14 +539,19 @@ public class AnaliseSintatica {
                     in.readLine();
                 } else {
                     i++;
-                    //le ate axar um \n
-                    while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
-                        tokenEnquanto.add(token.get(i));
-                        i++;
+                    if (token.get(i).getTipo().equals("|n")) {
+                        System.out.println("Erro: Atribuição inválida");
+                        in.readLine();
+                    } else {
+                        //le ate axar um \n
+                        while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
+                            tokenEnquanto.add(token.get(i));
+                            i++;
+                        }
+                        verificaCondicao(tokenEnquanto);
+                        verificaCondicao2(tokenEnquanto);
+                        tokenEnquanto.clear();
                     }
-                    verificaCondicao(tokenEnquanto);
-                    verificaCondicao2(tokenEnquanto);
-                    tokenEnquanto.clear();
                 }
             } //Analisa se é uma função
             else if (token.get(i).getTipo().equals("function")) {
@@ -618,57 +623,36 @@ public class AnaliseSintatica {
                     //analisa se é uma declaração de vetor
                     if ((i) < token.size() && token.get(i).getTipo().equals("[")) {
                         i++;
-                        while ((i < token.size()) && !("|n").equals(token.get(i).getTipo()) && !("]").equals(token.get(i).getTipo())) {
-                            tokenEnquanto.add(token.get(i));
-                            i++;
-                        }
-                        if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
-                            System.out.println("Erro: token esperado ']'");
+                        if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
+                            System.out.println("Erro: era esperado [int]");
                             in.readLine();
-                        }
-                        verificaCondicao(tokenEnquanto);
-                        verificaCondicao2(tokenEnquanto);
-                        tokenEnquanto.clear();
-
-                        i++;
-                        //analisa se é declaração de matriz
-                        if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
+                        } else {
                             i++;
-                            while ((i < token.size()) && !token.get(i).getTipo().equals("|n") && !token.get(i).getTipo().equals("]")) {
-                                tokenEnquanto.add(token.get(i));
-                                i++;
-                            }
-                            if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
-                                System.out.println("Erro: token esperado ']'");
+                            if (i >= token.size() || !token.get(i).getTipo().equals("]")) {
+                                System.out.println("Erro: era esperado token ]");
                                 in.readLine();
-                            }
-                            verificaCondicao(tokenEnquanto);
-                            verificaCondicao2(tokenEnquanto);
-                            tokenEnquanto.clear();
-
-                        }
-                        i++;
-                        if ((i < token.size()) && token.get(i).getTipo().equals("atrib")) {
-                            i++;
-                            //le ate axar um \n
-                            while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
-                                tokenEnquanto.add(token.get(i));
+                            } else {
                                 i++;
+                                //analisa se é declaração de matriz
+                                if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
+                                    i++;
+                                    if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
+                                        System.out.println("Erro: era esperado [int][int]");
+                                        in.readLine();
+                                    } else {
+                                        i++;
+                                        if (i >= token.size() || !token.get(i).getTipo().equals("]")) {
+                                            System.out.println("Erro: era esperado token ]");
+                                            in.readLine();
+                                        }
+                                    }
+                                } else {
+                                    System.out.println("Erro: declaração de vetor sem id");
+                                    in.readLine();
+                                }
                             }
-                            verificaCondicao(tokenEnquanto);
-                            verificaCondicao2(tokenEnquanto);
-                            tokenEnquanto.clear();
-                        } else if ((i < token.size()) && !token.get(i).getTipo().equals("|n")) {
-                            System.out.println("Erro: Token inesperado");
-                            in.readLine();
                         }
-                    } else {
-                        System.out.println("Erro: token [ esperado");
-                        in.readLine();
                     }
-                } else {
-                    System.out.println("Erro: declaração de vetor sem id");
-                    in.readLine();
                 }
             } else {
                 if (!token.get(i).getTipo().equals("|n")) {
