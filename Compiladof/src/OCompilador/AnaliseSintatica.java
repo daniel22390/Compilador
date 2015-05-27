@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
-import OCompilador.ArvoreBinaria;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,7 +20,7 @@ import java.io.InputStreamReader;
 public class AnaliseSintatica {
 
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas;
-    ArrayList<Lexema> comandos = new ArrayList<Lexema>();
+    ArrayList<Lexema> comandos = new ArrayList<>();
     ArvoreBinaria<Lexema> arvoreCond;
     Lexema l = null;
     int cont = 0;
@@ -103,7 +102,7 @@ public class AnaliseSintatica {
                     }
                     tokenCond.add(token.get(k));
                 }
-                if(pilha.isEmpty() && k<(token.size()-1)){
+                if (pilha.isEmpty() && k < (token.size() - 1)) {
                     System.out.println("Erro: falta comparador");
                     in.readLine();
                 }
@@ -299,7 +298,7 @@ public class AnaliseSintatica {
                 }
             }
         }
-        
+
         if (eCondicao && (posCond == (token.size() - 1) || posCond == 0)) {
             System.out.println("Erro: token " + token.get(posCond).getNome() + " inesperado");
             in.readLine();
@@ -542,7 +541,7 @@ public class AnaliseSintatica {
                         i++;
                     }
                     if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
-                        System.out.println("Erro: token esperado ']'");
+                        System.out.println("Erro: token esperado ] na linha "+ token.get(i-1).getLinha() );
                         in.readLine();
                     }
                     verificaCondicao(tokenEnquanto);
@@ -607,12 +606,12 @@ public class AnaliseSintatica {
                 i++;
                 //le se o proximo é um fun
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("fun")) {
-                    System.out.println("Erro: erro em parametros");
+                    System.out.println("Erro: faltou passar os parâmetros da função na linha " + token.get(i - 1).getLinha());
                     in.readLine();
                 } else {
                     i++;
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("(")) {
-                        System.out.println("Erro");
+                        System.out.println("Erro: faltou passar os parâmetros da função na linha " + token.get(i - 1).getLinha());
                         in.readLine();
                     } else {
                         pilha.push(token.get(i));
@@ -630,7 +629,7 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if (!pilha.isEmpty()) {
-                            System.out.println("Erro: faltou token )");
+                            System.out.println("Erro: faltou token ) na linha " + token.get(i - 1).getLinha());
                             in.readLine();
                         }
                         pilha.clear();
@@ -656,7 +655,7 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if (!pilha.isEmpty()) {
-                            System.out.println("Erro: faltou fim-funcao");
+                            System.out.println("Erro: Era esperado fim-funcao na linha " + (token.get(i - 3).getLinha() + 1));
                             in.readLine();
                         }
                         verificaComandos(tokenEnquanto);
@@ -672,12 +671,12 @@ public class AnaliseSintatica {
                     if ((i) < token.size() && token.get(i).getTipo().equals("[")) {
                         i++;
                         if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                            System.out.println("Erro: era esperado [int]");
+                            System.out.println("Erro: era esperado [int] na linha " + token.get(i - 1).getLinha());
                             in.readLine();
                         } else {
                             i++;
                             if (i >= token.size() || !token.get(i).getTipo().equals("]")) {
-                                System.out.println("Erro: era esperado token ]");
+                                System.out.println("Erro: era esperado token ] na linha " + token.get(i - 1).getLinha());
                                 in.readLine();
                             } else {
                                 i++;
@@ -685,26 +684,26 @@ public class AnaliseSintatica {
                                 if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
                                     i++;
                                     if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                                        System.out.println("Erro: era esperado [int][int]");
+                                        System.out.println("Erro: era esperado [int][int] na linha " + token.get(i).getLinha());
                                         in.readLine();
                                     } else {
                                         i++;
                                         if (i >= token.size() || !token.get(i).getTipo().equals("]")) {
-                                            System.out.println("Erro: era esperado token ]");
+                                            System.out.println("Erro: era esperado token ] na linha " + token.get(i - 1).getLinha());
                                             in.readLine();
                                         }
                                     }
-                                } else {
-                                    System.out.println("Erro: declaração de vetor sem id");
-                                    in.readLine();
                                 }
                             }
                         }
                     }
+                } else {
+                    System.out.println("Erro: era esperado id do vetor na linha " + token.get(i - 1).getLinha());
+                    in.readLine();
                 }
             } else {
                 if (!token.get(i).getTipo().equals("|n")) {
-                    System.out.println("Erro: token inesperado");
+                    System.out.println("Erro: token inesperado na linha " + token.get(i).getLinha());
                     in.readLine();
                 }
             }
@@ -726,7 +725,7 @@ public class AnaliseSintatica {
             }
         }
         if (programa == false) {
-            System.out.println("Erro: faltou fim");
+            System.out.println("Erro: faltou fim na linha " + (comandos.get(comandos.size() - 2).getLinha() + 1));
             in.readLine();
         }
 

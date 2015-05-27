@@ -135,6 +135,7 @@ public class AnaliseLexica {
                     if(comentario==false){
                         simbolos.setTipo("String");
                     simbolos.setNome(token);
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     }
                     token = "";
@@ -156,6 +157,7 @@ public class AnaliseLexica {
                     }
                     simbolos.setTipo(lexema.get(token));
                     simbolos.setNome(token);
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
                     simbolo = "";
@@ -164,18 +166,21 @@ public class AnaliseLexica {
                 else if (codigo.charAt(i) == 'x' && comentario == false && i > 0 && (i + 1) < codigo.length() && ((codigo.charAt(i - 1) == ' ' && codigo.charAt(i + 1) == ' ') || (ValidaNumero(codigo.charAt(i - 1)) && ValidaNumero(codigo.charAt(i + 1))) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)))) || (codigo.charAt(i - 1) == ')' && (codigo.charAt(i + 1) == ' ' || ValidaNumero(codigo.charAt(i + 1)) || codigo.charAt(i + 1) == '(')) || (codigo.charAt(i + 1) == '(' && (codigo.charAt(i - 1) == ' ' || ValidaNumero(codigo.charAt(i - 1)))))) {
                     simbolos.setTipo("mult");
                     simbolos.setNome("x");
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
                 }// se x isolado, entao eh uma multiplicação
                 else if (((codigo.length() == 1 && codigo.charAt(i)=='x') || ((i==0) && codigo.length() >= 2 && codigo.charAt(i)=='x' && codigo.charAt(i+1)==' ') || ((i>0) && codigo.length() == (i+1) && codigo.charAt(i)=='x' && codigo.charAt(i-1)==' ')) && comentario == false) {
                 simbolos.setTipo("mult");
                 simbolos.setNome("x");
+                simbolos.setLinha(linha);
                 tokenList.add(simbolos);
                 token = "";
                 }
                 else if(i==0 && codigo.charAt(i)=='x' && (i+1)<codigo.length() && codigo.charAt(i+1)=='(' && comentario==false){
                     simbolos.setTipo("mult");
                     simbolos.setNome("x");
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
                 }
@@ -207,6 +212,7 @@ public class AnaliseLexica {
                         i--;
                         simbolos.setTipo("id");
                         simbolos.setNome(token);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     } //se começa com letra e ta no final da linha ou começa com letra e proximo
@@ -214,18 +220,21 @@ public class AnaliseLexica {
                     else if(((i+1)==codigo.length() && ValidaLetra(token.charAt(0))) || (((i+1)<codigo.length() && !ValidaLetra(codigo.charAt(i+1)) && !ValidaNumero(codigo.charAt(i+1)))  && ValidaLetra(token.charAt(0)))){
                         simbolos.setTipo("id");
                         simbolos.setNome(token);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     }//se numero inteiro, entao adiciona como int
                     else if (inteiro == true) {
                         simbolos.setTipo("Int");
                         simbolos.setNome(token);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     }//se numero eh float, entao adiciona como float
                     else {
                         simbolos.setTipo("Float");
                         simbolos.setNome(token);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     }
@@ -236,6 +245,7 @@ public class AnaliseLexica {
                 else if (codigo.charAt(i) == '.' && comentario == false) {
                     simbolos.setTipo(".");
                     simbolos.setNome(".");
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
                 }//Se ler (, ele verifica se o ultimo lexema eh um id, se for adiciona seu tipo
@@ -258,6 +268,7 @@ public class AnaliseLexica {
                     }
                     simbolos.setTipo("(");
                     simbolos.setNome("(");
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
                 } //Analisa se é um ) e se o antepenultimo ( da pilha eh d uma funcao, entao
@@ -266,6 +277,7 @@ public class AnaliseLexica {
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
                     funcao = true;
@@ -274,6 +286,7 @@ public class AnaliseLexica {
                     pilha.pop();
                     simbolos.setTipo(")");
                     simbolos.setNome(")");
+                    simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
                     funcao = false;
@@ -284,6 +297,7 @@ public class AnaliseLexica {
                         pilha.push("(");
                         simbolos.setTipo("(");
                         simbolos.setNome("(");
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                         funcao = false;
@@ -294,12 +308,14 @@ public class AnaliseLexica {
                         }
                         simbolos.setTipo(")");
                         simbolos.setNome(")");
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                         funcao=false;
                     } else {
                         simbolos.setTipo(lexema.get(simbolo));
                         simbolos.setNome(simbolo);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     }
@@ -311,6 +327,7 @@ public class AnaliseLexica {
                     if (lexema.containsKey(token) && ((codigo.length() > (i + 1) && ((!ValidaLetra(codigo.charAt(i + 1)))) && !ValidaNumero(codigo.charAt(i+1))) || (codigo.length() == (i + 1)))) {
                         simbolos.setTipo(lexema.get(token));
                         simbolos.setNome(token);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     }
@@ -330,18 +347,21 @@ public class AnaliseLexica {
                             if(lexema.containsKey(token+'-'+hifen) && (((k+1)<codigo.length() && (!ValidaLetra(codigo.charAt(k+1)) || !ValidaNumero(codigo.charAt(k+1)))) || (k+1)==codigo.length())){
                                 simbolos.setTipo(lexema.get(token+'-'+hifen));
                                 simbolos.setNome(token+'-'+hifen);
+                                simbolos.setLinha(linha);
                                 tokenList.add(simbolos);
                                 token = "";
                                 i=k;
                             } else{
                                 simbolos.setTipo("id");
                                 simbolos.setNome(token);
+                                simbolos.setLinha(linha);
                                 tokenList.add(simbolos);
                                 token = "";
                             }
                         } else{
                         simbolos.setTipo("id");
                         simbolos.setNome(token);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                         }
@@ -350,6 +370,7 @@ public class AnaliseLexica {
                     if (!token.equals(" ") && !token.equals("") && (i + 1) == codigo.length()) {
                         simbolos.setTipo("id");
                         simbolos.setNome(token);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     }
@@ -359,6 +380,7 @@ public class AnaliseLexica {
                     if (!(linha == 1 && i == 0)) {
                         simbolos.setTipo(simbolo);
                         simbolos.setNome(simbolo);
+                        simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
                     }

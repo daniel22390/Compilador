@@ -4,11 +4,11 @@ para i de 1 até 10 faça
 fim-para
 se i<3 então
 fim-se
-as = 40 x 67 +2
-b = 40 - 20
-funcao as(30<10 10, 40)
+funcao as(10, 40)
 	enquanto a<30 faça
-	vetor v[2][3]
+	v[32
 	fim-enquanto
 fim-funcao
 fim
+
+

@@ -12,6 +12,7 @@ package OCompilador;
 public class Lexema {
     private String tipo;
     private String nome;
+    private int linha;
 
     /**
      * @return the tipo
@@ -39,6 +40,20 @@ public class Lexema {
      */
     public void setNome(String nome) {
         this.nome = nome;
+    }
+    
+     /**
+     * @return the nome
+     */
+    public int getLinha() {
+        return linha;
+    }
+
+    /**
+     * @param nome the nome to set
+     */
+    public void setLinha(int linha) {
+        this.linha = linha;
     }
 
    
