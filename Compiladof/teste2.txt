@@ -1,14 +1,26 @@
-﻿enquanto (a30) e 20+30*40 ou (i>40) faça
+﻿enquanto (a30) e 20+30*40 ou (v[3]+3)  faça
+	a=10
+	enquanto a<10 faça
+	fim-enquanto
 fim-enquanto
-para i de 1 até 10 faça
+para i de 2 até 3 faça
 fim-para
-se i<3 então
-fim-se
+	b=10
+	se a>10 então
+	a=90
+	se a<10 então
+		a=30
+	senão
+		b=10
+	fim-se
+	fim-se
+a = 4
 funcao as(10, 40)
 	enquanto a<30 faça
-	v[32
+	a[435][22] = 10
 	fim-enquanto
 fim-funcao
+apaga(telamensagem, telamensagem2, telamensagem3, telamensagem4)
 fim
 
 
