@@ -392,6 +392,7 @@ public class AnaliseLexica {
             simbolos3.setTipo("|n");
             simbolos3.setLinha(linha);
             tokenList.add(simbolos3);
+            simbolos3 = new Lexema();
             tokens.put(linha, tokenList);
         }
         //for para exibir tokens em terminal

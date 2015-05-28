@@ -407,8 +407,8 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenEnquanto = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
         boolean eSenao = false;
-        if(!token.get(0).getTipo().equals("|n")){
-            System.out.println("Erro: deve haver uma quebra de linha na linha "+token.get(0).getLinha());
+        if (!token.get(0).getTipo().equals("|n")) {
+            System.out.println("Erro: deve haver uma quebra de linha na linha " + token.get(0).getLinha());
             in.readLine();
         }
 
@@ -729,25 +729,28 @@ public class AnaliseSintatica {
                                 if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
                                     i++;
                                     if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                                        System.out.println("Erro: era esperado [int][int] na linha " + token.get(i).getLinha());
+                                        System.out.println("Erro: era esperado [int][int] na linha " + token.get(i-1).getLinha());
                                         in.readLine();
                                     } else {
                                         i++;
                                         if (i >= token.size() || !token.get(i).getTipo().equals("]")) {
                                             System.out.println("Erro: era esperado token ] na linha " + token.get(i - 1).getLinha());
                                             in.readLine();
-                                        } else{
+                                        } else {
                                             i++;
-                                            if(i >= token.size() || !token.get(i).getTipo().equals("|n")){
+                                            if (i >= token.size() || !token.get(i).getTipo().equals("|n")) {
                                                 System.out.println("Erro: deve haver uma quebra de linha na linha " + token.get(i).getLinha());
                                                 in.readLine();
                                             }
                                         }
-                                        
+
                                     }
                                 }
                             }
                         }
+                    } else {
+                        System.out.println("Erro: era esperado [int] do vetor na linha " + token.get(i - 1).getLinha());
+                        in.readLine();
                     }
                 } else {
                     System.out.println("Erro: era esperado id do vetor na linha " + token.get(i - 1).getLinha());
