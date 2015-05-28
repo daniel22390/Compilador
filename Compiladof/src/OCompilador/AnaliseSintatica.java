@@ -169,7 +169,7 @@ public class AnaliseSintatica {
             }
         } else if (token.size() == 1) {
             if (!termos(token.get(0))) {
-                System.out.println("Erro: token nao aceito na linha " + token.get(0).getLinha());
+                System.out.println("Erro: token " + token.get(0).getNome() + " nao aceito na linha " + token.get(0).getLinha());
                 in.readLine();
             }
         }
@@ -396,7 +396,7 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenEnquanto = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
         boolean eSenao = false;
-        
+
 //        for (Lexema pilha1 : token) {
 //            System.out.println(pilha1.getNome());
 //        }
@@ -423,31 +423,32 @@ public class AnaliseSintatica {
                 tokencond.clear();
                 pilha.push(token.get(i));
                 i++;
-               
+
                 //le ate axar o fim-se
                 while ((i < token.size())) {
-                        if (token.get(i).getTipo().equals("cond")) {
-                            pilha.push(token.get(i));
-                        } else if (token.get(i).getTipo().equals("endcond")) {
-                            pilha.pop();
-                            if (pilha.isEmpty()) {
-                                break;
-                            }
-                        } else if (token.get(i).getTipo().equals("altcond")) {
-                            if (pilha.size()==1) {
-                                verificaComandos(tokencomandos);
-                                tokencomandos.clear();
-                                pilha.clear();
-                                pilha.push(token.get(i));
-                                i++;
-                                continue;
-                            }
+                    if (token.get(i).getTipo().equals("cond")) {
+                        pilha.push(token.get(i));
+                    } else if (token.get(i).getTipo().equals("endcond")) {
+                        pilha.pop();
+                        if (pilha.isEmpty()) {
+                            break;
                         }
-                        tokencomandos.add(token.get(i));
+                    } else if (token.get(i).getTipo().equals("altcond")) {
+                        if (pilha.size() == 1) {
+                            verificaComandos(tokencomandos);
+                            tokencomandos.clear();
+                            pilha.clear();
+                            pilha.push(token.get(i));
+                            i++;
+                            continue;
+                        }
+                    }
+                    tokencomandos.add(token.get(i));
                     i++;
                 }
-                if(!pilha.isEmpty()){
+                if (!pilha.isEmpty()) {
                     System.out.println("Erro: faltou fim-se");
+                    in.readLine();
                 }
                 pilha.clear();
                 verificaComandos(tokencomandos);
@@ -474,15 +475,15 @@ public class AnaliseSintatica {
                 i++;
                 //le ate axar o fim-enquanto
                 while ((i < token.size())) {
-                        if (token.get(i).getTipo().equals("whileloop")) {
-                            pilha.push(token.get(i));
-                        } else if (token.get(i).getTipo().equals("endwhileloop")) {
-                            pilha.pop();
-                            if (pilha.isEmpty()) {
-                                break;
-                            }
+                    if (token.get(i).getTipo().equals("whileloop")) {
+                        pilha.push(token.get(i));
+                    } else if (token.get(i).getTipo().equals("endwhileloop")) {
+                        pilha.pop();
+                        if (pilha.isEmpty()) {
+                            break;
                         }
-                        tokencomandos.add(token.get(i));
+                    }
+                    tokencomandos.add(token.get(i));
                     i++;
                 }
                 if (!pilha.isEmpty()) {
@@ -534,22 +535,22 @@ public class AnaliseSintatica {
                                         i++;
                                         //le ate axar um fim-para
                                         while ((i < token.size())) {
-                                                if (token.get(i).getTipo().equals("forloop")) {
-                                                    pilha.push(token.get(i));
-                                                } else if (token.get(i).getTipo().equals("endforloop")) {
-                                                    pilha.pop();
-                                                    if (pilha.isEmpty()) {
-                                                        break;
-                                                    }
-                                                
-                                                tokenEnquanto.add(token.get(i));
+                                            if (token.get(i).getTipo().equals("forloop")) {
+                                                pilha.push(token.get(i));
+                                            } else if (token.get(i).getTipo().equals("endforloop")) {
+                                                pilha.pop();
+                                                if (pilha.isEmpty()) {
+                                                    break;
+                                                }
                                             }
+                                            tokenEnquanto.add(token.get(i));
                                             i++;
                                         }
                                         if (!pilha.isEmpty()) {
                                             System.out.println("Erro: faltou fim-para");
                                             in.readLine();
                                         }
+                                        pilha.clear();
                                         verificaComandos(tokenEnquanto);
                                         tokenEnquanto.clear();
                                     }
@@ -596,23 +597,23 @@ public class AnaliseSintatica {
 
                 } //le se proximo elemento é um =
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
-                    System.out.println("Erro: nao contem atribuição na linha " + token.get(i - 1).getLinha());
-                    in.readLine();
-                } else {
-                    i++;
-                    if (i >= token.size() || token.get(i).getTipo().equals("|n")) {
-                        System.out.println("Erro: Atribuição inválida na linha " + token.get(i - 1).getLinha());
+                    if (token.get(i).getTipo().equals("|n")) {
+                        System.out.println("Erro: nao contem atribuição na linha " + token.get(i - 1).getLinha());
                         in.readLine();
                     } else {
-                        //le ate axar um \n
-                        while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
-                            tokenEnquanto.add(token.get(i));
-                            i++;
-                        }
-                        verificaCondicao(tokenEnquanto);
-                        verificaCondicao2(tokenEnquanto);
-                        tokenEnquanto.clear();
+                        System.out.println("Erro: token "+ token.get(i).getNome()+" não aceito na linha "+token.get(i).getLinha());
+                        in.readLine();
                     }
+                } else {
+                    i++;
+                    //le ate axar um \n
+                    while ((i < token.size()) && (!token.get(i).getTipo().equals("|n"))) {
+                        tokenEnquanto.add(token.get(i));
+                        i++;
+                    }
+                    verificaCondicao(tokenEnquanto);
+                    verificaCondicao2(tokenEnquanto);
+                    tokenEnquanto.clear();
                 }
             } //Analisa se é uma função
             else if (token.get(i).getTipo().equals("function")) {
@@ -655,16 +656,16 @@ public class AnaliseSintatica {
                         tokenEnquanto.clear();
 
                         while ((i < token.size())) {
-                                if (token.get(i).getTipo().equals("function")) {
-                                    pilha.push(token.get(i));
-                                } else if (token.get(i).getTipo().equals("endfunction")) {
-                                    pilha.pop();
-                                    if (pilha.isEmpty()) {
-                                        break;
-                                    }
+                            if (token.get(i).getTipo().equals("function")) {
+                                pilha.push(token.get(i));
+                            } else if (token.get(i).getTipo().equals("endfunction")) {
+                                pilha.pop();
+                                if (pilha.isEmpty()) {
+                                    break;
                                 }
-                                tokenEnquanto.add(token.get(i));
-                            
+                            }
+                            tokenEnquanto.add(token.get(i));
+
                             i++;
                         }
                         if (!pilha.isEmpty()) {
