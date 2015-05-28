@@ -5,18 +5,20 @@ c = 91 - 3 * 2.4
 d = 41 : (4 / 2)
 a = (a * (((b x c) : d) / 2))
 
-se a[10] > 10 então
+se a[10] > 10 então vetor v[10]
    telaensagem = "A é maior que 10"
 fim-se
 
 enquanto (a(9)==10) faça
 fim-enquanto
-se a==10 então
-   telamensagem2 = "B é menor que 30"
-fim-se
-vetor v[23
+se a==10 então vetor v[10] 
+	a=b
+    a=b
+	a=20
+	fim-se
+vetor v[23]
 
-se (c <= 40) então
+se (c <= 40)*(a(2)) então
    telamensagem3 = "C é menor ou igual a 40"
 fim-se
 
@@ -36,7 +38,7 @@ se (a =< 30,5) e (a) então
    fim-se
 fim-se
 
-fat= 12
+fat =  12
 para i de 1 até 10 faça
     fat = fat x i
 fim-para

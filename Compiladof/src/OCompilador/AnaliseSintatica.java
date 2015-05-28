@@ -32,7 +32,7 @@ public class AnaliseSintatica {
         this.lexemas = listao;
     }
 
-    public void verificaParametro(ArrayList<Lexema> token) throws IOException {
+    public void verificaParametro(ArrayList<Lexema> token, int j) throws IOException {
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         boolean isCondicao = false;
         if (token.get(0).getTipo().equals(",")) {
@@ -124,7 +124,7 @@ public class AnaliseSintatica {
                         }
                         tokenParam.add(token.get(i));
                     }
-                    verificaParametro(tokenParam);
+                    verificaParametro(tokenParam, token.get(0).getLinha());
                     tokenParam.clear();
                     pilha.clear();
                 }
@@ -407,10 +407,6 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenEnquanto = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
         boolean eSenao = false;
-        if (!token.get(0).getTipo().equals("|n")) {
-            System.out.println("Erro: deve haver uma quebra de linha na linha " + token.get(0).getLinha());
-            in.readLine();
-        }
 
 //        for (Lexema pilha1 : token) {
 //            System.out.println(pilha1.getNome());
@@ -679,7 +675,7 @@ public class AnaliseSintatica {
                             pilha.push(token.get(i));
                         }
                         i++;
-                        verificaParametro(tokenEnquanto);
+                        verificaParametro(tokenEnquanto, token.get(i-1).getLinha());
                         tokenEnquanto.clear();
 
                         while ((i < token.size())) {
@@ -729,7 +725,7 @@ public class AnaliseSintatica {
                                 if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
                                     i++;
                                     if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                                        System.out.println("Erro: era esperado [int][int] na linha " + token.get(i-1).getLinha());
+                                        System.out.println("Erro: era esperado [int][int] na linha " + token.get(i - 1).getLinha());
                                         in.readLine();
                                     } else {
                                         i++;
@@ -745,6 +741,9 @@ public class AnaliseSintatica {
                                         }
 
                                     }
+                                } else if (i >= token.size() || !token.get(i).getTipo().equals("|n")) {
+                                    System.out.println("Erro: deve haver uma quebra de linha na linha " + token.get(i).getLinha());
+                                    in.readLine();
                                 }
                             }
                         }
