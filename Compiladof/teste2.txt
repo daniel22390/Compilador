@@ -3,10 +3,12 @@
 	enquanto a<10 faça
 	fim-enquanto
 fim-enquanto
-para i de 2 até 3 faça
+para i de 1 até 10 faça
+    fatfat x i
 fim-para
 	b=10
 	se a>10 então
+	
 	a=90
 	se a<10 então
 		a=30
@@ -16,11 +18,11 @@ fim-para
 	fim-se
 a = 4
 funcao as(10, 40)
+	fatfat x i
 	enquanto a<30 faça
 	a[435][22] = 10
 	fim-enquanto
 fim-funcao
-apaga(telamensagem, telamensagem2, telamensagem3, telamensagem4)
 fim
 
 
