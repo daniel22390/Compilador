@@ -1,5 +1,4 @@
 ﻿# Comentário: Início do código de exemplo#
-
 a = 3 x 3,2
 b = (8 + 7) x 4,1
 c = 91 - 3 * 2.4
@@ -10,8 +9,10 @@ se a[10] > 10 então
    telaensagem = "A é maior que 10"
 fim-se
 
-se b < 30 então
-   tela.mensagem2 = "B é menor que 30"
+enquanto (a(9)==10) faça
+fim-enquanto
+se a==10 então
+   telamensagem2 = "B é menor que 30"
 fim-se
 
 se (c <= 40) então
@@ -22,12 +23,12 @@ se (d >= 20) e (d =< 60) então
    telamensagem4 = "D está entre 20 e 60"
 fim-se
 
-se (a =< 30,5) e (a != 20) então
+se (a =< 30,5) e (a) então
    telamensagem5 = "E é menor que 30 e meio, mas é diferente de 20"
    se (a == 0) então
      telamensagem5 = "E é zero"
    senão
-   se (a < 0) então
+   se (a<10) então
      telamensagem5 = "E é negativo"
      
    fim-se
@@ -42,7 +43,7 @@ tela = "10! = " + fat
 
 fat = 1
 i = 1
-enquanto i <= 5 faça
+enquanto i <= 10 faça
     fat = fat x i
     i = i + 1
 fim-enquanto
@@ -50,11 +51,10 @@ tela = "5! = " + fat
 
 vetor m[10][10]
 
-m[2][1] = 1.5
+m[24][1] = 1.5
 m[1][2] = 3.2
 m[2][1] = 3,3
 m[2][i] = 2,9
-fim
 fim
 # As outras posições não foram inicializadas
 Portanto há zero ou espaço no seu interior #

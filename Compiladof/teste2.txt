@@ -1,4 +1,4 @@
-﻿enquanto (a30) e 20+30*40 ou (v[3]+3)  faça
+﻿enquanto a=20  faça
 	a=10
 	enquanto a<10 faça
 	fim-enquanto

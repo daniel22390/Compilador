@@ -390,6 +390,7 @@ public class AnaliseLexica {
             }
             simbolos3.setNome("|n");
             simbolos3.setTipo("|n");
+            simbolos3.setLinha(linha);
             tokenList.add(simbolos3);
             tokens.put(linha, tokenList);
         }
