@@ -17,7 +17,7 @@ se a==10 então
 	a=20
 	fim-se
 vetor v[23]
-
+a = (a<(23,3 e a>10) ou (b<4 ou (a>(30>(40)))))
 se (c <= 40)*(a(2)) então
    telamensagem3 = "C é menor ou igual a 40"
 fim-se
@@ -25,13 +25,13 @@ fim-se
 se (d >= 20) e (d =< 60) então
    telamensagem4 = "D está entre 20 e 60"
 fim-se
-
-se (a =< 30,5) e (a) então
+a = (a>2 e (3 ou a(2,a3242)))
+se (a =< a(2,2)) e (a) então
    telamensagem5 = "E é menor que 30 e meio, mas é diferente de 20"
    se (a == 0) então
      telamensagem5 = "E é zero"
    senão
-   se (a<10) então
+   se (a<10) e b então
      telamensagem5 = "E é negativo"
      
    fim-se

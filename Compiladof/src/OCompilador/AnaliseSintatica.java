@@ -31,8 +31,8 @@ public class AnaliseSintatica {
     int cont = 0;
     MensagemErro erro;
     ArrayList<MensagemErro> erros = new ArrayList<>();
-    
-    public void insereErro(String err, int linha){
+
+    public void insereErro(String err, int linha) {
         erro = new MensagemErro();
         erro.setErro(err);
         erro.setLinha(linha);
@@ -49,29 +49,30 @@ public class AnaliseSintatica {
     public void verificaParametro(ArrayList<Lexema> token, int j) throws IOException {
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         boolean isCondicao = false;
-        if (token.get(0).getTipo().equals(",")) {
-            insereErro("Erro: token , não esperado na linha ", token.get(0).getLinha());
-        }
-        for (int i = 0; i < token.size(); i++) {
-            if ((i + 1) < token.size() && token.get(i).getTipo().equals(",") && token.get(i + 1).getTipo().equals(",")) {
-                insereErro("Erro: era esperado uma condição entre ,, na linha ", token.get(i).getLinha());
+        if (token.isEmpty()) {
+            insereErro("Erro: Falta parâmetros na função da linha ", j);
+        } else {
+            if (token.get(0).getTipo().equals(",")) {
+                insereErro("Erro: token , não esperado na linha ", token.get(0).getLinha());
             }
-            if (token.get(i).getTipo().equals(",")) {
+            for (int i = 0; i < token.size(); i++) {
+                if ((i + 1) < token.size() && token.get(i).getTipo().equals(",") && token.get(i + 1).getTipo().equals(",")) {
+                    insereErro("Erro: era esperado uma condição entre ,, na linha ", token.get(i).getLinha());
+                }
+                if (token.get(i).getTipo().equals(",")) {
+                    verificaCondicao(tokenCond, token.get(0).getLinha());
+                    tokenCond.clear();
+                } else {
+                    tokenCond.add(token.get(i));
+                }
+            }
+            if (!token.get(token.size() - 1).getTipo().equals(",")) {
                 verificaCondicao(tokenCond, token.get(0).getLinha());
-                verificaCondicao2(tokenCond);
                 tokenCond.clear();
             } else {
-                tokenCond.add(token.get(i));
+                insereErro("Erro: token , não esperado na linha ", token.get(token.size() - 1).getLinha());
             }
         }
-        if (!token.get(token.size() - 1).getTipo().equals(",")) {
-            verificaCondicao(tokenCond, token.get(0).getLinha());
-            verificaCondicao2(tokenCond);
-            tokenCond.clear();
-        } else {
-            insereErro("Erro: token , não esperado na linha ", token.get(token.size() - 1).getLinha());
-        }
-
     }
 
     public boolean condicoes(Lexema lexema) {
@@ -117,7 +118,6 @@ public class AnaliseSintatica {
                     insereErro("Erro: falta comparador na linha ", token.get(0).getLinha());
                 }
                 verificaCondicao(tokenCond, token.get(0).getLinha());
-                verificaCondicao2(tokenCond);
                 tokenCond.clear();
                 pilha.clear();
             } else if (token.get(0).getTipo().equals("fun")) {
@@ -149,7 +149,6 @@ public class AnaliseSintatica {
                         insereErro("Erro: era esperado ] na linha ", token.get(i - 1).getLinha());
                     }
                     verificaCondicao(tokenCond, token.get(i).getLinha());
-                    verificaCondicao2(tokenCond);
                     tokenCond.clear();
                     if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
                         i = i + 2;
@@ -161,7 +160,6 @@ public class AnaliseSintatica {
                             insereErro("Erro: era esperado ] na linha ", token.get(i - 1).getLinha());
                         }
                         verificaCondicao(tokenCond, token.get(i).getLinha());
-                        verificaCondicao2(tokenCond);
                         tokenCond.clear();
                     } else if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("[")) {
                         insereErro("Erro: token inesperado na linha ", token.get(i - 1).getLinha());
@@ -189,50 +187,60 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean eTermo = false;
         int posTermo = 0;
+        int k;
 //        for (Lexema pilha1 : token) {
 //            insereErro(pilha1.getNome());
 //        }
 //        insereErro("-----");
-        for (int i = 0; i < token.size(); i++) {
-            if (!token.get(i).getTipo().equals("|n")) {
+        for (k = 0; k < token.size(); k++) {
+            if (!token.get(k).getTipo().equals("|n")) {
                 //empilha
-                if (token.get(i).getTipo().equals("(")) {
-                    pilha.push(token.get(i));
+                if (token.get(k).getTipo().equals("(")) {
+                    pilha.push(token.get(k));
                 } //desempilha
-                else if (token.get(i).getTipo().equals(")")) {
-                    pilha.pop();
+                else if (token.get(k).getTipo().equals(")")) {
+                    if (pilha.isEmpty()) {
+                        insereErro("Erro: era esperado ( na linha ", token.get(k).getLinha());
+                    } else {
+                        pilha.pop();
+                    }
                 } //verifica se o *,x,/,: ta no nivel mais para fora
-                else if ((token.get(i).getTipo().equals("mult") || token.get(i).getTipo().equals("div")) && pilha.isEmpty()) {
+                else if ((token.get(k).getTipo().equals("mult") || token.get(k).getTipo().equals("div")) && pilha.isEmpty()) {
                     eTermo = true;
-                    posTermo = i;
+                    posTermo = k;
                 }
             }
         }
+        if (!pilha.isEmpty()) {
+            insereErro("Erro: era esperado ) na linha ", token.get(k - 1).getLinha());
+
+        } else {
+            if (eTermo && (posTermo == (token.size() - 1) || posTermo == 0)) {
+                insereErro("Erro: token " + token.get(posTermo).getNome() + " inesperado na linha ", token.get(posTermo).getLinha());
+            }
+            if (eTermo) {
+                //antes do operador envia para verificaExpressao
+                for (int i = 0; i < posTermo; i++) {
+                    tokenExprPrec.add(token.get(i));
+                }
+                verificaExpressao(tokenExprPrec);
+                tokenExprPrec.clear();
+                //depois do operador envia para verificaTermo
+                for (int i = (posTermo + 1); i < token.size(); i++) {
+                    tokenTermo.add(token.get(i));
+                }
+                verificaTermo(tokenTermo);
+                tokenTermo.clear();
+            } //envia td para verificaTermo
+            else {
+                for (int i = 0; i < token.size(); i++) {
+                    tokenTermo.add(token.get(i));
+                }
+                verificaTermo(tokenTermo);
+                tokenTermo.clear();
+            }
+        }
         pilha.clear();
-        if (eTermo && (posTermo == (token.size() - 1) || posTermo == 0)) {
-            insereErro("Erro: token " + token.get(posTermo).getNome() + " inesperado na linha ", token.get(posTermo).getLinha());
-        }
-        if (eTermo) {
-            //antes do operador envia para verificaExpressao
-            for (int i = 0; i < posTermo; i++) {
-                tokenExprPrec.add(token.get(i));
-            }
-            verificaExpressao(tokenExprPrec);
-            tokenExprPrec.clear();
-            //depois do operador envia para verificaTermo
-            for (int i = (posTermo + 1); i < token.size(); i++) {
-                tokenTermo.add(token.get(i));
-            }
-            verificaTermo(tokenTermo);
-            tokenTermo.clear();
-        } //envia td para verificaTermo
-        else {
-            for (int i = 0; i < token.size(); i++) {
-                tokenTermo.add(token.get(i));
-            }
-            verificaTermo(tokenTermo);
-            tokenTermo.clear();
-        }
     }
 
     public void verificaExpressao(ArrayList<Lexema> token) throws IOException {
@@ -241,18 +249,23 @@ public class AnaliseSintatica {
         Stack<Lexema> pilha = new Stack<>();
         boolean eExprPrec = false;
         int posPrec = 0;
+        int i;
 //        for (Lexema pilha1 : token) {
 //            insereErro(pilha1.getNome());
 //        }
 //        insereErro("------");
-        for (int i = 0; i < token.size(); i++) {
+        for (i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
                 //empilha
                 if (token.get(i).getTipo().equals("(")) {
                     pilha.push(token.get(i));
                 } //desempilha
                 else if (token.get(i).getTipo().equals(")")) {
-                    pilha.pop();
+                    if (pilha.isEmpty()) {
+                        insereErro("Erro: era esperado ( na linha ", token.get(i).getLinha());
+                    } else {
+                        pilha.pop();
+                    }
                 } //verifica se o + ou - ta no nivel mais para fora
                 else if ((token.get(i).getTipo().equals("sum") || token.get(i).getTipo().equals("sub")) && pilha.isEmpty()) {
                     eExprPrec = true;
@@ -260,34 +273,39 @@ public class AnaliseSintatica {
                 }
             }
         }
+        if (!pilha.isEmpty()) {
+            insereErro("Erro: era esperado ) na linha ", token.get(i - 1).getLinha());
+
+        } else {
+            if (eExprPrec && (posPrec == (token.size() - 1) || posPrec == 0)) {
+                insereErro("Erro: token " + token.get(posPrec).getNome() + " inesperado na linha ", token.get(posPrec).getLinha());
+            }
+            if (eExprPrec) {
+                //antes do operador envia para verificaExpressao
+                for (int j = 0; j < posPrec; j++) {
+                    tokenExpr.add(token.get(j));
+                }
+                verificaExpressao(tokenExpr);
+                tokenExpr.clear();
+                //depois do operador envia para verificaExpressaoPrec
+                for (int j = (posPrec + 1); j < token.size(); j++) {
+                    tokenExprPrec.add(token.get(j));
+                }
+                verificaExpressaoPrec(tokenExprPrec);
+                tokenExprPrec.clear();
+            } //envia td para ExpressaoPrec
+            else {
+                for (int j = 0; j < token.size(); j++) {
+                    tokenExprPrec.add(token.get(j));
+                }
+                verificaExpressaoPrec(tokenExprPrec);
+                tokenExprPrec.clear();
+            }
+        }
         pilha.clear();
-        if (eExprPrec && (posPrec == (token.size() - 1) || posPrec == 0)) {
-            insereErro("Erro: token " + token.get(posPrec).getNome() + " inesperado na linha ", token.get(posPrec).getLinha());
-        }
-        if (eExprPrec) {
-            //antes do operador envia para verificaExpressao
-            for (int i = 0; i < posPrec; i++) {
-                tokenExpr.add(token.get(i));
-            }
-            verificaExpressao(tokenExpr);
-            tokenExpr.clear();
-            //depois do operador envia para verificaExpressaoPrec
-            for (int i = (posPrec + 1); i < token.size(); i++) {
-                tokenExprPrec.add(token.get(i));
-            }
-            verificaExpressaoPrec(tokenExprPrec);
-            tokenExprPrec.clear();
-        } //envia td para ExpressaoPrec
-        else {
-            for (int i = 0; i < token.size(); i++) {
-                tokenExprPrec.add(token.get(i));
-            }
-            verificaExpressaoPrec(tokenExprPrec);
-            tokenExprPrec.clear();
-        }
     }
 
-    public void verificaCondicao2(ArrayList<Lexema> token) throws IOException {
+    public void verificaCondicao(ArrayList<Lexema> token, int k) throws IOException {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
@@ -300,6 +318,10 @@ public class AnaliseSintatica {
 //        }
 //        insereErro("----");
         //Analiso o ArrayList
+        if (token.isEmpty()) {
+            insereErro("Erro: Não contém condição na linha ", k);
+
+        }
         for (j = 0; j < token.size(); j++) {
             if (!token.get(j).getTipo().equals("|n")) {
                 //empilha
@@ -307,7 +329,11 @@ public class AnaliseSintatica {
                     pilha.push(token.get(j));
                 } //desempilha
                 else if (token.get(j).getTipo().equals(")")) {
-                    pilha.pop();
+                    if (pilha.isEmpty()) {
+                        insereErro("Erro: era esperado ( na linha ", token.get(j).getLinha());
+                    } else {
+                        pilha.pop();
+                    }
                 } //verifica se a condicao ta no nivel mais para fora
                 else if (condicoes(token.get(j)) && pilha.isEmpty()) {
                     eCondicao = true;
@@ -315,89 +341,42 @@ public class AnaliseSintatica {
                 }
             }
         }
-
-        if (eCondicao && (posCond == (token.size() - 1) || posCond == 0)) {
-            insereErro("Erro: token " + token.get(posCond).getNome() + " inesperado na linha ", token.get(posCond).getLinha());
-        }
-        if (eCondicao) {
-            //antes da condicao envia para verificaCondicao
-            for (int i = 0; i < posCond; i++) {
-                tokenCond.add(token.get(i));
-            }
-            verificaCondicao(tokenCond, token.get(posCond).getLinha());
-            verificaCondicao2(tokenCond);
-            tokenCond.clear();
-            //depois da condicao envia para verificaExpressao
-            for (int i = (posCond + 1); i < token.size(); i++) {
-                tokenExpr.add(token.get(i));
-            }
-            verificaExpressao(tokenExpr);
-            tokenExpr.clear();
-        } //envia td para expressao
-        else {
-            for (int i = 0; i < token.size(); i++) {
-                tokenExpr.add(token.get(i));
-            }
-            verificaExpressao(tokenExpr);
-            tokenExpr.clear();
-        }
-        pilha.clear();
-    }
-
-    //Verifica o ArrayList de condicoes
-    public void verificaCondicao(ArrayList<Lexema> token, int j) throws IOException {
-        ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
-        ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
-        Stack<Lexema> pilha = new Stack<>();
-        boolean empilha = false;
-        boolean isCondicao = false;
-        int i;
-        if (token.isEmpty()) {
-            insereErro("Erro: Não contém condição na linha ", j);
+        if (!pilha.isEmpty()) {
+            insereErro("Erro: era esperado ) na linha ", token.get(j - 1).getLinha());
 
         } else {
-            for (i = 0; i < token.size(); i++) {
-                if (!token.get(i).getTipo().equals("|n")) {
-                    if (condicoes(token.get(i)) && empilha == false) {
-                        isCondicao = true;
-                        if (i == 0 || i >= (token.size() - 1)) {
-                            insereErro("Erro: condicionador " + token.get(i).getNome() + " inesperado na linha ", token.get(i).getLinha());
+            if (eCondicao && (posCond == (token.size() - 1) || posCond == 0)) {
+                insereErro("Erro: token " + token.get(posCond).getNome() + " inesperado na linha ", token.get(posCond).getLinha());
+            } else {
+                if (eCondicao && (token.get(posCond - 1).getTipo().equals("|n") || token.get(posCond + 1).getTipo().equals("|n"))) {
+                    insereErro("Erro: condicionador " + token.get(posCond).getNome() + " inesperado na linha ", token.get(posCond).getLinha());
 
-                        } else {
-                            if (token.get(i - 1).getTipo().equals("|n") || token.get(i + 1).getTipo().equals("|n")) {
-                                insereErro("Erro: condicionador " + token.get(i).getNome() + " inesperado na linha " , token.get(i).getLinha());
-
-                            }
-                        }
-                    }
-                    if (empilha == true && !token.get(i).getTipo().equals("(") && !token.get(i).getTipo().equals(")")) {
-                        tokenCond.add(token.get(i));
-                    }
-                    if (token.get(i).getTipo().equals("(")) {
-                        pilha.push(token.get(i));
-                        empilha = true;
-                    }
-                    if (token.get(i).getTipo().equals(")")) {
-                        if (pilha.isEmpty()) {
-                            insereErro("Erro: era esperado ( na linha " , token.get(i).getLinha());
-
-                        } else {
-                            pilha.pop();
-                            if (pilha.isEmpty()) {
-                                verificaCondicao(tokenCond, token.get(i).getLinha());
-                                empilha = false;
-                            }
-                        }
-                    }
                 }
             }
-            tokenCond.clear();
-            if (!pilha.isEmpty()) {
-                insereErro("Erro: era esperado ) na linha " , token.get(i - 1).getLinha());
 
+            if (eCondicao) {
+                //antes da condicao envia para verificaCondicao
+                for (int i = 0; i < posCond; i++) {
+                    tokenCond.add(token.get(i));
+                }
+                verificaCondicao(tokenCond, token.get(posCond).getLinha());
+                tokenCond.clear();
+                //depois da condicao envia para verificaExpressao
+                for (int i = (posCond + 1); i < token.size(); i++) {
+                    tokenExpr.add(token.get(i));
+                }
+                verificaExpressao(tokenExpr);
+                tokenExpr.clear();
+            } //envia td para expressao
+            else {
+                for (int i = 0; i < token.size(); i++) {
+                    tokenExpr.add(token.get(i));
+                }
+                verificaExpressao(tokenExpr);
+                tokenExpr.clear();
             }
-            pilha.clear();
         }
+        pilha.clear();
     }
 
     //Analisa comandos
@@ -427,13 +406,12 @@ public class AnaliseSintatica {
                     i++;
                 }
                 if (token.get(i).getNome().equals("|n")) {
-                    insereErro("Erro: não contem o então do se na linha " , token.get(i - 1).getLinha());
+                    insereErro("Erro: não contem o então do se na linha ", token.get(i - 1).getLinha());
 
                 }
                 verificaCondicao(tokencond, token.get(i - 1).getLinha());
-                verificaCondicao2(tokencond);
                 tokencond.clear();
-  
+
                 i++;
 
                 //le ate axar o fim-se
@@ -444,7 +422,7 @@ public class AnaliseSintatica {
                         pilha.pop();
                         if (pilha.isEmpty()) {
                             if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("|n")) {
-                                insereErro("Erro: deve haver uma quebra de linha na linha " , token.get(i).getLinha());
+                                insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
 
                             }
                             break;
@@ -461,7 +439,7 @@ public class AnaliseSintatica {
                     i++;
                 }
                 if (!pilha.isEmpty()) {
-                    insereErro("Erro: faltou fechamento do "+pilha.peek().getNome()+" da linha ", pilha.peek().getLinha());
+                    insereErro("Erro: faltou fechamento do " + pilha.peek().getNome() + " da linha ", pilha.peek().getLinha());
 
                 }
                 pilha.clear();
@@ -480,13 +458,12 @@ public class AnaliseSintatica {
                     i++;
                 }
                 if (token.get(i).getNome().equals("|n")) {
-                    insereErro("Erro: não contem o faça do loop na linha " , token.get(i - 1).getLinha());
+                    insereErro("Erro: não contem o faça do loop na linha ", token.get(i - 1).getLinha());
 
                 }
                 verificaCondicao(tokenEnquanto, token.get(i - 1).getLinha());
-                verificaCondicao2(tokenEnquanto);
                 tokenEnquanto.clear();
-                
+
                 i++;
                 //le ate axar o fim-enquanto
                 while ((i < token.size())) {
@@ -496,7 +473,7 @@ public class AnaliseSintatica {
                         pilha.pop();
                         if (pilha.isEmpty()) {
                             if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("|n")) {
-                                insereErro("Erro: deve haver uma quebra de linha na linha " , token.get(i).getLinha());
+                                insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
 
                             }
                             break;
@@ -506,7 +483,7 @@ public class AnaliseSintatica {
                     i++;
                 }
                 if (!pilha.isEmpty()) {
-                    insereErro("Erro: faltou fechamento do "+pilha.peek().getNome()+" da linha ", pilha.peek().getLinha());
+                    insereErro("Erro: faltou fechamento do " + pilha.peek().getNome() + " da linha ", pilha.peek().getLinha());
 
                 }
                 verificaComandos(tokencomandos);
@@ -518,37 +495,37 @@ public class AnaliseSintatica {
                 i++;
                 //le se proximo elemento é um id
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("id")) {
-                    insereErro("Erro: faltou id na linha " , token.get(i - 1).getLinha());
+                    insereErro("Erro: faltou id na linha ", token.get(i - 1).getLinha());
 
                 } else {
                     i++;
                     //le se proximo elemento é um "de"
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("rng1forloop")) {
-                        insereErro("Erro: faltou token 'de' na linha " , token.get(i - 1).getLinha());
+                        insereErro("Erro: faltou token 'de' na linha ", token.get(i - 1).getLinha());
 
                     } else {
                         i++;
                         //le se proximo elemento é um inteiro
                         if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                            insereErro("Erro: tipo nao inteiro no loop para na linha " , token.get(i - 1).getLinha());
+                            insereErro("Erro: tipo nao inteiro no loop para na linha ", token.get(i - 1).getLinha());
 
                         } else {
                             i++;
                             //le se proximo elemento é "até"
                             if ((i) >= token.size() || !token.get(i).getTipo().equals("rng2forloop")) {
-                                insereErro("Erro: faltou até no loop para na linha " , token.get(i - 1).getLinha());
+                                insereErro("Erro: faltou até no loop para na linha ", token.get(i - 1).getLinha());
 
                             } else {
                                 i++;
                                 //le se o próximo é um inteiro
                                 if ((i) >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                                    insereErro("Erro: tipo nao inteiro no loop para na linha " , token.get(i - 1).getLinha());
+                                    insereErro("Erro: tipo nao inteiro no loop para na linha ", token.get(i - 1).getLinha());
 
                                 } else {
                                     i++;
                                     //le se o próximo é um faça
                                     if ((i) >= token.size() || !token.get(i).getTipo().equals("initforloop")) {
-                                        insereErro("Erro: nao contem token faça na linha " , token.get(i - 1).getLinha());
+                                        insereErro("Erro: nao contem token faça na linha ", token.get(i - 1).getLinha());
 
                                     } else {
                                         i++;
@@ -560,7 +537,7 @@ public class AnaliseSintatica {
                                                 pilha.pop();
                                                 if (pilha.isEmpty()) {
                                                     if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("|n")) {
-                                                        insereErro("Erro: deve haver uma quebra de linha na linha " , token.get(i).getLinha());
+                                                        insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
 
                                                     }
                                                     break;
@@ -570,7 +547,7 @@ public class AnaliseSintatica {
                                             i++;
                                         }
                                         if (!pilha.isEmpty()) {
-                                            insereErro("Erro: faltou fechamento do "+pilha.peek().getNome()+" da linha ",pilha.peek().getLinha());
+                                            insereErro("Erro: faltou fechamento do " + pilha.peek().getNome() + " da linha ", pilha.peek().getLinha());
 
                                         }
                                         pilha.clear();
@@ -593,11 +570,10 @@ public class AnaliseSintatica {
                         i++;
                     }
                     if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
-                        insereErro("Erro: token esperado ] na linha " , token.get(i - 1).getLinha());
+                        insereErro("Erro: token esperado ] na linha ", token.get(i - 1).getLinha());
 
                     }
                     verificaCondicao(tokenEnquanto, token.get(i - 1).getLinha());
-                    verificaCondicao2(tokenEnquanto);
                     tokenEnquanto.clear();
 
                     i++;
@@ -609,11 +585,10 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if ((i >= token.size()) || token.get(i).getTipo().equals("|n")) {
-                            insereErro("Erro: era esperado o token ']' na linha " , token.get(i - 1).getLinha());
+                            insereErro("Erro: era esperado o token ']' na linha ", token.get(i - 1).getLinha());
 
                         }
                         verificaCondicao(tokenEnquanto, token.get(i - 1).getLinha());
-                        verificaCondicao2(tokenEnquanto);
                         tokenEnquanto.clear();
                         i++;
                     }
@@ -621,10 +596,10 @@ public class AnaliseSintatica {
                 } //le se proximo elemento é um =
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("atrib")) {
                     if (token.get(i).getTipo().equals("|n")) {
-                        insereErro("Erro: nao contem atribuição na linha " , token.get(i - 1).getLinha());
+                        insereErro("Erro: nao contem atribuição na linha ", token.get(i - 1).getLinha());
 
                     } else {
-                        insereErro("Erro: token " + token.get(i).getNome() + " não aceito na linha " ,token.get(i).getLinha());
+                        insereErro("Erro: token " + token.get(i).getNome() + " não aceito na linha ", token.get(i).getLinha());
 
                     }
                 } else {
@@ -635,7 +610,6 @@ public class AnaliseSintatica {
                         i++;
                     }
                     verificaCondicao(tokenEnquanto, token.get(i - 1).getLinha());
-                    verificaCondicao2(tokenEnquanto);
                     tokenEnquanto.clear();
                 }
             } //Analisa se é uma função
@@ -646,12 +620,12 @@ public class AnaliseSintatica {
                 i++;
                 //le se o proximo é um fun
                 if ((i) >= token.size() || !token.get(i).getTipo().equals("fun")) {
-                    insereErro("Erro: faltou passar os parâmetros da função na linha " , token.get(i - 1).getLinha());
+                    insereErro("Erro: faltou passar os parâmetros da função na linha ", token.get(i - 1).getLinha());
 
                 } else {
                     i++;
                     if ((i) >= token.size() || !token.get(i).getTipo().equals("(")) {
-                        insereErro("Erro: faltou passar os parâmetros da função na linha " , token.get(i - 1).getLinha());
+                        insereErro("Erro: faltou passar os parâmetros da função na linha ", token.get(i - 1).getLinha());
 
                     } else {
                         pilha2.push(token.get(i));
@@ -669,7 +643,7 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if (!pilha2.isEmpty()) {
-                            insereErro("Erro: faltou token ) na linha " , token.get(i - 1).getLinha());
+                            insereErro("Erro: faltou token ) na linha ", token.get(i - 1).getLinha());
 
                         }
                         i++;
@@ -683,7 +657,7 @@ public class AnaliseSintatica {
                                 pilha.pop();
                                 if (pilha.isEmpty()) {
                                     if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("|n")) {
-                                        insereErro("Erro: deve haver uma quebra de linha na linha " , token.get(i).getLinha());
+                                        insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
 
                                     }
                                     break;
@@ -694,7 +668,7 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if (!pilha.isEmpty()) {
-                            insereErro("Erro: faltou fechamento da "+pilha.peek().getNome()+" da linha ", pilha.peek().getLinha());
+                            insereErro("Erro: faltou fechamento da " + pilha.peek().getNome() + " da linha ", pilha.peek().getLinha());
 
                         }
                         verificaComandos(tokenEnquanto);
@@ -710,12 +684,12 @@ public class AnaliseSintatica {
                     if ((i) < token.size() && token.get(i).getTipo().equals("[")) {
                         i++;
                         if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                            insereErro("Erro: era esperado [int] na linha " , token.get(i - 1).getLinha());
+                            insereErro("Erro: era esperado [int] na linha ", token.get(i - 1).getLinha());
 
                         } else {
                             i++;
                             if (i >= token.size() || !token.get(i).getTipo().equals("]")) {
-                                insereErro("Erro: era esperado token ] na linha " , token.get(i - 1).getLinha());
+                                insereErro("Erro: era esperado token ] na linha ", token.get(i - 1).getLinha());
 
                             } else {
                                 i++;
@@ -723,39 +697,39 @@ public class AnaliseSintatica {
                                 if ((i < token.size()) && token.get(i).getTipo().equals("[")) {
                                     i++;
                                     if (i >= token.size() || !token.get(i).getTipo().equals("Int")) {
-                                        insereErro("Erro: era esperado [int][int] na linha " , token.get(i - 1).getLinha());
+                                        insereErro("Erro: era esperado [int][int] na linha ", token.get(i - 1).getLinha());
 
                                     } else {
                                         i++;
                                         if (i >= token.size() || !token.get(i).getTipo().equals("]")) {
-                                            insereErro("Erro: era esperado token ] na linha " , token.get(i - 1).getLinha());
+                                            insereErro("Erro: era esperado token ] na linha ", token.get(i - 1).getLinha());
 
                                         } else {
                                             i++;
                                             if (i >= token.size() || !token.get(i).getTipo().equals("|n")) {
-                                                insereErro("Erro: deve haver uma quebra de linha na linha " , token.get(i).getLinha());
+                                                insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
 
                                             }
                                         }
 
                                     }
                                 } else if (i >= token.size() || !token.get(i).getTipo().equals("|n")) {
-                                    insereErro("Erro: deve haver uma quebra de linha na linha " , token.get(i).getLinha());
+                                    insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
 
                                 }
                             }
                         }
                     } else {
-                        insereErro("Erro: era esperado [int] do vetor na linha " , token.get(i - 1).getLinha());
+                        insereErro("Erro: era esperado [int] do vetor na linha ", token.get(i - 1).getLinha());
 
                     }
                 } else {
-                    insereErro("Erro: era esperado id do vetor na linha " , token.get(i - 1).getLinha());
+                    insereErro("Erro: era esperado id do vetor na linha ", token.get(i - 1).getLinha());
 
                 }
             } else {
                 if (!token.get(i).getTipo().equals("|n")) {
-                    insereErro("Erro: token " + token.get(i).getNome() + " inesperado na linha " , token.get(i).getLinha());
+                    insereErro("Erro: token " + token.get(i).getNome() + " inesperado na linha ", token.get(i).getLinha());
 
                 }
             }
@@ -774,7 +748,7 @@ public class AnaliseSintatica {
                     verificaComandos(comandos);
                     programa = true;
                 } else if (!value1.getNome().equals("|n") && programa == true) {
-                    insereErro("Erro: token após o fim do programa na linha " , value1.getLinha());
+                    insereErro("Erro: token após o fim do programa na linha ", value1.getLinha());
                     break sair;
 
                 } else {
@@ -788,7 +762,7 @@ public class AnaliseSintatica {
         }
         Collections.sort(erros);
         for (MensagemErro erro : erros) {
-            mensagens.add(erro.getErro()+erro.getLinha());
+            mensagens.add(erro.getErro() + erro.getLinha());
         }
         boolean errou = false;
         System.out.println("-----------------------------------------------------------------------------------------");
@@ -797,7 +771,7 @@ public class AnaliseSintatica {
             System.out.println(mensagen);
             errou = true;
         }
-        if(errou == false){
+        if (errou == false) {
             System.out.println("Sintaticamente correto! ");
         }
 
