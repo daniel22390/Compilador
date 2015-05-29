@@ -56,7 +56,6 @@ public class Lexema {
         this.linha = linha;
     }
 
-   
 
     
     
