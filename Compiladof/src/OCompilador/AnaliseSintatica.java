@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package OCompilador;
 
 import java.util.ArrayList;
@@ -13,10 +8,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-/**
- *
- * @author Daniel
- */
 public class AnaliseSintatica {
 
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas;
@@ -776,8 +767,158 @@ public class AnaliseSintatica {
         }
     }
 
+    public ArvoreBinaria verificaExprPrecArvore(ArrayList<Lexema> token) {
+        ArrayList<Lexema> termo = new ArrayList<Lexema>();
+        ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
+        boolean eExprPrec = false;
+        int posExprPrec = 0;
+        ArvoreBinaria<Lexema> arvore;
+        Stack<Lexema> pilha = new Stack<>();
+
+        for (int j = 0; j < token.size(); j++) {
+            if (!token.get(j).getTipo().equals("|n")) {
+                //empilha
+                if (token.get(j).getTipo().equals("(")) {
+                    pilha.push(token.get(j));
+                } //desempilha
+                else if (token.get(j).getTipo().equals(")")) {
+                    if (pilha.isEmpty()) {
+                        insereErro("Erro: era esperado ( na linha ", token.get(j).getLinha());
+                    } else {
+                        pilha.pop();
+                    }
+                } //verifica se a condicao ta no nivel mais para fora
+                else if ((token.get(j).getTipo().equals("mult") || token.get(j).getTipo().equals("div")) && pilha.isEmpty()) {
+                    eExprPrec = true;
+                    posExprPrec = j;
+                }
+            }
+        }
+        if (eExprPrec) {
+            arvore = new ArvoreBinaria<>(token.get(posExprPrec));
+            for (int k = 0; k < posExprPrec; k++) {
+                tokenExprPrec.add(tokenExprPrec.get(k));
+            }
+            arvore.setEsq(verificaExprPrecArvore(tokenExprPrec));
+            tokenExprPrec.clear();
+            //depois da condicao envia para verificaExpressao
+            for (int k = (posExprPrec + 1); k < token.size(); k++) {
+                termo.add(token.get(k));
+            }
+            arvore.setDir(verificaTermo(termo));
+            termo.clear();
+            return arvore;
+        } else {
+            for (int k = 0; k < token.size(); k++) {
+                termo.add(token.get(k));
+            }
+            return verificaTermo(termo);
+        }
+    }
+
+    public ArvoreBinaria verificaExprArvore(ArrayList<Lexema> token) {
+        ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
+        ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
+        boolean eExpr = false;
+        int posExpr = 0;
+        ArvoreBinaria<Lexema> arvore;
+        Stack<Lexema> pilha = new Stack<>();
+
+        for (int j = 0; j < token.size(); j++) {
+            if (!token.get(j).getTipo().equals("|n")) {
+                //empilha
+                if (token.get(j).getTipo().equals("(")) {
+                    pilha.push(token.get(j));
+                } //desempilha
+                else if (token.get(j).getTipo().equals(")")) {
+                    if (pilha.isEmpty()) {
+                        insereErro("Erro: era esperado ( na linha ", token.get(j).getLinha());
+                    } else {
+                        pilha.pop();
+                    }
+                } //verifica se a condicao ta no nivel mais para fora
+                else if ((token.get(j).getTipo().equals("sum") || token.get(j).getTipo().equals("sub")) && pilha.isEmpty()) {
+                    eExpr = true;
+                    posExpr = j;
+                }
+            }
+        }
+        if (eExpr) {
+            arvore = new ArvoreBinaria<>(token.get(posExpr));
+            for (int k = 0; k < posExpr; k++) {
+                tokenExpr.add(tokenExpr.get(k));
+            }
+            arvore.setEsq(verificaExprArvore(tokenExpr));
+            tokenExpr.clear();
+            //depois da condicao envia para verificaExpressao
+            for (int k = (posExpr + 1); k < token.size(); k++) {
+                tokenExprPrec.add(token.get(k));
+            }
+            arvore.setDir(verificaExprPrecArvore(tokenExprPrec));
+            tokenExprPrec.clear();
+            return arvore;
+        } else {
+            for (int k = 0; k < token.size(); k++) {
+                tokenExprPrec.add(token.get(k));
+            }
+            return verificaExprPrecArvore(tokenExprPrec);
+        }
+    }
+
+    public ArvoreBinaria verificaCondArvore(ArrayList<Lexema> token) {
+        ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
+        ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
+        boolean eCondicao = false;
+        int posCond = 0;
+        ArvoreBinaria<Lexema> arvore;
+        Stack<Lexema> pilha = new Stack<>();
+
+        for (int j = 0; j < token.size(); j++) {
+            if (!token.get(j).getTipo().equals("|n")) {
+                //empilha
+                if (token.get(j).getTipo().equals("(")) {
+                    pilha.push(token.get(j));
+                } //desempilha
+                else if (token.get(j).getTipo().equals(")")) {
+                    if (pilha.isEmpty()) {
+                        insereErro("Erro: era esperado ( na linha ", token.get(j).getLinha());
+                    } else {
+                        pilha.pop();
+                    }
+                } //verifica se a condicao ta no nivel mais para fora
+                else if (condicoes(token.get(j)) && pilha.isEmpty()) {
+                    eCondicao = true;
+                    posCond = j;
+                }
+            }
+        }
+        if (eCondicao) {
+            arvore = new ArvoreBinaria<>(token.get(posCond));
+            for (int k = 0; k < posCond; k++) {
+                tokenCond.add(tokenCond.get(k));
+            }
+            arvore.setEsq(verificaCondArvore(tokenCond));
+            tokenCond.clear();
+            //depois da condicao envia para verificaExpressao
+            for (int k = (posCond + 1); k < token.size(); k++) {
+                tokenExpr.add(token.get(k));
+            }
+            arvore.setDir(verificaExprArvore(tokenExpr));
+            tokenExpr.clear();
+            return arvore;
+        } else {
+            for (int k = 0; k < token.size(); k++) {
+                tokenExpr.add(token.get(k));
+            }
+            return verificaExprArvore(tokenExpr);
+        }
+    }
+
     public void Analisa() throws IOException {
         LinkedHashSet<String> mensagens = new LinkedHashSet<String>();
+        ArvoreBinaria<Lexema> arvore;
+        ArvoreBinaria<Lexema> arvore2;
+        ArrayList<Lexema> tokenAtrib = new ArrayList<Lexema>();
         boolean programa = false;
         sair:
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
@@ -813,7 +954,21 @@ public class AnaliseSintatica {
         }
         if (errou == false) {
             System.out.println("Sintaticamente correto! ");
+            for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
+                Integer key = entrySet.getKey();
+                ArrayList<Lexema> value = entrySet.getValue();
+                for (int i = 0; i < value.size(); i++) {
+                    if (value.get(i).getTipo().equals("atrib")) {
+                        arvore = new ArvoreBinaria<>(value.get(i));
+                        arvore2 = new ArvoreBinaria<>(value.get(i - 1));
+                        arvore.setEsq(arvore2);
+                        for (int j = (i + 1); j < value.size(); j++) {
+                            tokenAtrib.add(value.get(j));
+                        }
+                        arvore.setDir(verificaCondArvore(tokenAtrib));
+                    }
+                }
+            }
         }
-
     }
 }
