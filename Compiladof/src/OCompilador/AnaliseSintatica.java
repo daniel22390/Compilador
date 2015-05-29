@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
@@ -36,9 +34,6 @@ public class AnaliseSintatica {
         erros.add(erro);
     }
 
-    static BufferedReader in = new BufferedReader(
-            new InputStreamReader(System.in));
-
     public AnaliseSintatica(LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
         this.lexemas = listao;
     }
@@ -54,7 +49,7 @@ public class AnaliseSintatica {
         boolean ePara = false;
         int posPara = 0;
         int k;
-        if(token.isEmpty()){
+        if (token.isEmpty()) {
             insereErro("Erro: falta parâmetro na função da linha ", j);
         }
         for (k = 0; k < token.size(); k++) {
@@ -68,6 +63,12 @@ public class AnaliseSintatica {
                         insereErro("Erro: era esperado ( na linha ", token.get(k).getLinha());
                     } else {
                         pilha.pop();
+                        if (pilha.isEmpty()) {
+                            if (k < (token.size() - 1)) {
+                                insereErro("Erro: elemento não aceito após ) na linha ", token.get(0).getLinha());
+                            }
+                            break;
+                        }
                     }
                 } //verifica se o *,x,/,: ta no nivel mais para fora
                 else if ((token.get(k).getTipo().equals(",")) && pilha.isEmpty()) {
@@ -130,9 +131,9 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenParam = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
 //        for (Lexema pilha1 : token) {
-//            insereErro(pilha1.getNome());
+//            System.out.println(pilha1.getNome());
 //        }
-//        insereErro("--------");
+//        System.out.println("--------");
         if (token.size() > 1) {
             int k;
             if (token.get(0).getTipo().equals("(")) {
@@ -161,6 +162,9 @@ public class AnaliseSintatica {
                         if (token.get(i).getTipo().equals(")")) {
                             pilha.pop();
                             if (pilha.isEmpty()) {
+                                if (i < (token.size() - 1)) {
+                                    insereErro("Erro: elemento não aceito após ) na linha ", token.get(0).getLinha());
+                                }
                                 break;
                             }
                         } else if (token.get(i).getTipo().equals("(")) {
@@ -223,9 +227,9 @@ public class AnaliseSintatica {
         int posTermo = 0;
         int k;
 //        for (Lexema pilha1 : token) {
-//            insereErro(pilha1.getNome());
+//            System.out.println(pilha1.getNome());
 //        }
-//        insereErro("-----");
+//        System.out.println("-----");
         for (k = 0; k < token.size(); k++) {
             if (!token.get(k).getTipo().equals("|n")) {
                 //empilha
@@ -285,9 +289,9 @@ public class AnaliseSintatica {
         int posPrec = 0;
         int i;
 //        for (Lexema pilha1 : token) {
-//            insereErro(pilha1.getNome());
+//            System.out.println(pilha1.getNome());
 //        }
-//        insereErro("------");
+//        System.out.println("------");
         for (i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
                 //empilha
