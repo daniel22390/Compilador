@@ -8,7 +8,9 @@ a = (a * (((b x c) : d) / 2))
 se a[10] > 10 então vetor v[10]
    telaensagem = "A é maior que 10"
 fim-se
-
+funcao a(a, 50, a+b, (a<5) e b>10>30)
+a= b
+fim-funcao
 enquanto (a(9)==10) faça
 fim-enquanto
 se a==10 então

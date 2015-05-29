@@ -13,10 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  *
@@ -47,32 +44,69 @@ public class AnaliseSintatica {
     }
 
     public void verificaParametro(ArrayList<Lexema> token, int j) throws IOException {
+//        for (Lexema token1 : token) {
+//            System.out.println(token1.getNome());
+//        }
+//        System.out.println("--------------------------");
+        ArrayList<Lexema> tokenParam = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
-        boolean isCondicao = false;
-        if (token.isEmpty()) {
-            insereErro("Erro: Falta parâmetros na função da linha ", j);
-        } else {
-            if (token.get(0).getTipo().equals(",")) {
-                insereErro("Erro: token , não esperado na linha ", token.get(0).getLinha());
-            }
-            for (int i = 0; i < token.size(); i++) {
-                if ((i + 1) < token.size() && token.get(i).getTipo().equals(",") && token.get(i + 1).getTipo().equals(",")) {
-                    insereErro("Erro: era esperado uma condição entre ,, na linha ", token.get(i).getLinha());
+        Stack<Lexema> pilha = new Stack<>();
+        boolean ePara = false;
+        int posPara = 0;
+        int k;
+        if(token.isEmpty()){
+            insereErro("Erro: falta parâmetro na função da linha ", j);
+        }
+        for (k = 0; k < token.size(); k++) {
+            if (!token.get(k).getTipo().equals("|n")) {
+                //empilha
+                if (token.get(k).getTipo().equals("(")) {
+                    pilha.push(token.get(k));
+                } //desempilha
+                else if (token.get(k).getTipo().equals(")")) {
+                    if (pilha.isEmpty()) {
+                        insereErro("Erro: era esperado ( na linha ", token.get(k).getLinha());
+                    } else {
+                        pilha.pop();
+                    }
+                } //verifica se o *,x,/,: ta no nivel mais para fora
+                else if ((token.get(k).getTipo().equals(",")) && pilha.isEmpty()) {
+                    ePara = true;
+                    posPara = k;
+                    break;
                 }
-                if (token.get(i).getTipo().equals(",")) {
-                    verificaCondicao(tokenCond, token.get(0).getLinha());
-                    tokenCond.clear();
-                } else {
-                    tokenCond.add(token.get(i));
-                }
-            }
-            if (!token.get(token.size() - 1).getTipo().equals(",")) {
-                verificaCondicao(tokenCond, token.get(0).getLinha());
-                tokenCond.clear();
-            } else {
-                insereErro("Erro: token , não esperado na linha ", token.get(token.size() - 1).getLinha());
             }
         }
+        if (!pilha.isEmpty()) {
+            insereErro("Erro: era esperado ) na linha ", token.get(k - 1).getLinha());
+
+        } else {
+            if (ePara && (posPara == (token.size() - 1) || posPara == 0)) {
+                insereErro("Erro: token " + token.get(posPara).getNome() + " inesperado no parâmetro da função da linha ", token.get(posPara).getLinha());
+            }
+            if (ePara) {
+                //antes do operador envia para verificaExpressao
+                for (int i = 0; i < posPara; i++) {
+                    tokenCond.add(token.get(i));
+                }
+                verificaCondicao(tokenCond, j);
+                tokenCond.clear();
+                //depois do operador envia para verificaTermo
+                for (int i = (posPara + 1); i < token.size(); i++) {
+                    tokenParam.add(token.get(i));
+                }
+                verificaParametro(tokenParam, j);
+                tokenParam.clear();
+            } //envia td para verificaTermo
+            else {
+                for (int i = 0; i < token.size(); i++) {
+                    tokenCond.add(token.get(i));
+                }
+                verificaCondicao(tokenCond, j);
+                tokenCond.clear();
+            }
+        }
+        pilha.clear();
     }
 
     public boolean condicoes(Lexema lexema) {
@@ -643,35 +677,37 @@ public class AnaliseSintatica {
                             i++;
                         }
                         if (!pilha2.isEmpty()) {
-                            insereErro("Erro: faltou token ) na linha ", token.get(i - 1).getLinha());
-
-                        }
-                        i++;
-                        verificaParametro(tokenEnquanto, token.get(i - 1).getLinha());
-                        tokenEnquanto.clear();
-
-                        while ((i < token.size())) {
-                            if (token.get(i).getTipo().equals("function")) {
-                                pilha.push(token.get(i));
-                            } else if (token.get(i).getTipo().equals("endfunction")) {
-                                pilha.pop();
-                                if (pilha.isEmpty()) {
-                                    if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("|n")) {
-                                        insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
-
-                                    }
-                                    break;
-                                }
-                            }
-                            tokenEnquanto.add(token.get(i));
-
+                            insereErro("Erro: era esperado ) na linha ", token.get(i - 1).getLinha());
+                        } else {
                             i++;
-                        }
-                        if (!pilha.isEmpty()) {
-                            insereErro("Erro: faltou fechamento da " + pilha.peek().getNome() + " da linha ", pilha.peek().getLinha());
+                            verificaParametro(tokenEnquanto, token.get(i - 1).getLinha());
+                            tokenEnquanto.clear();
 
+                            while ((i < token.size())) {
+                                if (token.get(i).getTipo().equals("function")) {
+                                    pilha.push(token.get(i));
+                                } else if (token.get(i).getTipo().equals("endfunction")) {
+                                    pilha.pop();
+                                    if (pilha.isEmpty()) {
+                                        if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("|n")) {
+                                            insereErro("Erro: deve haver uma quebra de linha na linha ", token.get(i).getLinha());
+
+                                        }
+                                        break;
+                                    }
+                                }
+                                tokenEnquanto.add(token.get(i));
+
+                                i++;
+                            }
+                            if (!pilha.isEmpty()) {
+                                insereErro("Erro: faltou fechamento da " + pilha.peek().getNome() + " da linha ", pilha.peek().getLinha());
+
+                            }
+                            verificaComandos(tokenEnquanto);
                         }
-                        verificaComandos(tokenEnquanto);
+                        pilha2.clear();
+                        pilha.clear();
                         tokenEnquanto.clear();
                     }
                 }
