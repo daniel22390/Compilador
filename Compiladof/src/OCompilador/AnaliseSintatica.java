@@ -1020,12 +1020,61 @@ public class AnaliseSintatica {
         }
     }
 
-    public void Analisa() throws IOException {
-        LinkedHashSet<String> mensagens = new LinkedHashSet<String>();
+    public ArrayList<ArvoreBinaria> geraArvore() {
         ArvoreBinaria<Lexema> arvore;
         ArvoreBinaria<Lexema> arvore2;
         ArrayList<Lexema> tokenAtrib = new ArrayList<Lexema>();
+        ArrayList<ArvoreBinaria> arvores = new ArrayList<ArvoreBinaria>();
+        for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
+            Integer key = entrySet.getKey();
+            ArrayList<Lexema> value = entrySet.getValue();
+            for (int i = 0; i < value.size(); i++) {
+                if (value.get(i).getTipo().equals("atrib")) {
+                    String vetor = "";
+                    Lexema vet;
+                    int a = 0, b = 0;
+                    arvore = new ArvoreBinaria<>(value.get(i));
+                    if (value.get(i - 1).getTipo().equals("id")) {
+                        arvore2 = new ArvoreBinaria<>(value.get(i - 1));
+                    } else {
+                        for (int j = (i - 1); !value.get(j).getTipo().equals("["); j--) {
+                            a = j;
+                        }
+                        if (value.get(a - 2).getTipo().equals("]")) {
+                            a = a - 2;
+                            while (!value.get(a).getTipo().equals("[")) {
+                                a--;
+                            }
+                            a--;
+                        }
+                        for (int k = a; k < i; k++) {
+                            vetor += value.get(k).getNome();
+                        }
+                        vet = new Lexema();
+                        vet.setNome(vetor);
+                        vet.setTipo("vet");
+                        vet.setLinha(key);
+                        arvore2 = new ArvoreBinaria<>(vet);
+                    }
+                    arvore.setEsq(arvore2);
+                    for (int k = (i + 1); k < value.size(); k++) {
+                        tokenAtrib.add(value.get(k));
+                    }
+                    arvore.setDir(verificaCondArvore(tokenAtrib, key));
+                    print(arvore);
+                    System.out.println("----------------------------------------------------------------------------------------------------------");
+                    arvores.add(arvore);
+                    tokenAtrib.clear();
+                }
+            }
+        }
+        return arvores;
+    }
+
+    public void Analisa() throws IOException {
+        LinkedHashSet<String> mensagens = new LinkedHashSet<String>();
         boolean programa = false;
+        ArrayList<ArvoreBinaria> arvores = new ArrayList<ArvoreBinaria>();
 
         sair:
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
@@ -1061,51 +1110,9 @@ public class AnaliseSintatica {
         }
         if (errou == false) {
             System.out.println("Sintaticamente correto! ");
-            for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
-                Integer key = entrySet.getKey();
-                ArrayList<Lexema> value = entrySet.getValue();
-                for (int i = 0; i < value.size(); i++) {
-                    if (value.get(i).getTipo().equals("atrib")) {
-                        String vetor = "";
-                        Lexema vet;
-                        int a = 0, b = 0;
-                        arvore = new ArvoreBinaria<>(value.get(i));
-                        if (value.get(i - 1).getTipo().equals("id")) {
-                            arvore2 = new ArvoreBinaria<>(value.get(i - 1));
-                        } else {
-                            for (int j = (i - 1); !value.get(j).getTipo().equals("["); j--) {
-                                vetor += value.get(j).getNome();
-                                a = j;
-                            }
-                            vetor += value.get(a - 1).getNome();
-                            if (value.get(a - 2).getTipo().equals("]")) {
-                                for (int z = (a - 2); !value.get(z).getTipo().equals("["); z--) {
-                                    vetor += value.get(z).getNome();
-                                    b = z;
-                                }
-                                vetor += value.get(b - 1).getNome();
-                                b--;
-                                vetor += value.get(b - 1).getNome();
-                                StringBuffer sb = new StringBuffer(vetor);
-                                vetor = sb.reverse().toString();
-                            }
-                            vet = new Lexema();
-                            vet.setNome(vetor);
-                            vet.setTipo("vet");
-                            vet.setLinha(key);
-                            arvore2 = new ArvoreBinaria<>(vet);
-                        }
-                        arvore.setEsq(arvore2);
-                        for (int k = (i + 1); k < value.size(); k++) {
-                            tokenAtrib.add(value.get(k));
-                        }
-                        arvore.setDir(verificaCondArvore(tokenAtrib, key));
-                        print(arvore);
-                        System.out.println("--------------------------------------------------------------------------------------------------------");
-                        tokenAtrib.clear();
-                    }
-                }
-            }
+            System.out.println("--------------------------------------------------------------------------------------");
+            System.out.println("Arvores geradas! ");
+            arvores = geraArvore();
         }
     }
 }
