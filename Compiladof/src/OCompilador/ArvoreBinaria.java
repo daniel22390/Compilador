@@ -66,25 +66,6 @@ public class ArvoreBinaria<T> implements Serializable{
         return nodo.toString();
     }
     
-    public void print(){
-        int alt = altura();
-        int esp = (int) (Math.pow(2, alt));
-        LinkedList<ArvoreBinaria<T>> fila;
-        for (int i = 0; i < alt; i++) {
-            fila = this.folhas(i);
-            for (int j = 0; j < esp/2-1; j++)
-                System.out.print("\t");
-            for(Iterator<ArvoreBinaria<T>> iterator = fila.iterator(); iterator.hasNext();) {
-                ArvoreBinaria<T> next = iterator.next();
-                if(next != null)
-                    System.out.print(next.toString());
-                for (int j = 0; j < esp; j++)
-                    System.out.print("\t");
-            }
-            esp = esp / 2;
-            System.out.println("");
-        }
-    }
     protected LinkedList<ArvoreBinaria<T>> folhas(int altura){
         LinkedList<ArvoreBinaria<T>> fila = new LinkedList<>();
         if(altura == 0)

@@ -1,28 +1,64 @@
-﻿enquanto a=20  faça
-	a=10
-	enquanto a<10 faça
-	fim-enquanto
-fim-enquanto
-para i de 1 até 10 faça
-    fatfat x i
-fim-para
-	b=10
-	se a>10 então
-	
-	a=90
-	se a<10 então
-		a=30
-	senão
-		b=10
-	fim-se
-	fim-se
-a = 4
-funcao as(10, 40)
-	fatfat x i
-	enquanto a<30 faça
-	a[435][22] = 10
-	fim-enquanto
+﻿# Comentário: Início do código de exemplo#
+a = 3 x 3,2
+b = (8 + 7) x 4,1
+c = 91 - 3 * 2.4
+d = 41 : (4 / 2)
+a = (a * (((b x c) : d) / 2))
+
+se a[10] > 10 então vetor v[10]
+   telaensagem = "A é maior que 10"
+fim-se
+funcao a(aaa, bbbb)
+a= b(a)
 fim-funcao
+enquanto (a(9)==10) faça
+fim-enquanto
+se a==10 então
+	a=2 ou a+b
+    a=b
+	a=20
+	fim-se
+vetor v[23]
+a = (a<(23,3 e a>10) ou (b<4 ou (a>(30>(40)))))
+se (c <= 40)*(a(2)) então
+   telamensagem3 = "C é menor ou igual a 40"
+fim-se
+
+se (d >= 20) e (d =< 60) então
+   telamensagem4 = "D está entre 20 e 60"
+fim-se
+a = (a>2 e (3 ou a(2,a3242)))
+se (a =< a(2,2)) e (a) então
+   telamensagem5 = "E é menor que 30 e meio, mas é diferente de 20"
+   se (a == 0) então
+     telamensagem5 = "E é zero"
+   senão
+   se (a<10) e b então
+     telamensagem5 = "E é negativo"
+     
+   fim-se
+   fim-se
+fim-se
+
+fat = 12
+para i de 1 até 10 faça
+    fat = fat x i
+fim-para
+tela = "10! = " + fat
+fat = 1
+i = 1
+enquanto i <= 10 faça
+    fat = fat x i
+    i = i + 1
+fim-enquanto
+tela = "5! = " < fat
+
+vetor m[10][10]
+
+m[24][1] = 1.5
+m[1][2] = 3.2
+m[2][1] = 3,3
+m[2][i] = 2,9
 fim
-
-
+# As outras posições não foram inicializadas
+Portanto há zero ou espaço no seu interior #

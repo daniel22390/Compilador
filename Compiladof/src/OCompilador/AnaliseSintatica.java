@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Stack;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 public class AnaliseSintatica {
 
@@ -767,7 +769,88 @@ public class AnaliseSintatica {
         }
     }
 
-    public ArvoreBinaria verificaExprPrecArvore(ArrayList<Lexema> token) {
+    public ArvoreBinaria verificaTermoArvore(ArrayList<Lexema> token, int key) {
+        ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
+        String tokenParam = "";
+        Lexema Parametro = new Lexema();
+        String tokenVetor = "";
+        Lexema Vetor = new Lexema();
+        boolean eExprPrec = false;
+        int posExprPrec = 0;
+        ArvoreBinaria<Lexema> arvore;
+        Stack<Lexema> pilha = new Stack<>();
+//        for (Lexema pilha1 : token) {
+//            System.out.println(pilha1.getNome());
+//        }
+//        System.out.println("-------------------------");
+        if (token.size() > 1) {
+            int k;
+            if (token.get(0).getTipo().equals("(")) {
+                pilha.push(token.get(0));
+                for (k = 1; k < token.size(); k++) {
+                    if (token.get(k).getTipo().equals(")")) {
+                        pilha.pop();
+                        if (pilha.isEmpty()) {
+                            break;
+                        }
+                    } else if (token.get(k).getTipo().equals("(")) {
+                        pilha.push(token.get(k));
+                    }
+                    tokenCond.add(token.get(k));
+                }
+                return verificaCondArvore(tokenCond, key);
+            } else if (token.get(0).getTipo().equals("fun")) {
+                for (int i = 0; i < token.size(); i++) {
+                    if (token.get(i).getTipo().equals(")")) {
+                        pilha.pop();
+                        tokenParam = (tokenParam + token.get(i).getNome());
+                        if (pilha.isEmpty()) {
+                            break;
+                        }
+                    } else if (token.get(i).getTipo().equals("(")) {
+                        pilha.push(token.get(i));
+                        tokenParam = (tokenParam + token.get(i).getNome());
+                    } else {
+                        tokenParam = (tokenParam + token.get(i).getNome());
+                    }
+                }
+                Parametro.setNome(tokenParam);
+                Parametro.setTipo("fun");
+                Parametro.setLinha(key);
+                arvore = new ArvoreBinaria<>(Parametro);
+                return arvore;
+            } else if (token.get(0).getTipo().equals("id")) {
+
+                int i;
+                for (i = 0; !token.get(i).getTipo().equals("]"); i++) {
+                    tokenVetor += token.get(i).getNome();
+                }
+                tokenVetor += token.get(i).getNome();
+                if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
+                    i++;
+                    while (i < token.size() && !token.get(i).getTipo().equals("]")) {
+                        tokenVetor += token.get(i).getNome();
+                        i++;
+                    }
+                    tokenVetor += token.get(i).getNome();
+                }
+                Vetor.setNome(tokenVetor);
+                Vetor.setTipo("vet");
+                Vetor.setLinha(key);
+                arvore = new ArvoreBinaria<>(Vetor);
+                return arvore;
+            } else {
+                return null;
+            }
+        } else if (token.size() == 1) {
+            arvore = new ArvoreBinaria<>(token.get(0));
+            return arvore;
+        } else {
+            return null;
+        }
+    }
+
+    public ArvoreBinaria verificaExprPrecArvore(ArrayList<Lexema> token, int key) {
         ArrayList<Lexema> termo = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
         boolean eExprPrec = false;
@@ -797,26 +880,26 @@ public class AnaliseSintatica {
         if (eExprPrec) {
             arvore = new ArvoreBinaria<>(token.get(posExprPrec));
             for (int k = 0; k < posExprPrec; k++) {
-                tokenExprPrec.add(tokenExprPrec.get(k));
+                tokenExprPrec.add(token.get(k));
             }
-            arvore.setEsq(verificaExprPrecArvore(tokenExprPrec));
+            arvore.setEsq(verificaExprPrecArvore(tokenExprPrec, key));
             tokenExprPrec.clear();
             //depois da condicao envia para verificaExpressao
-            for (int k = (posExprPrec + 1); k < token.size(); k++) {
+            for (int k = (posExprPrec + 1); k < token.size() && !token.get(k).getTipo().equals("|n"); k++) {
                 termo.add(token.get(k));
             }
-            arvore.setDir(verificaTermo(termo));
+            arvore.setDir(verificaTermoArvore(termo, key));
             termo.clear();
             return arvore;
         } else {
-            for (int k = 0; k < token.size(); k++) {
+            for (int k = 0; k < token.size() && !token.get(k).getTipo().equals("|n"); k++) {
                 termo.add(token.get(k));
             }
-            return verificaTermo(termo);
+            return verificaTermoArvore(termo, key);
         }
     }
 
-    public ArvoreBinaria verificaExprArvore(ArrayList<Lexema> token) {
+    public ArvoreBinaria verificaExprArvore(ArrayList<Lexema> token, int key) {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
         boolean eExpr = false;
@@ -846,26 +929,26 @@ public class AnaliseSintatica {
         if (eExpr) {
             arvore = new ArvoreBinaria<>(token.get(posExpr));
             for (int k = 0; k < posExpr; k++) {
-                tokenExpr.add(tokenExpr.get(k));
+                tokenExpr.add(token.get(k));
             }
-            arvore.setEsq(verificaExprArvore(tokenExpr));
+            arvore.setEsq(verificaExprArvore(tokenExpr, key));
             tokenExpr.clear();
             //depois da condicao envia para verificaExpressao
-            for (int k = (posExpr + 1); k < token.size(); k++) {
+            for (int k = (posExpr + 1); k < token.size() && !token.get(k).getTipo().equals("|n"); k++) {
                 tokenExprPrec.add(token.get(k));
             }
-            arvore.setDir(verificaExprPrecArvore(tokenExprPrec));
+            arvore.setDir(verificaExprPrecArvore(tokenExprPrec, key));
             tokenExprPrec.clear();
             return arvore;
         } else {
-            for (int k = 0; k < token.size(); k++) {
+            for (int k = 0; k < token.size() && !token.get(k).getTipo().equals("|n"); k++) {
                 tokenExprPrec.add(token.get(k));
             }
-            return verificaExprPrecArvore(tokenExprPrec);
+            return verificaExprPrecArvore(tokenExprPrec, key);
         }
     }
 
-    public ArvoreBinaria verificaCondArvore(ArrayList<Lexema> token) {
+    public ArvoreBinaria verificaCondArvore(ArrayList<Lexema> token, int key) {
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         boolean eCondicao = false;
@@ -895,22 +978,45 @@ public class AnaliseSintatica {
         if (eCondicao) {
             arvore = new ArvoreBinaria<>(token.get(posCond));
             for (int k = 0; k < posCond; k++) {
-                tokenCond.add(tokenCond.get(k));
+                tokenCond.add(token.get(k));
             }
-            arvore.setEsq(verificaCondArvore(tokenCond));
+            arvore.setEsq(verificaCondArvore(tokenCond, key));
             tokenCond.clear();
             //depois da condicao envia para verificaExpressao
-            for (int k = (posCond + 1); k < token.size(); k++) {
+            for (int k = (posCond + 1); k < token.size() && !token.get(k).getTipo().equals("|n"); k++) {
                 tokenExpr.add(token.get(k));
             }
-            arvore.setDir(verificaExprArvore(tokenExpr));
+            arvore.setDir(verificaExprArvore(tokenExpr, key));
             tokenExpr.clear();
             return arvore;
         } else {
-            for (int k = 0; k < token.size(); k++) {
+            for (int k = 0; k < token.size() && !token.get(k).getTipo().equals("|n"); k++) {
                 tokenExpr.add(token.get(k));
             }
-            return verificaExprArvore(tokenExpr);
+            return verificaExprArvore(tokenExpr, key);
+        }
+    }
+
+    public void print(ArvoreBinaria arvore) {
+        int alt = arvore.altura();
+        int esp = (int) (Math.pow(2, alt));
+        LinkedList<ArvoreBinaria<Lexema>> fila;
+        for (int i = 0; i < alt; i++) {
+            fila = arvore.folhas(i);
+            for (int j = 0; j < esp / 2 - 1; j++) {
+                System.out.print("\t");
+            }
+            for (Iterator<ArvoreBinaria<Lexema>> iterator = fila.iterator(); iterator.hasNext();) {
+                ArvoreBinaria<Lexema> next = iterator.next();
+                if (next != null) {
+                    System.out.print(next.getNodo().getNome());
+                }
+                for (int j = 0; j < esp; j++) {
+                    System.out.print("\t");
+                }
+            }
+            esp = esp / 2;
+            System.out.println("");
         }
     }
 
@@ -920,6 +1026,7 @@ public class AnaliseSintatica {
         ArvoreBinaria<Lexema> arvore2;
         ArrayList<Lexema> tokenAtrib = new ArrayList<Lexema>();
         boolean programa = false;
+
         sair:
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
             Integer key = entrySet.getKey();
@@ -959,13 +1066,43 @@ public class AnaliseSintatica {
                 ArrayList<Lexema> value = entrySet.getValue();
                 for (int i = 0; i < value.size(); i++) {
                     if (value.get(i).getTipo().equals("atrib")) {
+                        String vetor = "";
+                        Lexema vet;
+                        int a = 0, b = 0;
                         arvore = new ArvoreBinaria<>(value.get(i));
-                        arvore2 = new ArvoreBinaria<>(value.get(i - 1));
-                        arvore.setEsq(arvore2);
-                        for (int j = (i + 1); j < value.size(); j++) {
-                            tokenAtrib.add(value.get(j));
+                        if (value.get(i - 1).getTipo().equals("id")) {
+                            arvore2 = new ArvoreBinaria<>(value.get(i - 1));
+                        } else {
+                            for (int j = (i - 1); !value.get(j).getTipo().equals("["); j--) {
+                                vetor += value.get(j).getNome();
+                                a = j;
+                            }
+                            vetor += value.get(a - 1).getNome();
+                            if (value.get(a - 2).getTipo().equals("]")) {
+                                for (int z = (a - 2); !value.get(z).getTipo().equals("["); z--) {
+                                    vetor += value.get(z).getNome();
+                                    b = z;
+                                }
+                                vetor += value.get(b - 1).getNome();
+                                b--;
+                                vetor += value.get(b - 1).getNome();
+                                StringBuffer sb = new StringBuffer(vetor);
+                                vetor = sb.reverse().toString();
+                            }
+                            vet = new Lexema();
+                            vet.setNome(vetor);
+                            vet.setTipo("vet");
+                            vet.setLinha(key);
+                            arvore2 = new ArvoreBinaria<>(vet);
                         }
-                        arvore.setDir(verificaCondArvore(tokenAtrib));
+                        arvore.setEsq(arvore2);
+                        for (int k = (i + 1); k < value.size(); k++) {
+                            tokenAtrib.add(value.get(k));
+                        }
+                        arvore.setDir(verificaCondArvore(tokenAtrib, key));
+                        print(arvore);
+                        System.out.println("--------------------------------------------------------------------------------------------------------");
+                        tokenAtrib.clear();
                     }
                 }
             }
