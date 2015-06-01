@@ -143,7 +143,7 @@ public class AnaliseSintatica {
                     tokenCond.add(token.get(k));
                 }
                 if (pilha.isEmpty() && k < (token.size() - 1)) {
-                    insereErro("Erro: falta comparador na linha ", token.get(0).getLinha());
+                    insereErro("Erro: falta operador na linha ", token.get(0).getLinha());
                 }
                 verificaCondicao(tokenCond, token.get(0).getLinha());
                 tokenCond.clear();
@@ -178,22 +178,23 @@ public class AnaliseSintatica {
                     }
                     if (i >= token.size() || !token.get(i).getNome().equals("]")) {
                         insereErro("Erro: era esperado ] na linha ", token.get(i - 1).getLinha());
-                    }
-                    verificaCondicao(tokenCond, token.get(i).getLinha());
-                    tokenCond.clear();
-                    if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
-                        i = i + 2;
-                        while (i < token.size() && !token.get(i).getTipo().equals("]")) {
-                            tokenCond.add(token.get(i));
-                            i++;
-                        }
-                        if (i >= token.size() || !token.get(i).getNome().equals("]")) {
-                            insereErro("Erro: era esperado ] na linha ", token.get(i - 1).getLinha());
-                        }
+                    } else {
                         verificaCondicao(tokenCond, token.get(i).getLinha());
                         tokenCond.clear();
-                    } else if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("[")) {
-                        insereErro("Erro: token inesperado na linha ", token.get(i - 1).getLinha());
+                        if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
+                            i = i + 2;
+                            while (i < token.size() && !token.get(i).getTipo().equals("]")) {
+                                tokenCond.add(token.get(i));
+                                i++;
+                            }
+                            if (i >= token.size() || !token.get(i).getNome().equals("]")) {
+                                insereErro("Erro: era esperado ] na linha ", token.get(i - 1).getLinha());
+                            }
+                            verificaCondicao(tokenCond, token.get(i).getLinha());
+                            tokenCond.clear();
+                        } else if ((i + 1) < token.size() && !token.get(i + 1).getTipo().equals("[")) {
+                            insereErro("Erro: token inesperado na linha ", token.get(i - 1).getLinha());
+                        }
                     }
                 } else {
                     if (1 < token.size()) {
@@ -778,6 +779,8 @@ public class AnaliseSintatica {
         boolean eExprPrec = false;
         int posExprPrec = 0;
         ArvoreBinaria<Lexema> arvore;
+        ArvoreBinaria<Lexema> arvore2;
+        ArvoreBinaria<Lexema> arvore3;
         Stack<Lexema> pilha = new Stack<>();
 //        for (Lexema pilha1 : token) {
 //            System.out.println(pilha1.getNome());
@@ -820,24 +823,14 @@ public class AnaliseSintatica {
                 arvore = new ArvoreBinaria<>(Parametro);
                 return arvore;
             } else if (token.get(0).getTipo().equals("id")) {
-
+                arvore = new ArvoreBinaria<>(token.get(0));
                 int i;
-                for (i = 0; !token.get(i).getTipo().equals("]"); i++) {
-                    tokenVetor += token.get(i).getNome();
+                arvore2 = new ArvoreBinaria<>(token.get(2));
+                arvore.setEsq(arvore2);
+                if(token.size()>4){
+                    arvore3 = new ArvoreBinaria<>(token.get(5));
+                    arvore.setDir(arvore3);
                 }
-                tokenVetor += token.get(i).getNome();
-                if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
-                    i++;
-                    while (i < token.size() && !token.get(i).getTipo().equals("]")) {
-                        tokenVetor += token.get(i).getNome();
-                        i++;
-                    }
-                    tokenVetor += token.get(i).getNome();
-                }
-                Vetor.setNome(tokenVetor);
-                Vetor.setTipo("vet");
-                Vetor.setLinha(key);
-                arvore = new ArvoreBinaria<>(Vetor);
                 return arvore;
             } else {
                 return null;
@@ -1061,8 +1054,8 @@ public class AnaliseSintatica {
                         tokenAtrib.add(value.get(k));
                     }
                     arvore.setDir(verificaCondArvore(tokenAtrib, key));
-                    print(arvore);
-                    System.out.println("----------------------------------------------------------------------------------------------------------");
+                    //print(arvore);
+                    //System.out.println("----------------------------------------------------------------------------------------------------------");
                     arvores.add(arvore);
                     tokenAtrib.clear();
                 }
@@ -1111,7 +1104,6 @@ public class AnaliseSintatica {
         if (errou == false) {
             System.out.println("Sintaticamente correto! ");
             System.out.println("--------------------------------------------------------------------------------------");
-            System.out.println("Arvores geradas! ");
             arvores = geraArvore();
         }
     }
