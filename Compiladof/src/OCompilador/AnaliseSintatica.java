@@ -17,14 +17,11 @@ public class AnaliseSintatica {
     ArvoreBinaria<Lexema> arvoreCond;
     Lexema l = null;
     int cont = 0;
-    MensagemErro erro;
-    ArrayList<MensagemErro> erros = new ArrayList<>();
+    boolean errou = false;
 
     public void insereErro(String err, int linha) {
-        erro = new MensagemErro();
-        erro.setErro(err);
-        erro.setLinha(linha);
-        erros.add(erro);
+        System.out.println(err + linha);
+        System.exit(0);
     }
 
     public AnaliseSintatica(LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
@@ -827,7 +824,7 @@ public class AnaliseSintatica {
                 int i;
                 arvore2 = new ArvoreBinaria<>(token.get(2));
                 arvore.setEsq(arvore2);
-                if(token.size()>4){
+                if (token.size() > 4) {
                     arvore3 = new ArvoreBinaria<>(token.get(5));
                     arvore.setDir(arvore3);
                 }
@@ -1068,7 +1065,8 @@ public class AnaliseSintatica {
         LinkedHashSet<String> mensagens = new LinkedHashSet<String>();
         boolean programa = false;
         ArrayList<ArvoreBinaria> arvores = new ArrayList<ArvoreBinaria>();
-
+        
+        System.out.println("Erro Sintáticos: ");
         sair:
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
             Integer key = entrySet.getKey();
@@ -1079,7 +1077,7 @@ public class AnaliseSintatica {
                     programa = true;
                 } else if (!value1.getNome().equals("|n") && programa == true) {
                     insereErro("Erro: token após o fim do programa na linha ", value1.getLinha());
-                    break sair;
+                    System.exit(0);
 
                 } else {
                     comandos.add(value1);
@@ -1088,23 +1086,12 @@ public class AnaliseSintatica {
         }
         if (programa == false) {
             insereErro("Erro: faltou fim do programa iniciando na linha ", 0);
+            System.exit(0);
 
         }
-        Collections.sort(erros);
-        for (MensagemErro erro : erros) {
-            mensagens.add(erro.getErro() + erro.getLinha());
-        }
-        boolean errou = false;
-        System.out.println("-----------------------------------------------------------------------------------------");
-        System.out.println("Erros sintáticos: ");
-        for (String mensagen : mensagens) {
-            System.out.println(mensagen);
-            errou = true;
-        }
-        if (errou == false) {
-            System.out.println("Sintaticamente correto! ");
-            System.out.println("--------------------------------------------------------------------------------------");
-            arvores = geraArvore();
-        }
+        System.out.println("Sintaticamente correto! ");
+        System.out.println("--------------------------------------------------------------------------------------");
+        arvores = geraArvore();
+
     }
 }

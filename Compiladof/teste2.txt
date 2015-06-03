@@ -5,15 +5,15 @@ c = 91 - 3 * 2.4
 d = 41 : (4 / 2)
 a = (a * (((b x c) : d) / 2))
 
-se a > 10 então
+se a == 10 então
    telamensagem = "A é maior que 10"
 fim-se
 
-se b < 30 então
+se b == 30 então
    telamensagem2 = "B é menor que 30"
 fim-se
 
-se (c <= 40) então
+se (c == 40) então
    telamensagem3 = "C é menor ou igual a 40"
 fim-se
 
