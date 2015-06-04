@@ -1,8 +1,8 @@
 ﻿# Comentário: Início do código de exemplo#
 a = 5 x 3,2
 b = (8 + 7) x 4,1
-c = 91 - 3 * 2.4
-d = 41 : (4 / 2)
+c = 91 * 3 * 2.4
+d = 41 - (4 / 2)
 a = (a * (((b x c) : d) / 2))
 
 se a == 10 então
