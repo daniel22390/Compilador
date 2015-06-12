@@ -13,6 +13,13 @@ public class Lexema {
     private String tipo;
     private String nome;
     private int linha;
+    private int linhaAtual;
+    private String novoTipo;
+
+    public Lexema() {
+        this.linhaAtual = -1;
+        this.novoTipo = "";
+    }
 
     /**
      * @return the tipo
@@ -54,6 +61,34 @@ public class Lexema {
      */
     public void setLinha(int linha) {
         this.linha = linha;
+    }
+
+    /**
+     * @return the novoTipo
+     */
+    public String getNovoTipo() {
+        return novoTipo;
+    }
+
+    /**
+     * @param novoTipo the novoTipo to set
+     */
+    public void setNovoTipo(String novoTipo) {
+        this.novoTipo = novoTipo;
+    }
+
+    /**
+     * @return the linhaAtual
+     */
+    public int getLinhaAtual() {
+        return linhaAtual;
+    }
+
+    /**
+     * @param linhaAtual the linhaAtual to set
+     */
+    public void setLinhaAtual(int linhaAtual) {
+        this.linhaAtual = linhaAtual;
     }
 
 

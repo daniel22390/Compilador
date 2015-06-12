@@ -18,9 +18,7 @@ import java.util.Stack;
 public class AnaliseSemantica {
 
     ArrayList<ArvoreBinaria> arvore = new ArrayList<>();
-    Stack<ArrayList<ArvoreBinaria>> varEscopo = new Stack<>();
-    Stack<ArrayList<String>> vetEscopo = new Stack<>();
-    Stack<ArrayList<String>> matEscopo = new Stack<>();
+    Stack<ArrayList<Lexema>> varEscopo = new Stack<>();
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas = new LinkedHashMap<>();
 
     public AnaliseSemantica(ArrayList<ArvoreBinaria> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
@@ -95,102 +93,53 @@ public class AnaliseSemantica {
 
     }
 
+    public String verificaTipo(int posicao) {
+        return "";
+    }
+
     public void escopoProg(ArrayList<Lexema> escopo) {
-        ArrayList<ArvoreBinaria> varProg = new ArrayList<>();
-        ArrayList<String> vetProg = new ArrayList<>();
-        ArrayList<String> matProg = new ArrayList<>();
+        ArrayList<Lexema> varProg = new ArrayList<>();
         for (int i = 0; i < escopo.size(); i++) {
+            //Se achar um = ou vetor
             if (escopo.get(i).getTipo().equals("atrib") || escopo.get(i).getTipo().equals("vet")) {
+                //se achar =
                 if (escopo.get(i).getTipo().equals("atrib")) {
-                    for (ArvoreBinaria<Lexema> arvore1 : arvore) {
-                        if (arvore1.getEsq().getNodo().getLinha() == escopo.get(i).getLinha()) {
-                            arvore1.getEsq().getNodo().setLinha(i);
-                            varProg.add(arvore1);
+                    if (escopo.get(i - 1).getTipo().equals("id")) {
+                        boolean declarada = false;
+                        String tipo = verificaTipo(i + 1);
+                        // Procura na tabela de lexemas do bloco
+                        for (int j = 0; j < varProg.size(); j++) {
+                            if (varProg.get(j).getNome().equals(escopo.get(i - 1).getNome())) {
+                                declarada = true;
+                                //se o tipo(matriz, vetor, id) forem diferentes
+                                if (!varProg.get(j).getNovoTipo().equals(tipo)) {
+                                    System.out.println("Erro: Tipo não aceito para "+escopo.get(i-1).getNome()+" na linha "+escopo.get(i).getLinha());
+                                    System.exit(0);
+                                } 
+                                //se o tipo(int, float, booleano, ...) forem diferentes
+                                else if(!(varProg.get(j).getTipo().equals(escopo.get(i - 1).getTipo()))) {
+                                    System.out.println("Erro: Variavel " + escopo.get(i - 1).getNome() + " não pode ser modificada na linha " + escopo.get(i).getLinha());
+                                    System.exit(0);
+                                } 
+                                // senao atualizo a linha onde foi chamado a ultima vez
+                                else{
+                                    varProg.get(j).setLinhaAtual(i);
+                                    break;
+                                }
+                            }
+                        }
+                        //se nao encontrar, procuro na pilha de lexemas onde estao todos os tokens declarados ate o bloco ser chamado
+                        if(declarada == false){
+                            //Procura na pilha
                         }
                     }
                 } else {
-                    String vetor = escopo.get(i + 1).getNome();
-                    while (!escopo.get(i).getTipo().equals("]")) {
-                        i++;
-                    }
-                    if ((i + 1) < escopo.size() && escopo.get(i + 1).getTipo().equals("[")) {
-                        matProg.add(vetor);
-                    } else {
-                        vetProg.add(vetor);
-                    }
+                    //quando for vetor
                 }
             } else if (IsLaco(escopo.get(i))) {
-                varEscopo.add(varProg);
-                vetEscopo.add(vetProg);
-                matEscopo.add(matProg);
                 i = AnalisaLaco(i, escopo);
             } else if (IsId(escopo.get(i)) && !((i + 1) < escopo.size() && escopo.get(i + 1).getTipo().equals("atrib"))) {
-                boolean declarado = false;
-                boolean declaradoVet = false;
-                boolean vet = false;
-                String id = escopo.get(i).getNome();
-                if ((i + 1) < escopo.size() && escopo.get(i + 1).getTipo().equals("[")) {
-                    while (!escopo.get(i).getTipo().equals("]")) {
-                        i++;
-                    }
-                    if ((i + 1) < escopo.size() && escopo.get(i + 1).getTipo().equals("[")) {
-                        for (String matProg1 : matProg) {
-                            if (matProg1.contains(id)) {
-                                declaradoVet = true;
-                            }
-                        }
-                        if (declaradoVet == false) {
-                            for (ArrayList<String> matEscopo1 : matEscopo) {
-                                for (String matEscopo2 : matEscopo1) {
-                                    if (id.contains(matEscopo2)) {
-                                        declarado = true;
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        for (String vetProg1 : vetProg) {
-                            if (vetProg1.contains(id)) {
-                                declaradoVet = true;
-                            }
-                        }
-                        if (declaradoVet == false) {
-                            for (ArrayList<String> vetEscopo1 : vetEscopo) {
-                                for (String varEscopo2 : vetEscopo1) {
-                                    if (id.contains(varEscopo2)) {
-                                        declarado = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (declaradoVet == false) {
-                        System.out.println("Erro: vetor " + id + " não declarado na linha " + escopo.get(i).getLinha());
-                        System.exit(0);
-                    }
-                }
-                if (vet == false) {
-                    for (ArvoreBinaria<Lexema> varProg1 : varProg) {
-                        if (varProg1.getEsq().getNodo().getNome().equals(id)) {
-                            declarado = true;
-                            varProg1.getEsq().getNodo().setLinha(i);
-                        }
-                    }
-                    if (declarado == false) {
-                        for (ArrayList<ArvoreBinaria> varEscopo1 : varEscopo) {
-                            for (ArvoreBinaria<Lexema> varEscopo2 : varEscopo1) {
-                                if (varEscopo2.getEsq().getNodo().getNome().equals(id)) {
-                                    declarado = true;
-                                    varEscopo2.getEsq().getNodo().setLinha(i);
-                                }
-                            }
-                        }
-                        if (declarado == false) {
-                            System.out.println("Erro: token " + id + " não inicializado na linha " + escopo.get(i).getLinha());
-                            System.exit(0);
-                        }
-                    }
-                }
+                // quando encontrar um id
             }
         }
     }
