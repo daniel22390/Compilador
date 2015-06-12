@@ -1085,13 +1085,14 @@ public class AnaliseSintatica {
             }
         }
         if (programa == false) {
-            insereErro("Erro: faltou fim do programa iniciando na linha ", 0);
+            insereErro("Erro: faltou fim do programa iniciado na linha ", 0);
             System.exit(0);
 
         }
         System.out.println("Sintaticamente correto! ");
         System.out.println("--------------------------------------------------------------------------------------");
         arvores = geraArvore();
-
+        AnaliseSemantica semantico = new AnaliseSemantica(arvores, lexemas);
+        semantico.Analisa();
     }
 }
