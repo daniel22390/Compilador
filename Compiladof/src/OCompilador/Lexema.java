@@ -10,10 +10,13 @@ package OCompilador;
  * @author Daniel
  */
 public class Lexema {
+    // se eh int, float, ...
     private String tipo;
     private String nome;
     private int linha;
+    //onde foi acessado pela ultima vez
     private int linhaAtual;
+    // se for vetor, matriz. id
     private String novoTipo;
 
     public Lexema() {
