@@ -111,12 +111,11 @@ public class AnaliseSemantica {
 
     //retorna int, float, booleano(posicao contem a localizacao do id)
     public String verificaTipoVariavel(int posicao, ArrayList<Lexema> tokens) {
-        posicao = posicao + 2;
         int i = posicao;
         // pego o tipo do primeiro elemento
         String tipoInicial = "";
         boolean achou = false;
-        // passo todos os inicia parenteses
+        // passo todos os (
         while(tokens.get(i).getTipo().equals("(")){
             i++;
         }
@@ -134,10 +133,14 @@ public class AnaliseSemantica {
                     break;
                 }
             }
-        } // se o primeiro elemento for string ou booleano
-        else if (tokens.get(i).getTipo().equals("String") || tokens.get(i).getTipo().equals("true") || tokens.get(i).getTipo().equals("false")) {
+        } // se o primeiro elemento for string
+        else if (tokens.get(i).getTipo().equals("String")) {
             tipoInicial = tokens.get(i).getTipo();
-        } // se for float ou int, inicializo como num
+        } // se o primeiro elemento for booleano
+        else if(tokens.get(i).getTipo().equals("true") || tokens.get(i).getTipo().equals("false")){
+            tipoInicial = "booleano";
+        }
+        // se for float ou int, inicializo como num
         else if(tokens.get(i).getTipo().equals("Int") || tokens.get(i).getTipo().equals("Float")){
             tipoInicial = "num";
         }
@@ -215,7 +218,7 @@ public class AnaliseSemantica {
                     if (escopo.get(i - 1).getTipo().equals("id") || escopo.get(i - 1).getTipo().equals("]")) {
                         boolean declarada = false;
                         // verifico o tipo da variavel
-                        String tipo = verificaTipoVariavel(i - 1, escopo);
+                        String tipo = verificaTipoVariavel(i + 1, escopo);
                         //verifico o id da variavel (vetor, matriz, id...)
                         String identificador = verificaIdentificador(i - 1, escopo);
                         // Procura na tabela de lexemas
