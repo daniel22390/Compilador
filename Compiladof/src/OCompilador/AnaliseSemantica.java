@@ -113,8 +113,10 @@ public class AnaliseSemantica {
     public String verificaTipoVariavel(int posicao, ArrayList<Lexema> tokens) {
         posicao = posicao + 2;
         int i = posicao;
+        // pego o tipo do primeiro elemento
         String tipoInicial = "";
         boolean achou = false;
+        // passo todos os inicia parenteses
         while(tokens.get(i).getTipo().equals("(")){
             i++;
         }
