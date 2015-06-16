@@ -168,9 +168,19 @@ public class AnaliseSintatica {
                 }
             } else if (token.get(0).getTipo().equals("id")) {
                 //analisa se é uma declaração de vetor
+                Stack<Lexema> pilha2 = new Stack<>();
                 int i;
                 if (token.get(1).getTipo().equals("[")) {
-                    for (i = 2; i < token.size() && !token.get(i).getTipo().equals("]"); i++) {
+                    pilha2.push(token.get(1));
+                    for (i = 2; i < token.size(); i++) {
+                        if (token.get(i).getTipo().equals("[")) {
+                            pilha2.push(token.get(i));
+                        } else if (token.get(i).getTipo().equals("]")) {
+                            pilha2.pop();
+                            if (pilha2.isEmpty()) {
+                                break;
+                            }
+                        }
                         tokenCond.add(token.get(i));
                     }
                     if (i >= token.size() || !token.get(i).getNome().equals("]")) {
@@ -180,7 +190,15 @@ public class AnaliseSintatica {
                         tokenCond.clear();
                         if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
                             i = i + 2;
-                            while (i < token.size() && !token.get(i).getTipo().equals("]")) {
+                            while (i < token.size()) {
+                                if (token.get(i).getTipo().equals("[")) {
+                                    pilha2.push(token.get(i));
+                                } else if (token.get(i).getTipo().equals("]")) {
+                                    pilha2.pop();
+                                    if (pilha2.isEmpty()) {
+                                        break;
+                                    }
+                                }
                                 tokenCond.add(token.get(i));
                                 i++;
                             }
@@ -214,7 +232,9 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenTermo = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
+        Stack<Lexema> pilha2 = new Stack<>();
         boolean eTermo = false;
+        boolean eVetor = false;
         int posTermo = 0;
         int k;
 //        for (Lexema pilha1 : token) {
@@ -223,6 +243,11 @@ public class AnaliseSintatica {
 //        System.out.println("-----");
         for (k = 0; k < token.size(); k++) {
             if (!token.get(k).getTipo().equals("|n")) {
+                if (token.get(k).getTipo().equals("[")) {
+                    pilha2.push(token.get(k));
+                } else if (token.get(k).getTipo().equals("]")) {
+                    pilha2.pop();
+                }
                 //empilha
                 if (token.get(k).getTipo().equals("(")) {
                     pilha.push(token.get(k));
@@ -234,7 +259,7 @@ public class AnaliseSintatica {
                         pilha.pop();
                     }
                 } //verifica se o *,x,/,: ta no nivel mais para fora
-                else if ((token.get(k).getTipo().equals("mult") || token.get(k).getTipo().equals("div")) && pilha.isEmpty()) {
+                else if ((token.get(k).getTipo().equals("mult") || token.get(k).getTipo().equals("div")) && pilha.isEmpty() && pilha2.isEmpty()) {
                     eTermo = true;
                     posTermo = k;
                 }
@@ -276,7 +301,9 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
+        Stack<Lexema> pilha2 = new Stack<>();
         boolean eExprPrec = false;
+        boolean eVetor = false;
         int posPrec = 0;
         int i;
 //        for (Lexema pilha1 : token) {
@@ -285,6 +312,11 @@ public class AnaliseSintatica {
 //        System.out.println("------");
         for (i = 0; i < token.size(); i++) {
             if (!token.get(i).getTipo().equals("|n")) {
+                if (token.get(i).getTipo().equals("[")) {
+                    pilha2.push(token.get(i));
+                } else if (token.get(i).getTipo().equals("]")) {
+                    pilha2.pop();
+                }
                 //empilha
                 if (token.get(i).getTipo().equals("(")) {
                     pilha.push(token.get(i));
@@ -296,7 +328,7 @@ public class AnaliseSintatica {
                         pilha.pop();
                     }
                 } //verifica se o + ou - ta no nivel mais para fora
-                else if ((token.get(i).getTipo().equals("sum") || token.get(i).getTipo().equals("sub")) && pilha.isEmpty()) {
+                else if ((token.get(i).getTipo().equals("sum") || token.get(i).getTipo().equals("sub")) && pilha.isEmpty() && pilha2.isEmpty()) {
                     eExprPrec = true;
                     posPrec = i;
                 }
@@ -338,14 +370,16 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenExpr = new ArrayList<Lexema>();
         ArrayList<Lexema> tokenCond = new ArrayList<Lexema>();
         Stack<Lexema> pilha = new Stack<>();
+        Stack<Lexema> pilha2 = new Stack<>();
         boolean eCondicao = false;
+        boolean eVetor = false;
         int posCond = 0;
         int j;
 
 //        for (Lexema pilha1 : token) {
-//            insereErro(pilha1.getNome());
+//            System.out.println(pilha1.getNome());
 //        }
-//        insereErro("----");
+//        System.out.println("----");
         //Analiso o ArrayList
         if (token.isEmpty()) {
             insereErro("Erro: Não contém condição na linha ", k);
@@ -353,8 +387,12 @@ public class AnaliseSintatica {
         }
         for (j = 0; j < token.size(); j++) {
             if (!token.get(j).getTipo().equals("|n")) {
-                //empilha
-                if (token.get(j).getTipo().equals("(")) {
+                if (token.get(j).getTipo().equals("[")) {
+                    pilha2.push(token.get(j));
+                } else if (token.get(j).getTipo().equals("]")) {
+                    pilha2.pop();
+                } //empilha
+                else if (token.get(j).getTipo().equals("(")) {
                     pilha.push(token.get(j));
                 } //desempilha
                 else if (token.get(j).getTipo().equals(")")) {
@@ -364,7 +402,7 @@ public class AnaliseSintatica {
                         pilha.pop();
                     }
                 } //verifica se a condicao ta no nivel mais para fora
-                else if (condicoes(token.get(j)) && pilha.isEmpty()) {
+                else if (condicoes(token.get(j)) && pilha.isEmpty() && pilha2.isEmpty()) {
                     eCondicao = true;
                     posCond = j;
                 }
@@ -593,8 +631,18 @@ public class AnaliseSintatica {
                 i++;
                 //analisa se é um vetor
                 if ((i) < token.size() && token.get(i).getTipo().equals("[")) {
+                    Stack<Lexema> pilha2 = new Stack<>();
+                    pilha2.push(token.get(i));
                     i++;
-                    while ((i < token.size()) && !("|n").equals(token.get(i).getTipo()) && !("]").equals(token.get(i).getTipo())) {
+                    while ((i < token.size()) && !("|n").equals(token.get(i).getTipo())) {
+                        if (token.get(i).getTipo().equals("[")) {
+                            pilha2.push(token.get(i));
+                        } else if (token.get(i).getTipo().equals("]")) {
+                            pilha2.pop();
+                            if (pilha2.isEmpty()) {
+                                break;
+                            }
+                        }
                         tokenEnquanto.add(token.get(i));
                         i++;
                     }
@@ -1065,7 +1113,7 @@ public class AnaliseSintatica {
         LinkedHashSet<String> mensagens = new LinkedHashSet<String>();
         boolean programa = false;
         ArrayList<ArvoreBinaria> arvores = new ArrayList<ArvoreBinaria>();
-        
+
         System.out.println("Erro Sintáticos: ");
         sair:
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {

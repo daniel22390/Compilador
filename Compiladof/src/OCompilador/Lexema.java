@@ -11,7 +11,7 @@ package OCompilador;
  */
 public class Lexema {
     // se eh int, float, ...
-    private String tipo;
+    private String tipo = "";
     private String nome;
     private int linha;
     //onde foi acessado pela ultima vez
