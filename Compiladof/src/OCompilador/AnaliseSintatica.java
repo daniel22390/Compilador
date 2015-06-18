@@ -1142,5 +1142,7 @@ public class AnaliseSintatica {
         arvores = geraArvore();
         AnaliseSemantica semantico = new AnaliseSemantica(arvores, lexemas);
         semantico.Analisa();
+//        AnaliseSemantica2 semantica = new AnaliseSemantica2(arvores, lexemas);
+//        semantica.Analisa();
     }
 }
