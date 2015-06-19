@@ -115,7 +115,7 @@ public class AnaliseSemantica {
                         escopoProg(escopoEnquanto, false, true, false);
                         break;
                     }
-                } 
+                }
                 escopoEnquanto.add(escopo.get(posicao));
                 posicao++;
             }
@@ -134,7 +134,7 @@ public class AnaliseSemantica {
                         escopoProg(escopoPara, false, false, true);
                         break;
                     }
-                } 
+                }
                 escopoPara.add(escopo.get(posicao));
                 posicao++;
             }
@@ -153,7 +153,7 @@ public class AnaliseSemantica {
                         escopoFuncao(escopoFuncao);
                         break;
                     }
-                } 
+                }
                 escopoFuncao.add(escopo.get(posicao));
                 posicao++;
             }
@@ -306,7 +306,7 @@ public class AnaliseSemantica {
         String tipoInicial = "";
         boolean achou = false;
         // passo todos os (
-        while (tokens.get(i).getTipo().equals("(")) {
+        while (tokens.get(i).getTipo().equals("(") || tokens.get(i).getTipo().equals("sub")) {
             i++;
         }
         // se o primeiro elemento for id, ou fun
@@ -546,20 +546,26 @@ public class AnaliseSemantica {
                 System.exit(0);
             }
         } else if (isFor) {
+            boolean criada = false;
             for (ArrayList<Lexema> var : varEscopo) {
                 for (Lexema var1 : var) {
                     if (var1.getNome().equals(escopo.get(0).getNome())) {
-                        System.out.println("Erro: Variavel " + escopo.get(0).getNome() + " ja foi inicilizada. Linha  " + escopo.get(0).getLinha());
-                        System.exit(0);
+                        criada = true;
+                        if (!var1.getTipo().equals("Int")) {
+                            System.out.println("Erro: Variavel " + escopo.get(0).getNome() + " nao foi inicializada como inteiro. Linha  " + escopo.get(0).getLinha());
+                            System.exit(0);
+                        }
                     }
                 }
             }
-            Lexema idFor = new Lexema();
-            idFor.setNome(escopo.get(0).getNome());
-            idFor.setLinha(escopo.get(0).getLinha());
-            idFor.setNovoTipo("id");
-            idFor.setTipo("Int");
-            varEscopo.peek().add(idFor);
+            if (!criada) {
+                Lexema idFor = new Lexema();
+                idFor.setNome(escopo.get(0).getNome());
+                idFor.setLinha(escopo.get(0).getLinha());
+                idFor.setNovoTipo("id");
+                idFor.setTipo("Int");
+                varEscopo.peek().add(idFor);
+            }
             i++;
         }
         while (i < escopo.size()) {

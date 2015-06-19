@@ -306,6 +306,7 @@ public class AnaliseSintatica {
         boolean eExprPrec = false;
         boolean eVetor = false;
         int posPrec = 0;
+        boolean negativo = false;
         int i;
 //        for (Lexema pilha1 : token) {
 //            System.out.println(pilha1.getNome());
@@ -332,6 +333,9 @@ public class AnaliseSintatica {
                 else if ((token.get(i).getTipo().equals("sum") || token.get(i).getTipo().equals("sub")) && pilha.isEmpty() && pilha2.isEmpty()) {
                     eExprPrec = true;
                     posPrec = i;
+                    if (token.get(i).getTipo().equals("sub") && posPrec == 0 && token.size() > 1) {
+                        negativo = true;
+                    }
                 }
             }
         }
@@ -339,7 +343,7 @@ public class AnaliseSintatica {
             insereErro("Erro: era esperado ) . Linha:  ", token.get(i - 1).getLinha());
 
         } else {
-            if (eExprPrec && (posPrec == (token.size() - 1) || posPrec == 0)) {
+            if (eExprPrec && (posPrec == (token.size() - 1) || (posPrec == 0 && !negativo))) {
                 insereErro("Erro: token " + token.get(posPrec).getNome() + " inesperado . Linha:  ", token.get(posPrec).getLinha());
             }
             if (eExprPrec) {
@@ -943,6 +947,7 @@ public class AnaliseSintatica {
         ArrayList<Lexema> tokenExprPrec = new ArrayList<Lexema>();
         boolean eExpr = false;
         int posExpr = 0;
+        boolean negativo = false;
         ArvoreBinaria<Lexema> arvore;
         Stack<Lexema> pilha = new Stack<>();
 
@@ -962,6 +967,9 @@ public class AnaliseSintatica {
                 else if ((token.get(j).getTipo().equals("sum") || token.get(j).getTipo().equals("sub")) && pilha.isEmpty()) {
                     eExpr = true;
                     posExpr = j;
+                    if (token.get(j).getTipo().equals("sub") && posExpr == 0 && token.size() > 1) {
+                        negativo = true;
+                    }
                 }
             }
         }
@@ -970,7 +978,9 @@ public class AnaliseSintatica {
             for (int k = 0; k < posExpr; k++) {
                 tokenExpr.add(token.get(k));
             }
-            arvore.setEsq(verificaExprArvore(tokenExpr, key));
+            if (!negativo) {
+                arvore.setEsq(verificaExprArvore(tokenExpr, key));
+            }
             tokenExpr.clear();
             //depois da condicao envia para verificaExpressao
             for (int k = (posExpr + 1); k < token.size() && !token.get(k).getTipo().equals("|n"); k++) {
@@ -1106,7 +1116,7 @@ public class AnaliseSintatica {
                                 a--;
                             }
                         }
-                        for (int k = a-1; k < i; k++) {
+                        for (int k = a - 1; k < i; k++) {
                             vetor += value.get(k).getNome();
                         }
                         vet = new Lexema();

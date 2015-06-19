@@ -34,7 +34,8 @@ se (a =< 30,5) e (a != 20) então
 fim-se
 
 fat = 1
-para i de 1 até 10 faça
+i = 20,2
+para ga de 1 até 10 faça
 	da = 10
 	para h de 2 até 20 faça
     fat = fat x i
@@ -49,7 +50,7 @@ enquanto i <= 5 faça
 fim-enquanto
 tela = "5! = " + fat
 funcao fun(2,3)
-fun = 2
+fun = -i
 fim-funcao
 vetor m[10]
 vetor j[2][10]
@@ -57,7 +58,7 @@ j[20][20] = 30
 m[2] = 1
 a = m[2]
 m[2] = 3,3
-m[2] = fun(2,3)
+m[m[2]] = fun(2,3)
 fim
 # As outras posições não foram inicializadas
 Portanto há zero ou espaço no seu interior #
