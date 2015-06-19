@@ -103,33 +103,60 @@ public class AnaliseSemantica {
             return posicao;
         } //envio todo escopo do enquanto para ser analisado 
         else if (escopo.get(posicao).getTipo().equals("whileloop")) {
+            posicao++;
             ArrayList<Lexema> escopoEnquanto = new ArrayList<>();
-            while (!escopo.get(posicao).getTipo().equals("endwhileloop")) {
-                posicao++;
+            while (true) {
+                if (escopo.get(posicao).getTipo().equals("whileloop")) {
+                    pilha.push(escopo.get(posicao));
+                } else if (escopo.get(posicao).getTipo().equals("endwhileloop")) {
+                    pilha.pop();
+                    if (pilha.isEmpty()) {
+                        escopoEnquanto.add(acabou);
+                        escopoProg(escopoEnquanto, false, true, false);
+                        break;
+                    }
+                } 
                 escopoEnquanto.add(escopo.get(posicao));
+                posicao++;
             }
-            escopoEnquanto.add(acabou);
-            escopoProg(escopoEnquanto, false, true, false);
             return posicao;
         } //envio todo escopo do para para ser analisado 
         else if (escopo.get(posicao).getTipo().equals("forloop")) {
+            posicao++;
             ArrayList<Lexema> escopoPara = new ArrayList<>();
-            while (!escopo.get(posicao).getTipo().equals("endforloop")) {
-                posicao++;
+            while (true) {
+                if (escopo.get(posicao).getTipo().equals("forloop")) {
+                    pilha.push(escopo.get(posicao));
+                } else if (escopo.get(posicao).getTipo().equals("endforloop")) {
+                    pilha.pop();
+                    if (pilha.isEmpty()) {
+                        escopoPara.add(acabou);
+                        escopoProg(escopoPara, false, false, true);
+                        break;
+                    }
+                } 
                 escopoPara.add(escopo.get(posicao));
+                posicao++;
             }
-            escopoPara.add(acabou);
-            escopoProg(escopoPara, false, false, true);
             return posicao;
         } //envio todo escopo da funcao para ser analisado 
         else if (escopo.get(posicao).getTipo().equals("function")) {
+            posicao++;
             ArrayList<Lexema> escopoFuncao = new ArrayList<>();
-            while (!escopo.get(posicao).getTipo().equals("endfunction")) {
-                posicao++;
+            while (true) {
+                if (escopo.get(posicao).getTipo().equals("function")) {
+                    pilha.push(escopo.get(posicao));
+                } else if (escopo.get(posicao).getTipo().equals("endfunction")) {
+                    pilha.pop();
+                    if (pilha.isEmpty()) {
+                        escopoFuncao.add(acabou);
+                        escopoFuncao(escopoFuncao);
+                        break;
+                    }
+                } 
                 escopoFuncao.add(escopo.get(posicao));
+                posicao++;
             }
-            escopoFuncao.add(acabou);
-            escopoFuncao(escopoFuncao);
             return posicao;
         } else {
             return -1;
@@ -150,6 +177,7 @@ public class AnaliseSemantica {
                 }
             }
         }
+        verificaFuncao(1, escopo);
         varEscopo.peek().add(nomeFun);
         escopoProg(escopo, true, false, false);
     }
@@ -294,7 +322,7 @@ public class AnaliseSemantica {
                             System.out.println("Erro: Tipo de variavel " + tokens.get(i).getNome() + " nao pode ser modificada. Linha  " + tokens.get(i).getLinha());
                             System.exit(0);
                         } else if (!verificaIdentificador(i, tokens).equals(lista1.getNovoTipo())) {
-                            System.out.println("Erro: variavel "+tokens.get(i).getNome() +" inicializada como outro Id. Linha  " + tokens.get(i).getLinha());
+                            System.out.println("Erro: variavel " + tokens.get(i).getNome() + " inicializada como outro Id. Linha  " + tokens.get(i).getLinha());
                             System.exit(0);
                         }
                         tipoInicial = lista1.getTipo();
@@ -402,7 +430,7 @@ public class AnaliseSemantica {
                                 System.exit(0);
                             }
                             if (!verificaIdentificador(i, tokens).equals(varEsc1.getNovoTipo())) {
-                                System.out.println("Erro: variavel "+ tokens.get(i).getNome() +" inicializada como outro id. Linha  " + tokens.get(i).getLinha());
+                                System.out.println("Erro: variavel " + tokens.get(i).getNome() + " inicializada como outro id. Linha  " + tokens.get(i).getLinha());
                                 System.exit(0);
                             }
                             controlePilha = true;
@@ -725,12 +753,12 @@ public class AnaliseSemantica {
             i++;
         }
 
-        System.out.println("Escopo Principal: ");
-        for (ArrayList<Lexema> decVetProg1 : varEscopo) {
-            for (Lexema decVetProg11 : decVetProg1) {
-                System.out.println(decVetProg11.getNome() + " :" + decVetProg11.getTipo());
-            }
-        }
+//        System.out.println("Escopo Principal: ");
+//        for (ArrayList<Lexema> decVetProg1 : varEscopo) {
+//            for (Lexema decVetProg11 : decVetProg1) {
+//                System.out.println(decVetProg11.getNome() + " :" + decVetProg11.getTipo());
+//            }
+//        }
     }
 
     public void Analisa() {
