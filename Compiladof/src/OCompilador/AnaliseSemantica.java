@@ -145,7 +145,7 @@ public class AnaliseSemantica {
         for (ArrayList<Lexema> esc : varEscopo) {
             for (Lexema escopo1 : esc) {
                 if (escopo1.getNome().equals(escopo.get(0).getNome())) {
-                    System.out.println("Erro: variavel " + escopo.get(0).getNome() + " inicializada como " + escopo1.getNovoTipo() + " na linha " + escopo.get(0).getLinha());
+                    System.out.println("Erro: variavel " + escopo.get(0).getNome() + " inicializada como " + escopo1.getNovoTipo() + ". Linha  " + escopo.get(0).getLinha());
                     System.exit(0);
                 }
             }
@@ -239,7 +239,7 @@ public class AnaliseSemantica {
         lista.add(barraN);
         String tipo = verificaTipoVariavel(lista);
         if (!tipo.equals("Int")) {
-            System.out.println("Erro: O vetor " + tokens.get(i - 1).getNome() + " nao possui inteiro como posicao na linha " + tokens.get(i).getLinha());
+            System.out.println("Erro: O vetor " + tokens.get(i - 1).getNome() + " nao possui inteiro como posicao. Linha  " + tokens.get(i).getLinha());
             System.exit(0);
         }
         pilha.clear();
@@ -262,7 +262,7 @@ public class AnaliseSemantica {
             lista.add(barraN);
             tipo = verificaTipoVariavel(lista);
             if (!tipo.equals("Int")) {
-                System.out.println("Erro: O vetor " + tokens.get(i - 1).getNome() + " nao possui inteiro como posicao na linha " + tokens.get(i).getLinha());
+                System.out.println("Erro: O vetor " + tokens.get(i - 1).getNome() + " nao possui inteiro como posicao. Linha  " + tokens.get(i).getLinha());
                 System.exit(0);
             }
         }
@@ -287,11 +287,14 @@ public class AnaliseSemantica {
                 for (Lexema lista1 : lista) {
                     if (tokens.get(i).getNome().equals(lista1.getNome())) {
                         if (lista1.getTipo().equals("")) {
-                            System.out.println("Erro: variavel" + lista1.getNome() + "ainda nao foi inicializada na linha " + tokens.get(i).getLinha());
+                            System.out.println("Erro: variavel" + lista1.getNome() + "ainda nao foi inicializada. Linha  " + tokens.get(i).getLinha());
                             System.exit(0);
                         }
                         if (!lista1.getNovoTipo().equals("fun") && tokens.get(i).getTipo().equals("fun")) {
-                            System.out.println("Erro: Tipo de variavel " + tokens.get(i).getNome() + " nao pode ser modificada na linha " + tokens.get(i).getLinha());
+                            System.out.println("Erro: Tipo de variavel " + tokens.get(i).getNome() + " nao pode ser modificada. Linha  " + tokens.get(i).getLinha());
+                            System.exit(0);
+                        } else if (!verificaIdentificador(i, tokens).equals(lista1.getNovoTipo())) {
+                            System.out.println("Erro: variavel "+tokens.get(i).getNome() +" inicializada como outro Id. Linha  " + tokens.get(i).getLinha());
                             System.exit(0);
                         }
                         tipoInicial = lista1.getTipo();
@@ -315,7 +318,7 @@ public class AnaliseSemantica {
         }
         i++;
         if (tipoInicial.equals("")) {
-            System.out.println("Erro: Variavel " + tokens.get(i - 1).getNome() + " nao inicializada na linha " + tokens.get(i-1).getLinha());
+            System.out.println("Erro: Variavel " + tokens.get(i - 1).getNome() + " nao inicializada. Linha  " + tokens.get(i - 1).getLinha());
             System.exit(0);
         }
         boolean Booleano = false;
@@ -328,13 +331,13 @@ public class AnaliseSemantica {
             // se for booleano e o tipo inicial nao for booleano, entao dara erro
             if (tokens.get(i).getTipo().equals("true") || tokens.get(i).getTipo().equals("false")) {
                 if (!tipoInicial.equals("booleano")) {
-                    System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                    System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
                     System.exit(0);
                 }
             }// se for string e o tipo inicial nao for string, entao dara erro 
             else if (tokens.get(i).getTipo().equals("String")) {
                 if (!tipoInicial.equals("String") && !(mais && (tipoInicial.equals("Int") || tipoInicial.equals("Float")))) {
-                    System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                    System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
                     System.exit(0);
                 } else if (mais && (tipoInicial.equals("Int") || tipoInicial.equals("Float"))) {
                     tipoInicial = "String";
@@ -342,7 +345,7 @@ public class AnaliseSemantica {
             }// se for int e o tipo inicial nao for int ou float, entao dara erro 
             else if (tokens.get(i).getTipo().equals("Int")) {
                 if (!tipoInicial.equals("Int") && !tipoInicial.equals("Float") && !(mais && (tipoInicial.equals("String")))) {
-                    System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                    System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
                     System.exit(0);
                 } else if (mais && (tipoInicial.equals("String"))) {
                     tipoInicial = "String";
@@ -350,7 +353,7 @@ public class AnaliseSemantica {
             }// se for float e o tipo inicial nao for int ou float, entao dara erro 
             else if (tokens.get(i).getTipo().equals("Float")) {
                 if (!tipoInicial.equals("Int") && !tipoInicial.equals("Float") && !(mais && (tipoInicial.equals("String")))) {
-                    System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                    System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
                     System.exit(0);
                 } else if (mais && (tipoInicial.equals("String"))) {
                     tipoInicial = "String";
@@ -363,23 +366,23 @@ public class AnaliseSemantica {
                     for (Lexema varEsc1 : varEsc) {
                         // se for int e o tipo inicial nao for int ou float, entao erro
                         if (!varEsc1.getNovoTipo().equals("fun") && tokens.get(i).getTipo().equals("fun")) {
-                            System.out.println("Erro: Tipo de variavel " + tokens.get(i).getNome() + " nao pode ser modificada na linha " + tokens.get(i).getLinha());
+                            System.out.println("Erro: Tipo de variavel " + tokens.get(i).getNome() + " nao pode ser modificada. Linha  " + tokens.get(i).getLinha());
                             System.exit(0);
                         } else if (tokens.get(i).getNome().equals(varEsc1.getNome())) {
                             if (varEsc1.getTipo().equals("")) {
-                                System.out.println("Erro: variavel" + varEsc1.getNome() + "ainda nao foi inicializada na linha " + tokens.get(i).getLinha());
+                                System.out.println("Erro: variavel" + varEsc1.getNome() + "ainda nao foi inicializada. Linha  " + tokens.get(i).getLinha());
                                 System.exit(0);
                             } else if (varEsc1.getTipo().equals("Int")) {
                                 if (!tipoInicial.equals("Int") && !tipoInicial.equals("Float") && !(mais && (tipoInicial.equals("String")))) {
-                                    System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                                    System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
                                     System.exit(0);
                                 } else if (mais && (tipoInicial.equals("String"))) {
                                     tipoInicial = "String";
                                 }
                             }// se for float e o tipo inicial nnao for int ou float, entao erro
                             else if (varEsc1.getTipo().equals("Float")) {
-                                if (!tipoInicial.equals("Int") && !tipoInicial.equals("Float")  && !tipoInicial.equals("Float") && !(mais && (tipoInicial.equals("String")))) {
-                                    System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                                if (!tipoInicial.equals("Int") && !tipoInicial.equals("Float") && !tipoInicial.equals("Float") && !(mais && (tipoInicial.equals("String")))) {
+                                    System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
                                     System.exit(0);
                                 } else if (mais && (tipoInicial.equals("String"))) {
                                     tipoInicial = "String";
@@ -388,14 +391,18 @@ public class AnaliseSemantica {
                                 }
                             } else if (varEsc1.getTipo().equals("String")) {
                                 if (!tipoInicial.equals("String") && !(mais && (tipoInicial.equals("Int") || tipoInicial.equals("Float")))) {
-                                    System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                                    System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
                                     System.exit(0);
                                 } else if (mais && (tipoInicial.equals("Int") || tipoInicial.equals("Float"))) {
                                     tipoInicial = "String";
                                 }
                             } // se nao for nem int nem float, entao erro 
                             else if (!varEsc1.getTipo().equals(tipoInicial)) {
-                                System.out.println("Erro: Tipos diferentes na linha " + tokens.get(i).getLinha());
+                                System.out.println("Erro: Tipos diferentes. Linha  " + tokens.get(i).getLinha());
+                                System.exit(0);
+                            }
+                            if (!verificaIdentificador(i, tokens).equals(varEsc1.getNovoTipo())) {
+                                System.out.println("Erro: variavel "+ tokens.get(i).getNome() +" inicializada como outro id. Linha  " + tokens.get(i).getLinha());
                                 System.exit(0);
                             }
                             controlePilha = true;
@@ -407,7 +414,7 @@ public class AnaliseSemantica {
                     }
                 }
                 if (controlePilha == false) {
-                    System.out.println("Erro: variavel " + tokens.get(i).getNome() + " nao inicializada na linha " + tokens.get(i).getLinha());
+                    System.out.println("Erro: variavel " + tokens.get(i).getNome() + " nao inicializada. Linha  " + tokens.get(i).getLinha());
                     System.exit(0);
                 }
                 controlePilha = false;
@@ -507,14 +514,14 @@ public class AnaliseSemantica {
             }
             condicao.add(BarranN);
             if (!verificaTipoVariavel(condicao).equals("booleano")) {
-                System.out.println("Erro: Condição nao é booleana na linha " + escopo.get(i).getLinha());
+                System.out.println("Erro: Condição nao é booleana. Linha  " + escopo.get(i).getLinha());
                 System.exit(0);
             }
-        } else if(isFor){
+        } else if (isFor) {
             for (ArrayList<Lexema> var : varEscopo) {
                 for (Lexema var1 : var) {
-                    if(var1.getNome().equals(escopo.get(0).getNome())){
-                        System.out.println("Erro: Variavel "+escopo.get(0).getNome()+" ja foi inicilizada na linha "+escopo.get(0).getLinha());
+                    if (var1.getNome().equals(escopo.get(0).getNome())) {
+                        System.out.println("Erro: Variavel " + escopo.get(0).getNome() + " ja foi inicilizada. Linha  " + escopo.get(0).getLinha());
                         System.exit(0);
                     }
                 }
@@ -560,17 +567,17 @@ public class AnaliseSemantica {
                                     if (lexema.getNome().equals(nomeVet)) {
                                         declarada = true;
                                         if ((lexema.getTipo().equals("Int") || lexema.getTipo().equals("Float")) && !(tipo.equals("Int") || tipo.equals("Float"))) {
-                                            System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + " na linha " + escopo.get(i).getLinha());
+                                            System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + ". Linha  " + escopo.get(i).getLinha());
                                             System.exit(0);
                                         } else if (!lexema.getTipo().equals(tipo) && !((lexema.getTipo().equals("Int") || (lexema.getTipo().equals("Float"))))) {
-                                            System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + " na linha " + escopo.get(i).getLinha());
+                                            System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + ". Linha  " + escopo.get(i).getLinha());
                                             System.exit(0);
                                         } else if (lexema.getTipo().equals("Int") && tipo.equals("Float")) {
                                             System.out.println("Fazer cast");
                                         }
                                         //se o tipo(matriz, vetor, id) forem diferentes
                                         if (!lexema.getNovoTipo().equals(identificador) && !lexema.getTipo().equals("fun")) {
-                                            System.out.println("Erro: " + identificador + " " + nomeVet + " não pode ser modificada na linha " + escopo.get(i).getLinha());
+                                            System.out.println("Erro: " + identificador + " " + nomeVet + " não pode ser modificada. Linha  " + escopo.get(i).getLinha());
                                             System.exit(0);
                                         } // senao atualizo a linha onde foi chamado a ultima vez 
                                         else {
@@ -582,17 +589,17 @@ public class AnaliseSemantica {
                                 } else if (lexema.getNome().equals(escopo.get(i - 1).getNome())) {
                                     declarada = true;
                                     if ((lexema.getTipo().equals("Int") || lexema.getTipo().equals("Float")) && !(tipo.equals("Int") || tipo.equals("Float"))) {
-                                        System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + " na linha " + escopo.get(i).getLinha());
+                                        System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + ". Linha  " + escopo.get(i).getLinha());
                                         System.exit(0);
                                     } else if (!lexema.getTipo().equals(tipo) && !lexema.getNovoTipo().equals("fun") && !((lexema.getTipo().equals("Int") || (lexema.getTipo().equals("Float"))))) {
-                                        System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + " na linha " + escopo.get(i).getLinha());
+                                        System.out.println("Erro: Variavel " + lexema.getNome() + " inicializada como " + lexema.getTipo() + ". Linha  " + escopo.get(i).getLinha());
                                         System.exit(0);
                                     } else if (lexema.getTipo().equals("Int") && tipo.equals("Float")) {
                                         System.out.println("Fazer cast");
                                     }
                                     //se o tipo(matriz, vetor, id) forem diferentes
                                     if (!lexema.getNovoTipo().equals(identificador) && !(lexema.getNovoTipo().equals("fun") && lexema.getTipo().equals(""))) {
-                                        System.out.println("Erro: " + identificador + " " + escopo.get(i - 1).getNome() + " não pode ser modificada na linha " + escopo.get(i).getLinha());
+                                        System.out.println("Erro: " + identificador + " " + escopo.get(i - 1).getNome() + " não pode ser modificada. Linha  " + escopo.get(i).getLinha());
                                         System.exit(0);
                                     } // senao atualizo a linha onde foi chamado a ultima vez 
                                     else {
@@ -619,17 +626,17 @@ public class AnaliseSemantica {
                                     foiDeclarado = true;
                                     //se os tipos forem diferentes
                                     if ((decVetEsc1.getNovoTipo().equals("matriz") && identificador.equals("vetor")) || (decVetEsc1.getNovoTipo().equals("vetor") && identificador.equals("matriz"))) {
-                                        System.out.println("Erro: Variavel " + nome + " nao foi declarada como " + identificador + " na linha " + escopo.get(i).getLinha());
+                                        System.out.println("Erro: Variavel " + nome + " nao foi declarada como " + identificador + ". Linha  " + escopo.get(i).getLinha());
                                         System.exit(0);
                                     } else if (!decVetEsc1.getNovoTipo().equals(identificador)) {
-                                        System.out.println("Erro: Variavel " + escopo.get(i - 1).getNome() + " nao foi declarada como " + identificador + " na linha " + escopo.get(i).getLinha());
+                                        System.out.println("Erro: Variavel " + escopo.get(i - 1).getNome() + " nao foi declarada como " + identificador + ". Linha  " + escopo.get(i).getLinha());
                                         System.exit(0);
                                     }
                                 }
                             }
                         }
                         if ((identificador.equals("vetor") || identificador.equals("matriz")) && foiDeclarado == false) {
-                            System.out.println("Variavel " + nomeVet + " nao foi declarada na linha " + escopo.get(i).getLinha());
+                            System.out.println("Variavel " + nomeVet + " nao foi declarada. Linha  " + escopo.get(i).getLinha());
                             System.exit(0);
                         }
                         //}
@@ -705,7 +712,7 @@ public class AnaliseSemantica {
                         for (Lexema var1 : var) {
                             if (var1.getNome().equals(escopo.get(0).getNome())) {
                                 if (var1.getTipo().equals("")) {
-                                    System.out.println("Erro: Funcao nao possui retorno na linha " + escopo.get(0).getLinha());
+                                    System.out.println("Erro: Funcao nao possui retorno. Linha  " + escopo.get(0).getLinha());
                                     System.exit(0);
                                 }
                             }
