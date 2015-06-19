@@ -189,6 +189,7 @@ public class AnaliseSintatica {
                         verificaCondicao(tokenCond, token.get(i).getLinha());
                         tokenCond.clear();
                         if ((i + 1) < token.size() && token.get(i + 1).getTipo().equals("[")) {
+                            pilha2.push(token.get(i + 1));
                             i = i + 2;
                             while (i < token.size()) {
                                 if (token.get(i).getTipo().equals("[")) {
@@ -1061,6 +1062,7 @@ public class AnaliseSintatica {
     public ArrayList<ArvoreBinaria> geraArvore() {
         ArvoreBinaria<Lexema> arvore;
         ArvoreBinaria<Lexema> arvore2;
+        Stack<Lexema> pilha2 = new Stack<Lexema>();
         ArrayList<Lexema> tokenAtrib = new ArrayList<Lexema>();
         ArrayList<ArvoreBinaria> arvores = new ArrayList<ArvoreBinaria>();
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
@@ -1075,17 +1077,36 @@ public class AnaliseSintatica {
                     if (value.get(i - 1).getTipo().equals("id")) {
                         arvore2 = new ArvoreBinaria<>(value.get(i - 1));
                     } else {
-                        for (int j = (i - 1); !value.get(j).getTipo().equals("["); j--) {
-                            a = j;
-                        }
-                        if (value.get(a - 2).getTipo().equals("]")) {
-                            a = a - 2;
-                            while (!value.get(a).getTipo().equals("[")) {
-                                a--;
+                        pilha2.push(value.get(i - 1));
+                        a = i - 2;
+                        while (true) {
+                            if (value.get(a).getTipo().equals("]")) {
+                                pilha2.push(value.get(a));
+                            } else if (value.get(a).getTipo().equals("[")) {
+                                pilha2.pop();
+                                if (pilha2.isEmpty()) {
+                                    break;
+                                }
                             }
                             a--;
                         }
-                        for (int k = a; k < i; k++) {
+                        if (value.get(a - 1).getTipo().equals("]")) {
+                            pilha2.clear();
+                            pilha2.push(value.get(a));
+                            a = a - 2;
+                            while (true) {
+                                if (value.get(a).getTipo().equals("]")) {
+                                    pilha2.push(value.get(a));
+                                } else if (value.get(a).getTipo().equals("[")) {
+                                    pilha2.pop();
+                                    if (pilha2.isEmpty()) {
+                                        break;
+                                    }
+                                }
+                                a--;
+                            }
+                        }
+                        for (int k = a-1; k < i; k++) {
                             vetor += value.get(k).getNome();
                         }
                         vet = new Lexema();
@@ -1142,7 +1163,5 @@ public class AnaliseSintatica {
         arvores = geraArvore();
         AnaliseSemantica semantico = new AnaliseSemantica(arvores, lexemas);
         semantico.Analisa();
-//        AnaliseSemantica2 semantica = new AnaliseSemantica2(arvores, lexemas);
-//        semantica.Analisa();
     }
 }
