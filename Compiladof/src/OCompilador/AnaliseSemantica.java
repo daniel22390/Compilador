@@ -928,12 +928,12 @@ public class AnaliseSemantica {
                 i = AnalisaLaco(i, escopo, isFuncao);
             } // se encontrar o token acabou, entao desempilha o ultimo arraylist da tabela de escopo 
             else if (escopo.get(i).getTipo().equals("acabou")) {
-                System.out.println("Escopo nao-principal: ");
-                for (ArrayList<Lexema> decVetProg1 : varEscopo) {
-                    for (Lexema decVetProg11 : decVetProg1) {
-                        System.out.println(decVetProg11.getNome() + " :" + decVetProg11.getTipo());
-                    }
-                }
+//                System.out.println("Escopo nao-principal: ");
+//                for (ArrayList<Lexema> decVetProg1 : varEscopo) {
+//                    for (Lexema decVetProg11 : decVetProg1) {
+//                        System.out.println(decVetProg11.getNome() + " :" + decVetProg11.getTipo());
+//                    }
+//                }
                 if (isFuncao) {
                     for (ArrayList<Lexema> var : varEscopo) {
                         for (Lexema var1 : var) {
