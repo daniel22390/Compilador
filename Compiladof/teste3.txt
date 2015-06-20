@@ -3,7 +3,6 @@ a = 5 x 3,2
 b = (8 + 7) x 4,1
 c = 91 - 3 * 2.4
 d = 41 : (4 / 2)
-a = (a * (((b x c) : d) / 2))
 
 se a > 10 então
    telamensagem = "A é maior que 10"
@@ -19,6 +18,13 @@ fim-se
 
 se (d >= 20) e (d =< 60) então
    telamensagem4 = "D está entre 20 e 60"
+   para ju de 1 até 10 faça
+	hg = 10
+		para uuu de 2 até 20 faça
+			bau = 2
+			bau = 2
+		fim-para
+fim-para
 fim-se
 
 se (a =< 30,5) e (a != 20) então
@@ -35,30 +41,44 @@ fim-se
 
 fat = 1
 i = 20,2
+z = 10
 para ga de 1 até 10 faça
 	da = 10
-	para h de 2 até 20 faça
-    fat = fat x i
-	fim-para
+		para h de 2 até 20 faça
+			fat = fat x i
+		fim-para
 fim-para
+
 tela = "10! = " + fat
 i = 20
 fat = 1
-enquanto i <= 5 faça
+da = "d"
+funcao fun(2,3)
+da = 2
+ki = 0
+para ga de 1 até 10 faça
+		para h de 2 até 20 faça
+			fat = 5
+		fim-para
+fim-para
+fun = 10
+fim-funcao
+enquanto a <= 5 faça
     fat = fat x i
     i = i + 1
 fim-enquanto
 tela = "5! = " + fat
-funcao fun(2,3)
-fun = -i
-fim-funcao
-vetor m[10]
+i = 10
+
+
 vetor j[2][10]
 j[20][20] = 30
-m[2] = 1
+vetor m[2]
+m[2] = i
 a = m[2]
-m[2] = 3,3
-m[m[2]] = fun(2,3)
+m[j[2][2]] = 3,3
+m[2] = 1 
+
 fim
 # As outras posições não foram inicializadas
 Portanto há zero ou espaço no seu interior #

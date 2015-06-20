@@ -5,6 +5,8 @@
  */
 package OCompilador;
 
+import java.util.ArrayList;
+
 /**
  *ggf
  * @author Daniel
@@ -18,7 +20,7 @@ public class Lexema {
     private int linhaAtual;
     // se for vetor, matriz. id
     private String novoTipo;
-
+    private ArrayList<Integer> escopo = new ArrayList<>();
     public Lexema() {
         this.linhaAtual = -1;
         this.novoTipo = "";
@@ -92,6 +94,20 @@ public class Lexema {
      */
     public void setLinhaAtual(int linhaAtual) {
         this.linhaAtual = linhaAtual;
+    }
+
+    /**
+     * @return the escopo
+     */
+    public ArrayList<Integer> getEscopo() {
+        return escopo;
+    }
+
+    /**
+     * @param escopo the escopo to set
+     */
+    public void setEscopo(ArrayList<Integer> escopo) {
+        this.escopo = escopo;
     }
 
 
