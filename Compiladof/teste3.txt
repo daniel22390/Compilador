@@ -26,7 +26,6 @@ se (d >= 20) e (d =< 60) então
 		fim-para
 fim-para
 fim-se
-
 se (a =< 30,5) e (a != 20) então
    telamensagem5 = "E é menor que 30 e meio, mas é diferente de 20"
    z = "a"
@@ -53,15 +52,15 @@ tela = "10! = " + fat
 i = 20
 fat = 1
 da = "d"
-funcao fun(2,3)
-da = 2
+funcao jud(3, 3)
+da = 3
 ki = 0
 para ga de 1 até 10 faça
 		para h de 2 até 20 faça
 			fat = 5
 		fim-para
 fim-para
-fun = 10
+jud = "s"
 fim-funcao
 enquanto a <= 5 faça
     fat = fat x i
@@ -69,15 +68,17 @@ enquanto a <= 5 faça
 fim-enquanto
 tela = "5! = " + fat
 i = 10
-
+i = i + 10.3
 
 vetor j[2][10]
 j[20][20] = 30
 vetor m[2]
-m[2] = i
-a = m[2]
-m[j[2][2]] = 3,3
-m[2] = 1 
+m[2] = "s"
+m[j[2][2]] = 3
+kjhfkhfkhuf = jud(2,1)
+kjhfkhfkhuf = "grt"
+hu = 20
+hu = 765
 
 fim
 # As outras posições não foram inicializadas
