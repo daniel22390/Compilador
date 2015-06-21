@@ -53,15 +53,23 @@ tela = "10! = " + fat
 i = 20
 fat = 1
 da = "d"
-funcao jud(jdut, po)
-da = 3
+funcao jud(da, ba)
 ki = 0
-ba = po + jdut + po
 para ga de 1 até 10 faça
-		jki = 32
+		jki = 32 < 56
 		para h de 2 até 20 faça
 			fat = 5
-			jud = jdut
+			jud = ba
+		fim-para
+fim-para
+fim-funcao
+funcao vft(da, ba)
+ki = 0
+para ga de 1 até 10 faça
+		jki = 32 < 56
+		para h de 2 até 20 faça
+			fat = 5
+			vft = 2+3
 		fim-para
 fim-para
 fim-funcao
@@ -78,7 +86,9 @@ j[20][20] = 30
 vetor m[2]
 m[2] = "s"
 m[j[2][2]] = 3
-kjhfkhfkhuf = jud(2,1) + 453
+kjhfkhfkhuf = jud("a",1)
+ab = jud(i<3, da)
+ju = verdadeiro + vft(m[2], 4)
 kjhfkhfkhuf = 123
 hu = 20
 hu = 765
