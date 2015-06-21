@@ -31,6 +31,7 @@ se (a =< 30,5) e (a != 20) então
    z = "a"
    se (a == 0) então
      telamensagem5 = "E é zero"
+	 z = "s"
    senão
    se (a < 0) então
      telamensagem5 = "E é negativo"
@@ -52,15 +53,17 @@ tela = "10! = " + fat
 i = 20
 fat = 1
 da = "d"
-funcao jud(3, 3)
+funcao jud(jdut, po)
 da = 3
 ki = 0
+ba = po + jdut + po
 para ga de 1 até 10 faça
+		jki = 32
 		para h de 2 até 20 faça
 			fat = 5
+			jud = jdut
 		fim-para
 fim-para
-jud = "s"
 fim-funcao
 enquanto a <= 5 faça
     fat = fat x i
@@ -75,8 +78,8 @@ j[20][20] = 30
 vetor m[2]
 m[2] = "s"
 m[j[2][2]] = 3
-kjhfkhfkhuf = jud(2,1)
-kjhfkhfkhuf = "grt"
+kjhfkhfkhuf = jud(2,1) + 453
+kjhfkhfkhuf = 123
 hu = 20
 hu = 765
 
