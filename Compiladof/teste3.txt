@@ -6,7 +6,9 @@ d = 41 : (4 / 2)
 
 se a > 10 então
    telamensagem = "A é maior que 10"
+   daniel = 20
 fim-se
+daniel = "s"
 oi = "s"
 se b < 30 então
    telamensagem2 = "B é menor que 30" 
@@ -63,7 +65,7 @@ para ga de 1 até 10 faça
 		fim-para
 fim-para
 fim-funcao
-funcao vft(da, ba)
+funcao vft(kidthyy, ba)
 ki = 0
 para ga de 1 até 10 faça
 		jki = 32 < 56
@@ -88,7 +90,7 @@ m[2] = "s"
 m[j[2][2]] = 3
 kjhfkhfkhuf = jud("a",1)
 ab = jud(i<3, da)
-ju = verdadeiro + vft(m[2], 4)
+ju = vft(m[2], 4)
 kjhfkhfkhuf = 123
 hu = 20
 hu = 765

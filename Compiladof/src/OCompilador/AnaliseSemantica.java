@@ -20,6 +20,10 @@ public class AnaliseSemantica {
     Stack<ArrayList<Lexema>> decVetorEscopo = new Stack<>();
     Stack<ArrayList<Lexema>> decVetFunEscopo = new Stack<>();
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas = new LinkedHashMap<>();
+    ArrayList<Lexema> tabTokensProg = new ArrayList<Lexema>();
+    ArrayList<Lexema> tabTokensFun = new ArrayList<Lexema>();
+    ArrayList<ArrayList<Integer>> controleTokens = new ArrayList<>();
+    int contador = 1;
 
     public AnaliseSemantica(ArrayList<ArvoreBinaria> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
         this.arvore = arvore;
@@ -237,7 +241,7 @@ public class AnaliseSemantica {
         return tipoVar;
     }
 
-    public int AnalisaLaco(int posicao, ArrayList<Lexema> escopo, boolean isFuncao) {
+    public int AnalisaLaco(int posicao, ArrayList<Lexema> escopo, boolean isFuncao, ArrayList<Integer> pai, boolean primeiroAcesso) {
         // criado esse lexema para colocar no final da Arrayls, para saber qdo o escopo acaba
         Lexema acabou = new Lexema();
         acabou.setNome("acabou");
@@ -258,9 +262,9 @@ public class AnaliseSemantica {
                     if (pilha.isEmpty()) {
                         escopoSe.add(acabou);
                         if (senao) {
-                            escopoProg(escopoSe, isFuncao, false, false, false);
+                            escopoProg(escopoSe, isFuncao, false, false, false, pai, primeiroAcesso);
                         } else {
-                            escopoProg(escopoSe, isFuncao, true, false, false);
+                            escopoProg(escopoSe, isFuncao, true, false, false, pai, primeiroAcesso);
                         }
                         break;
                     }
@@ -268,7 +272,7 @@ public class AnaliseSemantica {
                     if (pilha.size() == 1) {
                         senao = true;
                         escopoSe.add(acabou);
-                        escopoProg(escopoSe, isFuncao, true, false, false);
+                        escopoProg(escopoSe, isFuncao, true, false, false, pai, primeiroAcesso);
                         escopoSe.clear();
                         posicao++;
                         continue;
@@ -289,7 +293,7 @@ public class AnaliseSemantica {
                     pilha.pop();
                     if (pilha.isEmpty()) {
                         escopoEnquanto.add(acabou);
-                        escopoProg(escopoEnquanto, isFuncao, true, false, false);
+                        escopoProg(escopoEnquanto, isFuncao, true, false, false, pai, primeiroAcesso);
                         break;
                     }
                 }
@@ -308,7 +312,7 @@ public class AnaliseSemantica {
                     pilha.pop();
                     if (pilha.isEmpty()) {
                         escopoPara.add(acabou);
-                        escopoProg(escopoPara, isFuncao, false, true, false);
+                        escopoProg(escopoPara, isFuncao, false, true, false, pai, primeiroAcesso);
                         break;
                     }
                 }
@@ -346,7 +350,9 @@ public class AnaliseSemantica {
         ArrayList<Lexema> iniciaDec = new ArrayList<Lexema>();
         funEscopo.push(iniciaEsc);
         decVetFunEscopo.push(iniciaDec);
+        boolean primeiroAcesso = false;
         if (PesquisaListaTokens(escopo.get(0), false) == null) {
+            primeiroAcesso = true;
             Lexema nomeFun = new Lexema();
             nomeFun.setNome(escopo.get(0).getNome());
             nomeFun.setLinha(escopo.get(0).getLinha());
@@ -363,7 +369,10 @@ public class AnaliseSemantica {
             varEscopo.peek().add(nomeFun);
         }
         verificaFuncao(1, escopo, true);
-        escopoProg(escopo, true, false, false, true);
+        ArrayList<Integer> array = new ArrayList<>();
+        array.add(contador);
+        escopoProg(escopo, true, false, false, true, array, primeiroAcesso);
+        contador++;
         Lexema lex = PesquisaListaTokens(escopo.get(0), false);
         return lex;
     }
@@ -757,7 +766,7 @@ public class AnaliseSemantica {
                             tipoInicial = "Float";
                         }
                     }
-                } 
+                }
                 tipoInicial = tipo;
                 i = k;
             } else if (tokens.get(i).getTipo().equals("sum")) {
@@ -828,9 +837,29 @@ public class AnaliseSemantica {
         return tokens.get(posicao);
     }
 
-    public void escopoProg(ArrayList<Lexema> escopo, boolean isFuncao, boolean isLaco, boolean isFor, boolean primeiraFun) {
+    public void salvaTokens(boolean isFunction, ArrayList<Integer> pai) {
+        Stack<ArrayList<Lexema>> pilha;
+        ArrayList<Integer> paiAux = new ArrayList<>(pai);
+        if (isFunction) {
+            pilha = funEscopo;
+        } else {
+            pilha = varEscopo;
+        }
+        for (Lexema lex : pilha.peek()) {
+            lex.setEscopo(paiAux);
+            if (isFunction) {
+                tabTokensFun.add(lex);
+            } else {
+                tabTokensProg.add(lex);
+            }
+        }
+    }
+
+    public void escopoProg(ArrayList<Lexema> escopo, boolean isFuncao, boolean isLaco, boolean isFor, boolean primeiraFun, ArrayList<Integer> pai, boolean primAcesso) {
         ArrayList<Lexema> varProg = new ArrayList<>();
         ArrayList<Lexema> decVetProg = new ArrayList<>();
+        int cont = 0;
+        boolean primChamada = primeiraFun;
         // empilho o escopo na pilha de escopos
         if (!primeiraFun) {
             inicializaEscopo(isFuncao);
@@ -972,7 +1001,10 @@ public class AnaliseSemantica {
 
             } // se encontrar um laço 
             else if (IsLaco(escopo.get(i))) {
-                i = AnalisaLaco(i, escopo, isFuncao);
+                cont++;
+                pai.add(cont);
+                i = AnalisaLaco(i, escopo, isFuncao, pai, primAcesso);
+                pai.remove(pai.size() - 1);
             } // se encontrar o token acabou, entao desempilha o ultimo arraylist da tabela de escopo 
             else if (escopo.get(i).getTipo().equals("acabou")) {
 //                System.out.println("Escopo nao-principal: ");
@@ -981,6 +1013,9 @@ public class AnaliseSemantica {
 //                        System.out.println(decVetProg11.getNome() + " "+decVetProg11.getNovoTipo()+":" + decVetProg11.getTipo());
 //                    }
 //                }
+                if ((isFuncao && primAcesso) || (!isFuncao && !primAcesso)) {
+                    salvaTokens(isFuncao, pai);
+                }
                 if (isFuncao) {
                     for (ArrayList<Lexema> var : varEscopo) {
                         for (Lexema var1 : var) {
@@ -1009,12 +1044,18 @@ public class AnaliseSemantica {
             ArrayList<Lexema> value = entrySet.getValue();
             for (Lexema value1 : value) {
                 if (value1.getNome().equals("fim")) {
-                    escopoProg(escopoProg, false, false, false, false);
+                    ArrayList<Integer> array = new ArrayList<>();
+                    array.add(1);
+                    escopoProg(escopoProg, false, false, false, false, array, false);
+                    salvaTokens(false, array);
                     escopoProg.clear();
                 } else if (value1.getTipo().equals("function")) {
                     existeFuncao = true;
                     isFuncao = true;
-                    escopoProg(escopoProg, false, false, false, false);
+                    ArrayList<Integer> array = new ArrayList<>();
+                    array.add(1);
+                    escopoProg(escopoProg, false, false, false, false, array, false);
+                    salvaTokens(false, array);
                     escopoProg.clear();
                 } else if (value1.getTipo().equals("endfunction")) {
                     isFuncao = false;
@@ -1023,6 +1064,24 @@ public class AnaliseSemantica {
                     escopoProg.add(value1);
                 }
             }
+        }
+        System.out.println("Variaveis Programa");
+        for (Lexema escopoProg1 : tabTokensProg) {
+            System.out.print("Nome: " + escopoProg1.getNome() + "  Escopo: ");
+            for (Integer esc : escopoProg1.getEscopo()) {
+                System.out.print(esc + " ");
+            }
+            System.out.print(" Tipo: "+escopoProg1.getTipo());
+            System.out.println("");
+        }
+        System.out.println("");
+        System.out.println("Variaveis Funcao");
+        for (Lexema escopoProg1 : tabTokensFun) {
+            System.out.print("Nome: " + escopoProg1.getNome() + "  Escopo: ");
+            for (Integer esc : escopoProg1.getEscopo()) {
+                System.out.print(esc + " ");
+            }
+            System.out.println(" Tipo: "+escopoProg1.getTipo());
         }
     }
 }
