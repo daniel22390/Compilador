@@ -22,7 +22,6 @@ public class Lexema {
     private String novoTipo;
     private ArrayList<Integer> escopo = new ArrayList<>();
     public Lexema() {
-        this.linhaAtual = -1;
         this.novoTipo = "";
     }
 

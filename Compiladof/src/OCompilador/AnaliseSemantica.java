@@ -148,12 +148,12 @@ public class AnaliseSemantica {
         }
     }
 
-    public void AtualizaLinhaToken(Lexema token, boolean isFuncao, int linha) {
+    public void AtualizaLinhaToken(Lexema token, boolean isFuncao, Lexema lex) {
         if (isFuncao) {
             for (ArrayList<Lexema> var : funEscopo) {
                 for (Lexema var1 : var) {
                     if (token.getNome().equals(var1.getNome())) {
-                        var1.setLinhaAtual(linha);
+                        var1.setLinhaAtual(lex.getLinha());
                         return;
                     }
                 }
@@ -162,7 +162,7 @@ public class AnaliseSemantica {
             for (ArrayList<Lexema> var : varEscopo) {
                 for (Lexema var1 : var) {
                     if (token.getNome().equals(var1.getNome())) {
-                        var1.setLinhaAtual(linha);
+                        var1.setLinhaAtual(lex.getLinha());
                         return;
                     }
                 }
@@ -909,7 +909,7 @@ public class AnaliseSemantica {
                                     System.exit(0);
                                 } // senao atualizo a linha onde foi chamado a ultima vez 
                                 else {
-                                    AtualizaLinhaToken(lexema, isFuncao, i);
+                                    AtualizaLinhaToken(lexema, isFuncao, escopo.get(i));
                                 }
                             }
                         } else {
@@ -931,7 +931,7 @@ public class AnaliseSemantica {
                                     System.exit(0);
                                 } // senao atualizo a linha onde foi chamado a ultima vez 
                                 else {
-                                    AtualizaLinhaToken(lexema, isFuncao, i);
+                                    AtualizaLinhaToken(lexema, isFuncao, escopo.get(i));
                                 }
                             }
                         }
@@ -1071,7 +1071,7 @@ public class AnaliseSemantica {
             for (Integer esc : escopoProg1.getEscopo()) {
                 System.out.print(esc + " ");
             }
-            System.out.print(" Tipo: "+escopoProg1.getTipo());
+            System.out.print(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinhaAtual());
             System.out.println("");
         }
         System.out.println("");
@@ -1081,7 +1081,7 @@ public class AnaliseSemantica {
             for (Integer esc : escopoProg1.getEscopo()) {
                 System.out.print(esc + " ");
             }
-            System.out.println(" Tipo: "+escopoProg1.getTipo());
+            System.out.println(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinhaAtual());
         }
     }
 }

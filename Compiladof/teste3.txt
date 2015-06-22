@@ -59,6 +59,7 @@ funcao jud(da, ba)
 ki = 0
 para ga de 1 até 10 faça
 		jki = 32 < 56
+		ki = 10
 		para h de 2 até 20 faça
 			fat = 5
 			jud = ba
