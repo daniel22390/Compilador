@@ -11,7 +11,7 @@ import java.util.Stack;
  */
 public class AnaliseSemantica {
 
-    ArrayList<ArvoreBinaria> arvore = new ArrayList<>();
+    ArrayList<ArvoreBinaria<Lexema>> arvore = new ArrayList<>();
     // todas as variaveis visiveis no escopo
     Stack<ArrayList<Lexema>> varEscopo = new Stack<>();
     Stack<ArrayList<Lexema>> funEscopo = new Stack<>();
@@ -25,7 +25,7 @@ public class AnaliseSemantica {
     ArrayList<ArrayList<Integer>> controleTokens = new ArrayList<>();
     int contador = 1;
 
-    public AnaliseSemantica(ArrayList<ArvoreBinaria> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
+    public AnaliseSemantica(ArrayList<ArvoreBinaria<Lexema>> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
         this.arvore = arvore;
         this.lexemas = listao;
     }
@@ -1071,7 +1071,7 @@ public class AnaliseSemantica {
             for (Integer esc : escopoProg1.getEscopo()) {
                 System.out.print(esc + " ");
             }
-            System.out.print(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinhaAtual());
+            System.out.print(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinha()+" -> "+escopoProg1.getLinhaAtual());
             System.out.println("");
         }
         System.out.println("");
@@ -1081,7 +1081,10 @@ public class AnaliseSemantica {
             for (Integer esc : escopoProg1.getEscopo()) {
                 System.out.print(esc + " ");
             }
-            System.out.println(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinhaAtual());
+            System.out.println(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinha()+" -> "+escopoProg1.getLinhaAtual());
         }
+        
+        Otimizacao otim = new Otimizacao(tabTokensProg, tabTokensFun, this.arvore);
+        otim.analisa();
     }
 }

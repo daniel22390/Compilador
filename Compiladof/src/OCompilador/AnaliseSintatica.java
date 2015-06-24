@@ -1069,12 +1069,12 @@ public class AnaliseSintatica {
         }
     }
 
-    public ArrayList<ArvoreBinaria> geraArvore() {
+    public ArrayList<ArvoreBinaria<Lexema>> geraArvore() {
         ArvoreBinaria<Lexema> arvore;
         ArvoreBinaria<Lexema> arvore2;
         Stack<Lexema> pilha2 = new Stack<Lexema>();
         ArrayList<Lexema> tokenAtrib = new ArrayList<Lexema>();
-        ArrayList<ArvoreBinaria> arvores = new ArrayList<ArvoreBinaria>();
+        ArrayList<ArvoreBinaria<Lexema>> arvores = new ArrayList<ArvoreBinaria<Lexema>>();
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
             Integer key = entrySet.getKey();
             ArrayList<Lexema> value = entrySet.getValue();
@@ -1143,7 +1143,7 @@ public class AnaliseSintatica {
     public void Analisa() throws IOException {
         LinkedHashSet<String> mensagens = new LinkedHashSet<String>();
         boolean programa = false;
-        ArrayList<ArvoreBinaria> arvores = new ArrayList<ArvoreBinaria>();
+        ArrayList<ArvoreBinaria<Lexema>> arvores = new ArrayList<ArvoreBinaria<Lexema>>();
 
         System.out.println("Erro Sintáticos: ");
         sair:

@@ -15,6 +15,7 @@ public class Lexema {
     // se eh int, float, ...
     private String tipo = "";
     private String nome;
+    private String nomeVar;
     private int linha;
     //onde foi acessado pela ultima vez
     private int linhaAtual;
@@ -107,6 +108,20 @@ public class Lexema {
      */
     public void setEscopo(ArrayList<Integer> escopo) {
         this.escopo = escopo;
+    }
+
+    /**
+     * @return the nomeVar
+     */
+    public String getNomeVar() {
+        return nomeVar;
+    }
+
+    /**
+     * @param nomeVar the nomeVar to set
+     */
+    public void setNomeVar(String nomeVar) {
+        this.nomeVar = nomeVar;
     }
 
 
