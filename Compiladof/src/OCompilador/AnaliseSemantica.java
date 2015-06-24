@@ -565,6 +565,7 @@ public class AnaliseSemantica {
                     System.out.println("Erro: Tipo de variavel " + tokens.get(i).getNome() + " nao pode ser modificada. Linha  " + tokens.get(i).getLinha());
                     System.exit(0);
                 } else if (tokens.get(i).getNome().equals(varEsc1.getNome())) {
+                    AtualizaLinhaToken(tokens.get(i), isFuncao, tokens.get(i));
                     if (varEsc1.getTipo().equals("")) {
                         System.out.println("Erro: variavel " + varEsc1.getNome() + " ainda nao foi inicializada. Linha  " + tokens.get(i).getLinha());
                         System.exit(0);
@@ -642,6 +643,7 @@ public class AnaliseSemantica {
                     System.exit(0);
                 }
                 tipoInicial = lista1.getTipo();
+                AtualizaLinhaToken(tokens.get(i), isFuncao, tokens.get(i));
             }
         } // se o primeiro elemento for string
         else if (tokens.get(i).getTipo().equals("String")) {

@@ -7,6 +7,7 @@ package OCompilador;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class Otimizacao {
@@ -16,12 +17,17 @@ public class Otimizacao {
     ArrayList<ArvoreBinaria<Lexema>> arvore;
     LinkedHashMap<Integer, ArrayList<Lexema>> linhas;
     ArrayList<Lexema> variaveis;
-    Stack<Integer> varDisponiveis = new Stack<Integer>();
+    Stack<Integer> varDisponiveis;
+    ArrayList<ArrayList<Lexema>> variaveisAlocadas;
 
     public Otimizacao(ArrayList<Lexema> TabTokensProg, ArrayList<Lexema> TabTokensFun, ArrayList<ArvoreBinaria<Lexema>> arvore) {
         this.TabTokensFun = TabTokensFun;
         this.TabTokensProg = TabTokensProg;
         this.arvore = arvore;
+        linhas = new LinkedHashMap<>();
+        variaveis = new ArrayList<Lexema>();
+        varDisponiveis = new Stack<>();
+        variaveisAlocadas = new ArrayList<>();
     }
 
     public Lexema PesquisaToken(Lexema token) {
@@ -55,10 +61,23 @@ public class Otimizacao {
             return false;
         }
     }
-    
-    public Lexema LiberaVariavel(Lexema lex){
+
+    public Lexema LiberaVariavel(Lexema lex) {
         Lexema retorno = new Lexema();
-        // fazer
+        ArrayList<Lexema> lista = new ArrayList<Lexema>();
+        if (lex.getTipo().equals("id")) {
+            for (ArrayList<Lexema> variaveis : variaveisAlocadas) {
+                if (variaveis.get(0).getNome().equals(lex.getNome())) {
+                    return variaveis.get(1);
+                }
+            }
+            lista.add(lex);
+            retorno = variaveis.remove(0);
+            lista.add(retorno);
+            variaveisAlocadas.add(lista);
+            return retorno;
+        }
+        retorno = variaveis.remove(0);
         return retorno;
     }
 
@@ -67,10 +86,9 @@ public class Otimizacao {
         ArrayList<Lexema> linha;
         Lexema varA;
         Lexema varB;
-        Lexema esq = arvore.getEsq().getNodo();
-        Lexema dir = arvore.getDir().getNodo();
 
         if (arvore.getEsq() != null) {
+            Lexema esq = arvore.getEsq().getNodo();
             if (esq.getTipo().equals("id")) {
                 varA = LiberaVariavel(esq);
                 exp.add(varA);
@@ -83,8 +101,15 @@ public class Otimizacao {
                 exp.add(esq);
             }
         }
-        exp.add(arvore.getNodo());
+        if (Operador(arvore.getNodo())) {
+            exp.add(arvore.getNodo());
+        } else if (arvore.getNodo().getTipo().equals("id")) {
+            exp.add(LiberaVariavel(arvore.getNodo()));
+        } else {
+            exp.add(arvore.getNodo());
+        }
         if (arvore.getDir() != null) {
+            Lexema dir = arvore.getDir().getNodo();
             if (dir.getTipo().equals("id")) {
                 varB = LiberaVariavel(dir);
                 exp.add(varB);
@@ -101,21 +126,30 @@ public class Otimizacao {
     }
 
     public void Otimiza(ArvoreBinaria<Lexema> arvore) {
-        Lexema a = variaveis.remove(0);
-        a.setNome(arvore.getEsq().getNodo().getNome());
+        Lexema a = LiberaVariavel(arvore.getEsq().getNodo());
+//        a.setNome(arvore.getEsq().getNodo().getNome());
         a.setLinha(arvore.getEsq().getNodo().getLinha());
         linhas.put(a.getLinha(), CriaExpr(a, Expr(arvore.getDir())));
     }
 
     public void analisa() {
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i < 11; i++) {
             Lexema lex = new Lexema();
-            lex.setNomeVar("a" + i);
+            lex.setNome("a" + i);
             variaveis.add(lex);
         }
         varDisponiveis.push(10);
         for (ArvoreBinaria<Lexema> arv : arvore) {
             Otimiza(arv);
+        }
+
+        for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : linhas.entrySet()) {
+            Integer key = entrySet.getKey();
+            ArrayList<Lexema> value = entrySet.getValue();
+            for (Lexema value1 : value) {
+                System.out.print(value1.getNome());
+            }
+            System.out.println("");
         }
     }
 }
