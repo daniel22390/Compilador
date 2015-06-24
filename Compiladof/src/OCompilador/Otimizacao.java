@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package OCompilador;
 
 import java.util.ArrayList;
@@ -25,7 +21,7 @@ public class Otimizacao {
         this.TabTokensProg = TabTokensProg;
         this.arvore = arvore;
         linhas = new LinkedHashMap<>();
-        variaveis = new ArrayList<Lexema>();
+        variaveis = new ArrayList<>();
         varDisponiveis = new Stack<>();
         variaveisAlocadas = new ArrayList<>();
     }
@@ -35,7 +31,7 @@ public class Otimizacao {
     }
 
     public ArrayList<Lexema> CriaExpr(Lexema esq, ArrayList<Lexema> dir) {
-        ArrayList<Lexema> linha = new ArrayList<Lexema>();
+        ArrayList<Lexema> linha = new ArrayList<>();
         Lexema atrib = new Lexema();
         atrib.setNome("=");
         atrib.setTipo("atrib");
@@ -52,23 +48,19 @@ public class Otimizacao {
     }
 
     public boolean Operador(Lexema token) {
-        if (token.getTipo().equals("sum") || token.getTipo().equals("sub") || token.getTipo().equals("mult")
+        return token.getTipo().equals("sum") || token.getTipo().equals("sub") || token.getTipo().equals("mult")
                 || token.getTipo().equals("div") || token.getTipo().equals("gte") || token.getTipo().equals("gt")
                 || token.getTipo().equals("lt") || token.getTipo().equals("lte") || token.getTipo().equals("eq")
-                || token.getTipo().equals("neq")) {
-            return true;
-        } else {
-            return false;
-        }
+                || token.getTipo().equals("neq");
     }
 
     public Lexema LiberaVariavel(Lexema lex) {
-        Lexema retorno = new Lexema();
-        ArrayList<Lexema> lista = new ArrayList<Lexema>();
+        Lexema retorno;
+        ArrayList<Lexema> lista = new ArrayList<>();
         if (lex.getTipo().equals("id")) {
-            for (ArrayList<Lexema> variaveis : variaveisAlocadas) {
-                if (variaveis.get(0).getNome().equals(lex.getNome())) {
-                    return variaveis.get(1);
+            for (ArrayList<Lexema> variavel : variaveisAlocadas) {
+                if (variavel.get(0).getNome().equals(lex.getNome())) {
+                    return variavel.get(1);
                 }
             }
             lista.add(lex);
