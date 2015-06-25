@@ -1073,7 +1073,7 @@ public class AnaliseSemantica {
             for (Integer esc : escopoProg1.getEscopo()) {
                 System.out.print(esc + " ");
             }
-            System.out.print(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinha()+" -> "+escopoProg1.getLinhaAtual());
+            System.out.print(" Tipo: " + escopoProg1.getTipo() + " Linha: " + escopoProg1.getLinha() + " -> " + escopoProg1.getLinhaAtual());
             System.out.println("");
         }
         System.out.println("");
@@ -1083,9 +1083,9 @@ public class AnaliseSemantica {
             for (Integer esc : escopoProg1.getEscopo()) {
                 System.out.print(esc + " ");
             }
-            System.out.println(" Tipo: " + escopoProg1.getTipo()+" Linha: "+escopoProg1.getLinha()+" -> "+escopoProg1.getLinhaAtual());
+            System.out.println(" Tipo: " + escopoProg1.getTipo() + " Linha: " + escopoProg1.getLinha() + " -> " + escopoProg1.getLinhaAtual());
         }
-        
+
         Otimizacao otim = new Otimizacao(tabTokensProg, tabTokensFun, this.arvore);
         otim.analisa();
     }

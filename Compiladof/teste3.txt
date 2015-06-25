@@ -1,10 +1,18 @@
-﻿
-c = 10
+﻿vetor v[2]
+v[2] = 30
+c = 20 + v[2]
 b = 5
 a = 2
-d = 60
+d = 10
 a = d - (a+c)
 d = 30
+f = 20
+k = 80
+p = 90
+h = 654
+u = 40
+ju = 40
+c = 24
 fim
 # As outras posições não foram inicializadas
 Portanto há zero ou espaço no seu interior #

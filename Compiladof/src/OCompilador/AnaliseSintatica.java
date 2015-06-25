@@ -873,14 +873,25 @@ public class AnaliseSintatica {
                 arvore = new ArvoreBinaria<>(Parametro);
                 return arvore;
             } else if (token.get(0).getTipo().equals("id")) {
-                arvore = new ArvoreBinaria<>(token.get(0));
-                int i;
-                arvore2 = new ArvoreBinaria<>(token.get(2));
-                arvore.setEsq(arvore2);
-                if (token.size() > 4) {
-                    arvore3 = new ArvoreBinaria<>(token.get(5));
-                    arvore.setDir(arvore3);
+                int i = 0;
+                String nome = "";
+                while(!token.get(i).getTipo().equals("]")){
+                    nome = nome + token.get(i).getNome();
+                    i++;
                 }
+                nome = nome + token.get(i).getNome();
+                i++;
+                if(i<token.size() && token.get(i).getTipo().equals("[")){
+                    while(!token.get(i).getTipo().equals("]")){
+                        nome = nome + token.get(i).getNome();
+                        i++;
+                    }
+                    nome = nome + token.get(i).getNome();
+                }
+                Lexema vetor = token.get(0);
+                vetor.setNomeVar(nome);
+                vetor.setTipo("vetor");
+                arvore = new ArvoreBinaria<>(vetor);
                 return arvore;
             } else {
                 return null;

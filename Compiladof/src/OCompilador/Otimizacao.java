@@ -3,6 +3,7 @@ package OCompilador;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 
 public class Otimizacao {
@@ -62,6 +63,25 @@ public class Otimizacao {
         return null;
     }
 
+    public Lexema DesalocaVariavel(Lexema lex) {
+        int i = lex.getLinha();
+        Lexema newLex = PesquisaListaTokens(lex);
+
+        for (ArrayList<Lexema> variaveis : variaveisAlocadas) {
+            if (variaveis.get(0).getLinhaAtual() < i) {
+                return variaveis.get(1);
+            } else if (newLex.getEscopo().size() < variaveis.get(0).getEscopo().size()) {
+                return variaveis.get(1);
+            } else if ((newLex.getEscopo().size() == variaveis.get(0).getEscopo().size())
+                    && (!Objects.equals(newLex.getEscopo().get(newLex.getEscopo().size() - 1), variaveis.get(0).getEscopo().get(variaveis.get(0).getEscopo().size() - 1)))) {
+                return variaveis.get(1);
+            }
+        }
+        System.out.println("Erro: variáveis superiores as disponiveis no programa. Linha " + lex.getLinha());
+        System.exit(0);
+        return null;
+    }
+
     public Lexema LiberaVariavel(Lexema lex) {
         Lexema retorno;
         ArrayList<Lexema> lista = new ArrayList<>();
@@ -73,9 +93,13 @@ public class Otimizacao {
             }
             Lexema token = PesquisaListaTokens(lex);
             lista.add(token);
-            retorno = variaveis.remove(0);
-            lista.add(retorno);
-            variaveisAlocadas.add(lista);
+            if (variaveis.isEmpty()) {
+                retorno = DesalocaVariavel(lex);
+            } else {
+                retorno = variaveis.remove(0);
+                lista.add(retorno);
+                variaveisAlocadas.add(lista);
+            }
             return retorno;
         }
         retorno = variaveis.remove(0);
@@ -99,6 +123,10 @@ public class Otimizacao {
                 exp.add(varA);
                 linha = CriaExpr(varA, Expr(arvore.getEsq()));
                 linhas.put(varA.getLinha(), linha);
+            } else if (esq.getTipo().equals("vetor")) {
+                Lexema vetor = esq;
+                vetor.setNome(esq.getNomeVar());
+                exp.add(vetor);
             } else {
                 exp.add(esq);
             }
@@ -121,6 +149,10 @@ public class Otimizacao {
                 exp.add(varB);
                 linha = CriaExpr(varB, Expr(arvore.getDir()));
                 linhas.put(varB.getLinha(), linha);
+            } else if (dir.getTipo().equals("vetor")) {
+                Lexema vetor = dir;
+                vetor.setNome(dir.getNomeVar());
+                exp.add(vetor);
             } else {
                 exp.add(dir);
             }
@@ -129,7 +161,12 @@ public class Otimizacao {
     }
 
     public void Otimiza(ArvoreBinaria<Lexema> arvore) {
-        Lexema a = LiberaVariavel(arvore.getEsq().getNodo());
+        Lexema a = new Lexema();
+        if (arvore.getEsq().getNodo().getTipo().equals("vet")) {
+            a = arvore.getEsq().getNodo();
+        } else {
+            a = LiberaVariavel(arvore.getEsq().getNodo());
+        }
         a.setLinha(arvore.getEsq().getNodo().getLinha());
         linhas.put(a.getLinha(), CriaExpr(a, Expr(arvore.getDir())));
     }
