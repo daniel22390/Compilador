@@ -3,16 +3,19 @@ v[2] = 30
 c = 20 + v[2]
 b = 5
 a = 2
+se (a<3) então
 d = 10
 a = d - (a+c)
 d = 30
+fim-se
 f = 20
 k = 80
 p = 90
 h = 654
 u = 40
 ju = 40
-c = 24
+b = c+ 2
+ka = 20 + c + b + a + f + k + p + h + u + ju
 fim
 # As outras posições não foram inicializadas
 Portanto há zero ou espaço no seu interior #

@@ -69,12 +69,22 @@ public class Otimizacao {
 
         for (ArrayList<Lexema> variaveis : variaveisAlocadas) {
             if (variaveis.get(0).getLinhaAtual() < i) {
-                return variaveis.get(1);
-            } else if (newLex.getEscopo().size() < variaveis.get(0).getEscopo().size()) {
-                return variaveis.get(1);
-            } else if ((newLex.getEscopo().size() == variaveis.get(0).getEscopo().size())
+                Lexema retorno = variaveis.get(1);
+                variaveis.remove(this);
+                return retorno;
+            } else if (variaveis.get(0).getTipo().equals("aux")) {
+                Lexema retorno = variaveis.get(0);
+                variaveis.remove(this);
+                return retorno;
+            } else if (!Operador(lex) && (newLex.getEscopo().size() < variaveis.get(0).getEscopo().size())) {
+                Lexema retorno = variaveis.get(1);
+                variaveis.remove(this);
+                return retorno;
+            } else if ((!Operador(lex)) && (newLex.getEscopo().size() == variaveis.get(0).getEscopo().size())
                     && (!Objects.equals(newLex.getEscopo().get(newLex.getEscopo().size() - 1), variaveis.get(0).getEscopo().get(variaveis.get(0).getEscopo().size() - 1)))) {
-                return variaveis.get(1);
+                Lexema retorno = variaveis.get(1);
+                variaveis.remove(this);
+                return retorno;
             }
         }
         System.out.println("Erro: variáveis superiores as disponiveis no programa. Linha " + lex.getLinha());
@@ -85,6 +95,14 @@ public class Otimizacao {
     public Lexema LiberaVariavel(Lexema lex) {
         Lexema retorno;
         ArrayList<Lexema> lista = new ArrayList<>();
+        if (variaveis.isEmpty()) {
+            retorno = DesalocaVariavel(lex);
+            Lexema token = PesquisaListaTokens(lex);
+            lista.add(token);
+            lista.add(retorno);
+            variaveisAlocadas.add(lista);
+            return retorno;
+        }
         if (lex.getTipo().equals("id")) {
             for (ArrayList<Lexema> variavel : variaveisAlocadas) {
                 if (variavel.get(0).getNome().equals(lex.getNome())) {
@@ -93,16 +111,16 @@ public class Otimizacao {
             }
             Lexema token = PesquisaListaTokens(lex);
             lista.add(token);
-            if (variaveis.isEmpty()) {
-                retorno = DesalocaVariavel(lex);
-            } else {
-                retorno = variaveis.remove(0);
-                lista.add(retorno);
-                variaveisAlocadas.add(lista);
-            }
+            retorno = variaveis.remove(0);
+            lista.add(retorno);
+            variaveisAlocadas.add(lista);
             return retorno;
         }
         retorno = variaveis.remove(0);
+        Lexema aux = lex;
+        aux.setTipo("aux");
+        lista.add(aux);
+        variaveisAlocadas.add(lista);
         return retorno;
     }
 
