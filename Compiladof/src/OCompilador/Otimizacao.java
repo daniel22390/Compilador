@@ -1,4 +1,3 @@
-
 package OCompilador;
 
 import java.util.ArrayList;
@@ -54,6 +53,15 @@ public class Otimizacao {
                 || token.getTipo().equals("neq");
     }
 
+    public Lexema PesquisaListaTokens(Lexema lex) {
+        for (Lexema TabTokensProg1 : TabTokensProg) {
+            if (TabTokensProg1.getNome().equals(lex.getNome())) {
+                return TabTokensProg1;
+            }
+        }
+        return null;
+    }
+
     public Lexema LiberaVariavel(Lexema lex) {
         Lexema retorno;
         ArrayList<Lexema> lista = new ArrayList<>();
@@ -63,7 +71,8 @@ public class Otimizacao {
                     return variavel.get(1);
                 }
             }
-            lista.add(lex);
+            Lexema token = PesquisaListaTokens(lex);
+            lista.add(token);
             retorno = variaveis.remove(0);
             lista.add(retorno);
             variaveisAlocadas.add(lista);
@@ -82,6 +91,7 @@ public class Otimizacao {
         if (arvore.getEsq() != null) {
             Lexema esq = arvore.getEsq().getNodo();
             if (esq.getTipo().equals("id")) {
+                Lexema token = PesquisaListaTokens(esq);
                 varA = LiberaVariavel(esq);
                 exp.add(varA);
             } else if (Operador(esq)) {
@@ -103,8 +113,9 @@ public class Otimizacao {
         if (arvore.getDir() != null) {
             Lexema dir = arvore.getDir().getNodo();
             if (dir.getTipo().equals("id")) {
-                varB = LiberaVariavel(dir);
-                exp.add(varB);
+                Lexema token = PesquisaListaTokens(dir);
+                varA = LiberaVariavel(dir);
+                exp.add(varA);
             } else if (Operador(dir)) {
                 varB = LiberaVariavel(dir);
                 exp.add(varB);
@@ -119,7 +130,6 @@ public class Otimizacao {
 
     public void Otimiza(ArvoreBinaria<Lexema> arvore) {
         Lexema a = LiberaVariavel(arvore.getEsq().getNodo());
-//        a.setNome(arvore.getEsq().getNodo().getNome());
         a.setLinha(arvore.getEsq().getNodo().getLinha());
         linhas.put(a.getLinha(), CriaExpr(a, Expr(arvore.getDir())));
     }

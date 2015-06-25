@@ -1130,8 +1130,8 @@ public class AnaliseSintatica {
                         tokenAtrib.add(value.get(k));
                     }
                     arvore.setDir(verificaCondArvore(tokenAtrib, key));
-                    //print(arvore);
-                    //System.out.println("----------------------------------------------------------------------------------------------------------");
+                    print(arvore);
+                    System.out.println("----------------------------------------------------------------------------------------------------------");
                     arvores.add(arvore);
                     tokenAtrib.clear();
                 }
