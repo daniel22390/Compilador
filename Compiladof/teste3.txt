@@ -1,21 +1,27 @@
-﻿vetor v[2]
-v[2] = 30
-c = 20 + v[2]
-b = 5
-a = 2
-se (a<3) então
-d = 10
-a = d - (a+c)
+﻿a = 10
+b = 20
 d = 30
+f = 40
+g = 50
+h = 60
+i = 70
+j = 80
+k = 90
+se (a<3) então
+l = 10
 fim-se
-f = 20
-k = 80
-p = 90
-h = 654
-u = 40
-ju = 40
-b = c+ 2
-ka = 20 + c + b + a + f + k + p + h + u + ju
+se (a<6) então
+m = 100
+n = 20
+fim-se
+a = 10
+b = 20
+d = 30
+f = 40
+g = 50
+h = 60
+i = 70
+j = 80
+k = 90
+l = a + d + f + k
 fim
-# As outras posições não foram inicializadas
-Portanto há zero ou espaço no seu interior #
