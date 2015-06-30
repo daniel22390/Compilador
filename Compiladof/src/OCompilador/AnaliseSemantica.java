@@ -1,5 +1,6 @@
 package OCompilador;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -1037,7 +1038,7 @@ public class AnaliseSemantica {
 
     }
 
-    public void Analisa() {
+    public void Analisa() throws IOException {
         ArrayList<Lexema> escopoProg = new ArrayList<>();
         boolean isFuncao = false;
         boolean existeFuncao = false;

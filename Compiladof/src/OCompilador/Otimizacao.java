@@ -1,7 +1,11 @@
 package OCompilador;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -16,7 +20,7 @@ public class Otimizacao {
     ArrayList<ArrayList<Lexema>> variaveisAlocadas;
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas;
 
-    public Otimizacao(ArrayList<Lexema> TabTokensProg, ArrayList<Lexema> TabTokensFun, ArrayList<ArvoreBinaria<Lexema>> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) {
+    public Otimizacao(ArrayList<Lexema> TabTokensProg, ArrayList<Lexema> TabTokensFun, ArrayList<ArvoreBinaria<Lexema>> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) throws IOException {
         this.TabTokensFun = TabTokensFun;
         this.TabTokensProg = TabTokensProg;
         this.arvore = arvore;
@@ -57,7 +61,7 @@ public class Otimizacao {
 
     public Lexema PesquisaListaTokens(Lexema lex) {
         for (Lexema TabTokensProg1 : TabTokensProg) {
-            if (TabTokensProg1.getNome()!=null && TabTokensProg1.getNome().equals(lex.getNome())) {
+            if (TabTokensProg1.getNome() != null && TabTokensProg1.getNome().equals(lex.getNome())) {
                 return TabTokensProg1;
             }
         }
@@ -188,8 +192,9 @@ public class Otimizacao {
         return exp;
     }
 
-    public void Otimiza(ArvoreBinaria<Lexema> arvore) {
+    public ArrayList<ArrayList<Lexema>> Otimiza(ArvoreBinaria<Lexema> arvore) {
         Lexema a = new Lexema();
+        ArrayList<Lexema> linha;
         if (arvore.getEsq().getNodo().getTipo().equals("vet")) {
             a = arvore.getEsq().getNodo();
         } else {
@@ -197,22 +202,46 @@ public class Otimizacao {
         }
         a.setLinha(arvore.getEsq().getNodo().getLinha());
         linhas.add(CriaExpr(a, Expr(arvore.getDir())));
-        Lexema lex = new Lexema();
-        lex.setNome("-----------");
-        ArrayList<Lexema> list = new ArrayList<Lexema>();
-        list.add(lex);
-        linhas.add(list);
+        return linhas;
     }
 
-    public void GeraCodigo() {
-        for (int i = 1; i < 11; i++) {
+    public boolean ContemAtrib(ArrayList<Lexema> tokens) {
+        for (Lexema token : tokens) {
+            if (token.getTipo().equals("atrib")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void GeraCodigo() throws IOException {
+
+        for (int i = 1;
+                i < 11; i++) {
             Lexema lex = new Lexema();
             lex.setNome("a" + i);
             variaveis.add(lex);
         }
+
         varDisponiveis.push(10);
-        for (ArvoreBinaria<Lexema> arv : arvore) {
-            Otimiza(arv);
+        int cont = 0;
+        try (FileWriter arq = new FileWriter("codigo.txt")) {
+            PrintWriter printArq = new PrintWriter(arq);
+            for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
+                Integer key = entrySet.getKey();
+                ArrayList<Lexema> value = entrySet.getValue();
+                if (ContemAtrib(value)) {
+                    for (ArrayList<Lexema> value1 : Otimiza(arvore.get(cont))) {
+                        for (Lexema value11 : value1) {
+                            printArq.print(value11.getNome() + " ");
+                        }
+                        printArq.println("");
+                    }
+                    linhas.clear();
+                    cont++;
+                }
+            }
+            arq.close();
         }
 
         for (ArrayList<Lexema> linha : linhas) {

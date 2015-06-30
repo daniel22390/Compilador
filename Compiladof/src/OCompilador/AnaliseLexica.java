@@ -422,17 +422,17 @@ public class AnaliseLexica {
         AnaliseSintatica analisador = new AnaliseSintatica(tokens);
         analisador.Analisa();
         //Escrevendo em arquivo teste3
-        /*try (FileWriter arq = new FileWriter("teste3.txt")) {
-         PrintWriter gravarArq = new PrintWriter(arq);
-         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
-         Integer key = entrySet.getKey();
-         ArrayList<Lexema> value = entrySet.getValue();
-         gravarArq.print(key);
-         for (Lexema value1 : value) {
-         gravarArq.print(" <"/* + value1.getTipo() + "," + value1.getNome() + ">");
-         }
-         gravarArq.println("");
-         }
-         }*/
+//        try (FileWriter arq = new FileWriter("teste3.txt")) {
+//            PrintWriter gravarArq = new PrintWriter(arq);
+//            for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
+//                Integer key = entrySet.getKey();
+//                ArrayList<Lexema> value = entrySet.getValue();
+//                gravarArq.print(key);
+//                for (Lexema value1 : value) {
+//                    gravarArq.print(" <" + value1.getTipo() + "," + value1.getNome() + ">");
+//                }
+//                gravarArq.println("");
+//            }
+//        }
     }
 }
