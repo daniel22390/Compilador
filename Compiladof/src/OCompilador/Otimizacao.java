@@ -2,7 +2,6 @@ package OCompilador;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -11,7 +10,7 @@ public class Otimizacao {
     ArrayList<Lexema> TabTokensProg;
     ArrayList<Lexema> TabTokensFun;
     ArrayList<ArvoreBinaria<Lexema>> arvore;
-    LinkedHashMap<Integer, ArrayList<Lexema>> linhas;
+    ArrayList<ArrayList<Lexema>> linhas;
     ArrayList<Lexema> variaveis;
     Stack<Integer> varDisponiveis;
     ArrayList<ArrayList<Lexema>> variaveisAlocadas;
@@ -21,7 +20,7 @@ public class Otimizacao {
         this.TabTokensFun = TabTokensFun;
         this.TabTokensProg = TabTokensProg;
         this.arvore = arvore;
-        linhas = new LinkedHashMap<>();
+        linhas = new ArrayList<>();
         variaveis = new ArrayList<>();
         varDisponiveis = new Stack<>();
         variaveisAlocadas = new ArrayList<>();
@@ -128,6 +127,7 @@ public class Otimizacao {
         }
         retorno = variaveis.remove(0);
         Lexema aux = lex;
+        aux.setNome(retorno.getNome());
         aux.setTipo("aux");
         lista.add(aux);
         variaveisAlocadas.add(lista);
@@ -150,7 +150,7 @@ public class Otimizacao {
                 varA = LiberaVariavel(esq);
                 exp.add(varA);
                 linha = CriaExpr(varA, Expr(arvore.getEsq()));
-                linhas.put(varA.getLinha(), linha);
+                linhas.add(linha);
             } else if (esq.getTipo().equals("vetor")) {
                 Lexema vetor = esq;
                 vetor.setNome(esq.getNomeVar());
@@ -176,7 +176,7 @@ public class Otimizacao {
                 varB = LiberaVariavel(dir);
                 exp.add(varB);
                 linha = CriaExpr(varB, Expr(arvore.getDir()));
-                linhas.put(varB.getLinha(), linha);
+                linhas.add(linha);
             } else if (dir.getTipo().equals("vetor")) {
                 Lexema vetor = dir;
                 vetor.setNome(dir.getNomeVar());
@@ -196,10 +196,15 @@ public class Otimizacao {
             a = LiberaVariavel(arvore.getEsq().getNodo());
         }
         a.setLinha(arvore.getEsq().getNodo().getLinha());
-        linhas.put(a.getLinha(), CriaExpr(a, Expr(arvore.getDir())));
+        linhas.add(CriaExpr(a, Expr(arvore.getDir())));
+        Lexema lex = new Lexema();
+        lex.setNome("-----------");
+        ArrayList<Lexema> list = new ArrayList<Lexema>();
+        list.add(lex);
+        linhas.add(list);
     }
 
-    public void analisa() {
+    public void GeraCodigo() {
         for (int i = 1; i < 11; i++) {
             Lexema lex = new Lexema();
             lex.setNome("a" + i);
@@ -210,11 +215,9 @@ public class Otimizacao {
             Otimiza(arv);
         }
 
-        for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : linhas.entrySet()) {
-            Integer key = entrySet.getKey();
-            ArrayList<Lexema> value = entrySet.getValue();
-            for (Lexema value1 : value) {
-                System.out.print(value1.getNome());
+        for (ArrayList<Lexema> linha : linhas) {
+            for (Lexema linha1 : linha) {
+                System.out.print(linha1.getNome());
             }
             System.out.println("");
         }

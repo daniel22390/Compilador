@@ -4,22 +4,23 @@ b = (8 + 7) x 4,1
 c = 91 - 3 * 2.4
 d = 41 : (4 / 2)
 a = (a * (((b x c) : d) / 2))
-
-se a[10] > 10 então vetor v[10]
+vetor ak[10]
+ak[1] = 10
+se ak[10] > 10 então vetor v[10]
    telaensagem = "A é maior que 10"
 fim-se
-funcao a(aaa, bbbb)
-a= b(a)
+funcao af(aaa, bbbb)
+af= 10
 fim-funcao
-enquanto (a(9)==10) faça
+enquanto (af(9,10)==10) faça
 fim-enquanto
 se a==10 então
-	a=2 ou a+b
+	a=2
     a=b
 	a=20
 	fim-se
 vetor v[23]
-a = (a<(23,3 e a>10) ou (b<4 ou (a>(30>(40)))))
+a = 10
 se (c <= 40)*(a(2)) então
    telamensagem3 = "C é menor ou igual a 40"
 fim-se
@@ -27,8 +28,9 @@ fim-se
 se (d >= 20) e (d =< 60) então
    telamensagem4 = "D está entre 20 e 60"
 fim-se
-a = (a>2 e (3 ou a(2,a3242)))
-se (a =< a(2,2)) e (a) então
+a3242 = 20
+a = af(2,a3242)
+se (a =< af(2,2)) e (a) então
    telamensagem5 = "E é menor que 30 e meio, mas é diferente de 20"
    se (a == 0) então
      telamensagem5 = "E é zero"
@@ -51,7 +53,7 @@ enquanto i <= 10 faça
     fat = fat x i
     i = i + 1
 fim-enquanto
-tela = "5! = " < fat
+tela = "5! = " + fat
 
 vetor m[10][10]
 

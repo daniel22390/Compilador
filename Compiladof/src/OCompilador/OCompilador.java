@@ -14,7 +14,7 @@ public class OCompilador {
         Scanner leia = new Scanner(System.in);
         //System.out.println("Digite o nome do arquivo: ");
         //String nome = leia.next();
-        String nome = "teste3.txt";
+        String nome = "teste.txt";
         AnaliseLexica analisador = new AnaliseLexica(nome);
         analisador.Analisar();
     }

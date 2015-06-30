@@ -1067,6 +1067,13 @@ public class AnaliseSemantica {
                 }
             }
         }
+        for (Lexema escopo : tabTokensFun) {
+            ArrayList<Integer> list = (ArrayList<Integer>) escopo.getEscopo().clone();
+            int z = list.get(0) + 1;
+            list.set(0, z);
+            escopo.setEscopo(list);
+            tabTokensProg.add(escopo);
+        }
         System.out.println("Variaveis Programa");
         for (Lexema escopoProg1 : tabTokensProg) {
             System.out.print("Nome: " + escopoProg1.getNome() + "  Escopo: ");
@@ -1076,17 +1083,8 @@ public class AnaliseSemantica {
             System.out.print(" Tipo: " + escopoProg1.getTipo() + " Linha: " + escopoProg1.getLinha() + " -> " + escopoProg1.getLinhaAtual());
             System.out.println("");
         }
-        System.out.println("");
-        System.out.println("Variaveis Funcao");
-        for (Lexema escopoProg1 : tabTokensFun) {
-            System.out.print("Nome: " + escopoProg1.getNome() + "  Escopo: ");
-            for (Integer esc : escopoProg1.getEscopo()) {
-                System.out.print(esc + " ");
-            }
-            System.out.println(" Tipo: " + escopoProg1.getTipo() + " Linha: " + escopoProg1.getLinha() + " -> " + escopoProg1.getLinhaAtual());
-        }
 
         Otimizacao otim = new Otimizacao(tabTokensProg, tabTokensFun, this.arvore, this.lexemas);
-        otim.analisa();
+        otim.GeraCodigo();
     }
 }
