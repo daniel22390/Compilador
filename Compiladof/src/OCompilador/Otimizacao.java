@@ -57,7 +57,7 @@ public class Otimizacao {
 
     public Lexema PesquisaListaTokens(Lexema lex) {
         for (Lexema TabTokensProg1 : TabTokensProg) {
-            if (TabTokensProg1.getNome().equals(lex.getNome())) {
+            if (TabTokensProg1.getNome()!=null && TabTokensProg1.getNome().equals(lex.getNome())) {
                 return TabTokensProg1;
             }
         }

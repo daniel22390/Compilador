@@ -396,8 +396,8 @@ public class AnaliseSemantica {
         posicao++;
         if (!eAssinatura) {
             Lexema nomeFun = new Lexema();
-            nomeFun.setNome(tokens.get(posicao - 1).getNome());
-            nomeFun.setLinha(tokens.get(posicao - 1).getLinha());
+            nomeFun.setNome(tokens.get(posicao - 2).getNome());
+            nomeFun.setLinha(tokens.get(posicao - 2).getLinha());
             nomeFun.setNovoTipo("fun");
             ArrayList<Lexema> array = new ArrayList<Lexema>();
             array.add(nomeFun);

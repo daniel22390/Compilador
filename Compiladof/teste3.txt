@@ -1,5 +1,6 @@
-﻿funcao ak(b,c) 
-ak = 300
+﻿ak = 20
+funcao ak(b) 
+ak = b
 bij = 90,3
 fim-funcao
 bij = 30
@@ -12,7 +13,7 @@ h = 60
 i = 70
 j = 80
 k = 90
-z = ak(10, 20)
+z = ak(100.1)
 se (a<3) então
 l = 10
 fim-se

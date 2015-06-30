@@ -7,9 +7,7 @@ package OCompilador;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -93,24 +91,42 @@ public class AnaliseLexica {
         return Character.isDigit(simbolo);
     }
 
+    public void JuntaPontos(LinkedHashMap<Integer, ArrayList<Lexema>> tokens) {
+        for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
+            Integer key = entrySet.getKey();
+            ArrayList<Lexema> value = entrySet.getValue();
+            for (int i = 0; i < value.size(); i++) {
+                if (value.get(i).getNome().equals(".")) {
+                    if (i > 0 && value.get(i - 1).getNome().equals("tela") && i < (value.size() - 1) && value.get(i + 1).getTipo().equals("id")) {
+                        String nome = value.get(i - 1).getNome() + value.get(i).getNome() + value.get(i + 1).getNome();
+                        value.get(i).setNome(nome);
+                        value.get(i).setTipo("id");
+                        value.remove(i - 1);
+                        value.remove(i);
+                    }
+                }
+            }
+        }
+    }
+
     public void Analisar() throws IOException {
         String token = "";
         int linha = 0;
         boolean comentario = false;
         boolean funcao = false;
         boolean and = false;
-        
+
         //Coloco toda a linha na variavel codigo
         while (scanner.hasNext()) {
             tokenList = new ArrayList<Lexema>();
             linha++;
             codigo = scanner.nextLine();
-            
+
             //Analiso caracter por caracter da linha
             for (int i = 0; i < codigo.length(); i++) {
                 String simbolo = "";
                 simbolo = simbolo + codigo.charAt(i);
-                
+
                 //Retira comentarios
                 if (codigo.charAt(i) == '#') {
                     if (comentario == false) {
@@ -118,25 +134,24 @@ public class AnaliseLexica {
                     } else {
                         comentario = false;
                     }
-                }
-                //Analisa Aspas
+                } //Analisa Aspas
                 else if (codigo.charAt(i) == '"') {
                     token = "";
                     i++;
-                    while(i<codigo.length() && codigo.charAt(i)!='"'){
-                        token = token+codigo.charAt(i);
+                    while (i < codigo.length() && codigo.charAt(i) != '"') {
+                        token = token + codigo.charAt(i);
                         i++;
-                        if(i==codigo.length() && scanner.hasNext()){
+                        if (i == codigo.length() && scanner.hasNext()) {
                             linha++;
                             codigo = scanner.nextLine();
-                            i=0;
-                        }        
+                            i = 0;
+                        }
                     }
-                    if(comentario==false){
+                    if (comentario == false) {
                         simbolos.setTipo("String");
-                    simbolos.setNome(token);
-                    simbolos.setLinha(linha);
-                    tokenList.add(simbolos);
+                        simbolos.setNome(token);
+                        simbolos.setLinha(linha);
+                        tokenList.add(simbolos);
                     }
                     token = "";
                     simbolo = "";
@@ -170,30 +185,28 @@ public class AnaliseLexica {
                     tokenList.add(simbolos);
                     token = "";
                 }// se x isolado, entao eh uma multiplicação
-                else if (((codigo.length() == 1 && codigo.charAt(i)=='x') || ((i==0) && codigo.length() >= 2 && codigo.charAt(i)=='x' && codigo.charAt(i+1)==' ') || ((i>0) && codigo.length() == (i+1) && codigo.charAt(i)=='x' && codigo.charAt(i-1)==' ')) && comentario == false) {
-                simbolos.setTipo("mult");
-                simbolos.setNome("x");
-                simbolos.setLinha(linha);
-                tokenList.add(simbolos);
-                token = "";
-                }
-                else if(i==0 && codigo.charAt(i)=='x' && (i+1)<codigo.length() && codigo.charAt(i+1)=='(' && comentario==false){
+                else if (((codigo.length() == 1 && codigo.charAt(i) == 'x') || ((i == 0) && codigo.length() >= 2 && codigo.charAt(i) == 'x' && codigo.charAt(i + 1) == ' ') || ((i > 0) && codigo.length() == (i + 1) && codigo.charAt(i) == 'x' && codigo.charAt(i - 1) == ' ')) && comentario == false) {
                     simbolos.setTipo("mult");
                     simbolos.setNome("x");
                     simbolos.setLinha(linha);
                     tokenList.add(simbolos);
                     token = "";
-                }
-                  //Analise numeros e pontos flutuantes, verificando se a frente do ponto ou virgula
-                  //tem numero
+                } else if (i == 0 && codigo.charAt(i) == 'x' && (i + 1) < codigo.length() && codigo.charAt(i + 1) == '(' && comentario == false) {
+                    simbolos.setTipo("mult");
+                    simbolos.setNome("x");
+                    simbolos.setLinha(linha);
+                    tokenList.add(simbolos);
+                    token = "";
+                } //Analise numeros e pontos flutuantes, verificando se a frente do ponto ou virgula
+                //tem numero
                 else if (ValidaNumero(codigo.charAt(i)) && comentario == false) {
                     boolean inteiro = true;
                     do {
                         token = token + codigo.charAt(i);
                         i++;
                         if (i < codigo.length() && (codigo.charAt(i) == '.' || codigo.charAt(i) == ',') && (i + 1) < codigo.length() && codigo.charAt(i + 1) >= 48 && codigo.charAt(i + 1) <= 57 && inteiro == true) {
-                            if (((funcao == true || ValidaLetra(token.charAt(0))) && codigo.charAt(i) == ',') || (ValidaLetra(token.charAt(0)) && codigo.charAt(i)=='.')) {}
-                            else {
+                            if (((funcao == true || ValidaLetra(token.charAt(0))) && codigo.charAt(i) == ',') || (ValidaLetra(token.charAt(0)) && codigo.charAt(i) == '.')) {
+                            } else {
                                 token = token + codigo.charAt(i);
                                 i++;
                                 inteiro = false;
@@ -203,9 +216,9 @@ public class AnaliseLexica {
                     i--;
                     //se o token que tiver palavra começar com letra e tiver como proximo caracter letra
                     //entao eu leio enquanto for letra ou numero
-                    if (!token.isEmpty() && ValidaLetra(token.charAt(0)) && (i+1)<codigo.length() && ValidaLetra(codigo.charAt(i+1))) {
+                    if (!token.isEmpty() && ValidaLetra(token.charAt(0)) && (i + 1) < codigo.length() && ValidaLetra(codigo.charAt(i + 1))) {
                         i++;
-                        while(i<codigo.length() && (ValidaLetra(codigo.charAt(i)) || ValidaNumero(codigo.charAt(i)))){
+                        while (i < codigo.length() && (ValidaLetra(codigo.charAt(i)) || ValidaNumero(codigo.charAt(i)))) {
                             token = token + codigo.charAt(i);
                             i++;
                         }
@@ -216,8 +229,8 @@ public class AnaliseLexica {
                         tokenList.add(simbolos);
                         token = "";
                     } //se começa com letra e ta no final da linha ou começa com letra e proximo
-                      //caracter nao eh letra ou numero, entao adiciona como id
-                    else if(((i+1)==codigo.length() && ValidaLetra(token.charAt(0))) || (((i+1)<codigo.length() && !ValidaLetra(codigo.charAt(i+1)) && !ValidaNumero(codigo.charAt(i+1)))  && ValidaLetra(token.charAt(0)))){
+                    //caracter nao eh letra ou numero, entao adiciona como id
+                    else if (((i + 1) == codigo.length() && ValidaLetra(token.charAt(0))) || (((i + 1) < codigo.length() && !ValidaLetra(codigo.charAt(i + 1)) && !ValidaNumero(codigo.charAt(i + 1))) && ValidaLetra(token.charAt(0)))) {
                         simbolos.setTipo("id");
                         simbolos.setNome(token);
                         simbolos.setLinha(linha);
@@ -249,7 +262,7 @@ public class AnaliseLexica {
                     tokenList.add(simbolos);
                     token = "";
                 }//Se ler (, ele verifica se o ultimo lexema eh um id, se for adiciona seu tipo
-                 //como fun e seta funcao como true, senao, adiciona funcao como false
+                //como fun e seta funcao como true, senao, adiciona funcao como false
                 else if (codigo.charAt(i) == '(' && i > 0 && comentario == false) {
                     int k = i - 1;
                     while (k > 0 && codigo.charAt(k) == ' ') {
@@ -262,7 +275,7 @@ public class AnaliseLexica {
                         tokenList.get(tokenList.size() - 1).setTipo("fun");
                         pilha.push("((");
                         funcao = true;
-                    } else{
+                    } else {
                         pilha.push("(");
                         funcao = false;
                     }
@@ -272,7 +285,7 @@ public class AnaliseLexica {
                     tokenList.add(simbolos);
                     token = "";
                 } //Analisa se é um ) e se o antepenultimo ( da pilha eh d uma funcao, entao
-                  //a funcao eh setada como true
+                //a funcao eh setada como true
                 else if (codigo.charAt(i) == ')' && pilha.size() >= 2 && pilha.get(pilha.size() - 2).equals("((") && comentario == false) {
                     pilha.pop();
                     simbolos.setTipo(")");
@@ -311,7 +324,7 @@ public class AnaliseLexica {
                         simbolos.setLinha(linha);
                         tokenList.add(simbolos);
                         token = "";
-                        funcao=false;
+                        funcao = false;
                     } else {
                         simbolos.setTipo(lexema.get(simbolo));
                         simbolos.setNome(simbolo);
@@ -324,7 +337,7 @@ public class AnaliseLexica {
                     token = token + codigo.charAt(i);
                     //Analisa se a palavra esta na tabela de lexemas e se o proximo token
                     //é um caracterer especial
-                    if (lexema.containsKey(token) && ((codigo.length() > (i + 1) && ((!ValidaLetra(codigo.charAt(i + 1)))) && !ValidaNumero(codigo.charAt(i+1))) || (codigo.length() == (i + 1)))) {
+                    if (lexema.containsKey(token) && ((codigo.length() > (i + 1) && ((!ValidaLetra(codigo.charAt(i + 1)))) && !ValidaNumero(codigo.charAt(i + 1))) || (codigo.length() == (i + 1)))) {
                         simbolos.setTipo(lexema.get(token));
                         simbolos.setNome(token);
                         simbolos.setLinha(linha);
@@ -337,33 +350,33 @@ public class AnaliseLexica {
                     if (!token.equals(" ") && !token.equals("") && (i + 1) < codigo.length() && !ValidaLetra(codigo.charAt(i + 1)) && !ValidaNumero(codigo.charAt(i + 1))) {
                         //se token eh fim, e o proximo eh -, entao eu verifico se eh uma palavra reservada
                         //se nao for, eu adiciono fim como id
-                        if(token.equals("fim") && codigo.charAt(i+1)=='-'){
-                            int k=i+2;
-                            while(k<codigo.length() && (ValidaLetra(codigo.charAt(k)) || ValidaNumero(codigo.charAt(k)))){
+                        if (token.equals("fim") && codigo.charAt(i + 1) == '-') {
+                            int k = i + 2;
+                            while (k < codigo.length() && (ValidaLetra(codigo.charAt(k)) || ValidaNumero(codigo.charAt(k)))) {
                                 hifen = hifen + codigo.charAt(k);
                                 k++;
                             }
                             k--;
-                            if(lexema.containsKey(token+'-'+hifen) && (((k+1)<codigo.length() && (!ValidaLetra(codigo.charAt(k+1)) || !ValidaNumero(codigo.charAt(k+1)))) || (k+1)==codigo.length())){
-                                simbolos.setTipo(lexema.get(token+'-'+hifen));
-                                simbolos.setNome(token+'-'+hifen);
+                            if (lexema.containsKey(token + '-' + hifen) && (((k + 1) < codigo.length() && (!ValidaLetra(codigo.charAt(k + 1)) || !ValidaNumero(codigo.charAt(k + 1)))) || (k + 1) == codigo.length())) {
+                                simbolos.setTipo(lexema.get(token + '-' + hifen));
+                                simbolos.setNome(token + '-' + hifen);
                                 simbolos.setLinha(linha);
                                 tokenList.add(simbolos);
                                 token = "";
-                                i=k;
-                            } else{
+                                i = k;
+                            } else {
                                 simbolos.setTipo("id");
                                 simbolos.setNome(token);
                                 simbolos.setLinha(linha);
                                 tokenList.add(simbolos);
                                 token = "";
                             }
-                        } else{
-                        simbolos.setTipo("id");
-                        simbolos.setNome(token);
-                        simbolos.setLinha(linha);
-                        tokenList.add(simbolos);
-                        token = "";
+                        } else {
+                            simbolos.setTipo("id");
+                            simbolos.setNome(token);
+                            simbolos.setLinha(linha);
+                            tokenList.add(simbolos);
+                            token = "";
                         }
                     }
                     //Analisa se for a ultima palavra, entao eh adicionada como variavel
@@ -375,8 +388,8 @@ public class AnaliseLexica {
                         token = "";
                     }
                 }//se o caracter nao eh numero e nem letra e nao eh espaço em branco ou TAB, eu o adiciono
-                 //como um simbolo comum
-                else if (comentario == false && !ValidaLetra(codigo.charAt(i)) && !ValidaNumero(codigo.charAt(i)) && codigo.charAt(i) != ' ' && codigo.charAt(i)!=9) {
+                //como um simbolo comum
+                else if (comentario == false && !ValidaLetra(codigo.charAt(i)) && !ValidaNumero(codigo.charAt(i)) && codigo.charAt(i) != ' ' && codigo.charAt(i) != 9) {
                     if (!(linha == 1 && i == 0)) {
                         simbolos.setTipo(simbolo);
                         simbolos.setNome(simbolo);
@@ -395,6 +408,7 @@ public class AnaliseLexica {
             simbolos3 = new Lexema();
             tokens.put(linha, tokenList);
         }
+        JuntaPontos(tokens);
         //for para exibir tokens em terminal
         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
             Integer key = entrySet.getKey();
@@ -409,16 +423,16 @@ public class AnaliseLexica {
         analisador.Analisa();
         //Escrevendo em arquivo teste3
         /*try (FileWriter arq = new FileWriter("teste3.txt")) {
-            PrintWriter gravarArq = new PrintWriter(arq);
-            for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
-                Integer key = entrySet.getKey();
-                ArrayList<Lexema> value = entrySet.getValue();
-                gravarArq.print(key);
-                for (Lexema value1 : value) {
-                    gravarArq.print(" <"/* + value1.getTipo() + "," + value1.getNome() + ">");
-                }
-                gravarArq.println("");
-            }
-        }*/
+         PrintWriter gravarArq = new PrintWriter(arq);
+         for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : tokens.entrySet()) {
+         Integer key = entrySet.getKey();
+         ArrayList<Lexema> value = entrySet.getValue();
+         gravarArq.print(key);
+         for (Lexema value1 : value) {
+         gravarArq.print(" <"/* + value1.getTipo() + "," + value1.getNome() + ">");
+         }
+         gravarArq.println("");
+         }
+         }*/
     }
 }
