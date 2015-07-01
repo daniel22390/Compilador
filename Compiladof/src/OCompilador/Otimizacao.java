@@ -205,6 +205,7 @@ public class Otimizacao {
         return linhas;
     }
 
+    // verifica se akela linha contem uma atribução
     public boolean ContemAtrib(ArrayList<Lexema> tokens) {
         for (Lexema token : tokens) {
             if (token.getTipo().equals("atrib")) {
@@ -212,6 +213,93 @@ public class Otimizacao {
             }
         }
         return false;
+    }
+
+    // retorna o nome criado para o id lex
+    public Lexema retornaId(Lexema lex) {
+        for (ArrayList<Lexema> var : variaveisAlocadas) {
+            if (var.get(0).getNome().equals(lex.getNome())) {
+                return var.get(1);
+            }
+        }
+        return null;
+    }
+
+    // escreve o nome criado do Id
+    public void analisaId(Lexema lex, PrintWriter printArq) {
+        if (lex.getTipo().equals("id") && !lex.getNome().equals("fim")) {
+            Lexema lex2 = retornaId(lex);
+            if (lex2 != null) {
+                printArq.print(lex.getNome() + " ");
+            }
+        }
+    }
+    
+    // escreve o simbolo de operação em javascript
+    public boolean AnalisaSimboloOper(Lexema lex, PrintWriter printArq){
+        switch (lex.getTipo()) {
+            case "mult":
+                printArq.print(" * ");
+                return true;
+            case "or":
+                printArq.print(" || ");
+                return true;
+            case "and":
+                printArq.print(" && ");
+                return true;
+            case "div":
+                printArq.print(" / ");
+                return true;
+            case "lte":
+                printArq.print(" <= ");
+                return true;
+            case "gte":
+                printArq.print(" >= ");
+                return true;
+            case "true":
+                printArq.print("true");
+            return true;
+            case "false":
+                printArq.print("false");
+            return true;
+        }
+        return false;
+    }
+    
+    // analisa uma condicao
+    public void Condicao(ArrayList<Lexema> tokens, PrintWriter printArq){
+        for (Lexema token : tokens) {
+            // se for id, busca o nome criado para ela
+            if(token.getNovoTipo().equals("id")){
+                Lexema lex = retornaId(token);
+                printArq.print(lex.getNome());
+            }
+            // se for mult, <=, etc, ele escreve o mesmo
+            if(AnalisaSimboloOper(token, printArq)){
+                
+            } else {
+                printArq.print(token.getNome());
+            }
+        }
+    }
+
+    // quando for um se
+    public void linhaSe(ArrayList<Lexema> tokens, PrintWriter printArq) {
+        printArq.print("if (");
+        ArrayList<Lexema> condicao = new ArrayList<>();
+        for (int i = 1; !tokens.get(i).getTipo().equals("initcond"); i++) {
+            condicao.add(tokens.get(i));
+        }
+        Condicao(condicao, printArq);
+        printArq.print("){");
+        printArq.println("");
+    }
+
+    // se for o fim de um bloco, retorna true
+    public boolean isFim(Lexema lex) {
+        return lex.getNome().equals("fim") || lex.getTipo().equals("endcond")
+                || lex.getTipo().equals("endwhileloop") || lex.getTipo().equals("endforloop")
+                || lex.getTipo().equals("endfunction");
     }
 
     public void GeraCodigo() throws IOException {
@@ -230,6 +318,7 @@ public class Otimizacao {
             for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
                 Integer key = entrySet.getKey();
                 ArrayList<Lexema> value = entrySet.getValue();
+                // se a linha contem atribuição, entao otimiza e da break na verificação
                 if (ContemAtrib(value)) {
                     for (ArrayList<Lexema> value1 : Otimiza(arvore.get(cont))) {
                         for (Lexema value11 : value1) {
@@ -239,6 +328,19 @@ public class Otimizacao {
                     }
                     linhas.clear();
                     cont++;
+                } else {
+                    for (int i = 0; i < value.size(); i++) {
+                        // se for um se, ele escreve apenas a linha da assinatura
+                        if (value.get(i).getTipo().equals("cond")) {
+                            linhaSe(value, printArq);
+                            break;
+                        } // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
+                        else if (isFim(value.get(i))) {
+                            printArq.print("}");
+                            printArq.println();
+                            break;
+                        }
+                    }
                 }
             }
             arq.close();
