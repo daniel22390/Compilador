@@ -294,6 +294,13 @@ public class Otimizacao {
         printArq.print("){");
         printArq.println("");
     }
+    
+    // analisa a linha de um para
+    public void linhaFor(ArrayList<Lexema> tokens, PrintWriter printArq){
+        Lexema lex = LiberaVariavel(tokens.get(1));
+        printArq.print("for ("+lex.getNome()+" = "+tokens.get(3).getNome()+"; "+lex.getNome()+"<="+tokens.get(5).getNome()+"; "+lex.getNome()+"++){");
+        printArq.println();
+    }
 
     // se for o fim de um bloco, retorna true
     public boolean isFim(Lexema lex) {
@@ -334,7 +341,12 @@ public class Otimizacao {
                         if (value.get(i).getTipo().equals("cond")) {
                             linhaSe(value, printArq);
                             break;
-                        } // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
+                        } 
+                        else if(value.get(i).getTipo().equals("forloop")){
+                            linhaFor(value, printArq);
+                            break;
+                        }
+                        // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
                         else if (isFim(value.get(i))) {
                             printArq.print("}");
                             printArq.println();
