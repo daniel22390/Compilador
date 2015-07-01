@@ -7,13 +7,16 @@ bij = 30
 a = 10
 b = 20
 d = 30
+vetor vet[2]
+vet[2] = 90
 f = 40
 g = 50
 h = 60
 i = 70
 j = 80
-para poiu de 1 até 10 faça
+para ak de 1 até 10 faça
 tyr = 20
+ak = 20
 fim-para
 z = ak(100.1)
 se (a<3) então
@@ -28,6 +31,9 @@ b = 20
 d = 30
 f = 40
 g = 50
+enquanto f =< 32 + 2 faça
+f = 9000
+fim-enquanto
 h = 60
 i = 70
 j = 80

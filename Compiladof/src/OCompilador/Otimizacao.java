@@ -270,12 +270,12 @@ public class Otimizacao {
     public void Condicao(ArrayList<Lexema> tokens, PrintWriter printArq) {
         for (Lexema token : tokens) {
             // se for id, busca o nome criado para ela
-            if (token.getNovoTipo().equals("id")) {
-                Lexema lex = retornaId(token);
+            if (token.getTipo().equals("id")) {
+                Lexema lex = LiberaVariavel(token);
                 printArq.print(lex.getNome());
             }
             // se for mult, <=, etc, ele escreve o mesmo
-            if (AnalisaSimboloOper(token, printArq)) {
+            else if (AnalisaSimboloOper(token, printArq)) {
 
             } else {
                 printArq.print(token.getNome());
@@ -301,6 +301,18 @@ public class Otimizacao {
         printArq.println();
     }
 
+    // analisa a linha de um enquanto
+    public void linhaWhile(ArrayList<Lexema> tokens, PrintWriter printArq) {
+        ArrayList<Lexema> condicao = new ArrayList<>();
+        printArq.print("while (");
+        for (int i = 1; !tokens.get(i).getTipo().equals("initforloop"); i++) {
+            condicao.add(tokens.get(i));
+        }
+        Condicao(condicao, printArq);
+        printArq.print("){");
+        printArq.println("");
+    }
+    
     // se for o fim de um bloco, retorna true
     public boolean isFim(Lexema lex) {
         return lex.getNome().equals("fim") || lex.getTipo().equals("endcond")
@@ -320,7 +332,10 @@ public class Otimizacao {
         varDisponiveis.push(10);
         int cont = 0;
         boolean isFor = false;
+        boolean isVariaveis = false;
+        boolean isVariaveisAlo = false;
         Lexema For = new Lexema();
+        ArrayList<Lexema> For2 = new ArrayList<Lexema>();
         try (FileWriter arq = new FileWriter("codigo.txt")) {
             PrintWriter printArq = new PrintWriter(arq);
             for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
@@ -353,24 +368,37 @@ public class Otimizacao {
                                 for (int j = 0; j < variaveis.size(); j++) {
                                     if (variaveis.get(j).getNome().equals(lex.getNome())) {
                                         For = variaveis.remove(j);
+                                        isVariaveis = true;
                                     }
                                 }
                                 for (int j = 0; j < variaveisAlocadas.size(); j++) {
                                     if (variaveisAlocadas.get(j).get(1).getNome().equals(lex.getNome())) {
-                                        For = variaveisAlocadas.remove(j).get(1);
+                                        For2 = variaveisAlocadas.remove(j);
+                                        isVariaveisAlo = true;
                                     }
                                 }
                             }
                             linhaFor(value, printArq, lex);
                             break;
-                        } // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
+                        } 
+                        else if(value.get(i).getTipo().equals("whileloop")){
+                            linhaWhile(value, printArq);
+                            break;
+                        }
+                        // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
                         else if (isFim(value.get(i))) {
                             printArq.print("}");
                             printArq.println();
                             // se for um fim-para, tenho q liberar a variavel de controle
                             if (value.get(i).getTipo().equals("endforloop")) {
                                 isFor = false;
-                                variaveis.add(For);
+                                if (isVariaveis) {
+                                    variaveis.add(For);
+                                    isVariaveis = false;
+                                } else if (isVariaveisAlo) {
+                                    variaveisAlocadas.add(For2);
+                                    isVariaveisAlo = false;
+                                }
                             }
                             break;
                         }
