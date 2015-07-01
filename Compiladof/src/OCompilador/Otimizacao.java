@@ -234,9 +234,9 @@ public class Otimizacao {
             }
         }
     }
-    
+
     // escreve o simbolo de operação em javascript
-    public boolean AnalisaSimboloOper(Lexema lex, PrintWriter printArq){
+    public boolean AnalisaSimboloOper(Lexema lex, PrintWriter printArq) {
         switch (lex.getTipo()) {
             case "mult":
                 printArq.print(" * ");
@@ -258,25 +258,25 @@ public class Otimizacao {
                 return true;
             case "true":
                 printArq.print("true");
-            return true;
+                return true;
             case "false":
                 printArq.print("false");
-            return true;
+                return true;
         }
         return false;
     }
-    
+
     // analisa uma condicao
-    public void Condicao(ArrayList<Lexema> tokens, PrintWriter printArq){
+    public void Condicao(ArrayList<Lexema> tokens, PrintWriter printArq) {
         for (Lexema token : tokens) {
             // se for id, busca o nome criado para ela
-            if(token.getNovoTipo().equals("id")){
+            if (token.getNovoTipo().equals("id")) {
                 Lexema lex = retornaId(token);
                 printArq.print(lex.getNome());
             }
             // se for mult, <=, etc, ele escreve o mesmo
-            if(AnalisaSimboloOper(token, printArq)){
-                
+            if (AnalisaSimboloOper(token, printArq)) {
+
             } else {
                 printArq.print(token.getNome());
             }
@@ -294,11 +294,10 @@ public class Otimizacao {
         printArq.print("){");
         printArq.println("");
     }
-    
+
     // analisa a linha de um para
-    public void linhaFor(ArrayList<Lexema> tokens, PrintWriter printArq){
-        Lexema lex = LiberaVariavel(tokens.get(1));
-        printArq.print("for ("+lex.getNome()+" = "+tokens.get(3).getNome()+"; "+lex.getNome()+"<="+tokens.get(5).getNome()+"; "+lex.getNome()+"++){");
+    public void linhaFor(ArrayList<Lexema> tokens, PrintWriter printArq, Lexema lex) {
+        printArq.print("for (" + lex.getNome() + " = " + tokens.get(3).getNome() + "; " + lex.getNome() + "<=" + tokens.get(5).getNome() + "; " + lex.getNome() + "++){");
         printArq.println();
     }
 
@@ -320,6 +319,8 @@ public class Otimizacao {
 
         varDisponiveis.push(10);
         int cont = 0;
+        boolean isFor = false;
+        Lexema For = new Lexema();
         try (FileWriter arq = new FileWriter("codigo.txt")) {
             PrintWriter printArq = new PrintWriter(arq);
             for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
@@ -341,15 +342,36 @@ public class Otimizacao {
                         if (value.get(i).getTipo().equals("cond")) {
                             linhaSe(value, printArq);
                             break;
-                        } 
-                        else if(value.get(i).getTipo().equals("forloop")){
-                            linhaFor(value, printArq);
+                        } // se for um para, ele analisa a linha
+                        else if (value.get(i).getTipo().equals("forloop")) {
+                            isFor = true;
+                            //busca-se uma variavel livre para o controle do for
+                            Lexema lex = LiberaVariavel(value.get(i + 1));
+                            //caso ele nao exista, tem-se que tirar ele das listas, para q 
+                            //essa variavel nao seja pega
+                            if (PesquisaListaTokens(lex) != null) {
+                                for (int j = 0; j < variaveis.size(); j++) {
+                                    if (variaveis.get(j).getNome().equals(lex.getNome())) {
+                                        For = variaveis.remove(j);
+                                    }
+                                }
+                                for (int j = 0; j < variaveisAlocadas.size(); j++) {
+                                    if (variaveisAlocadas.get(j).get(1).getNome().equals(lex.getNome())) {
+                                        For = variaveisAlocadas.remove(j).get(1);
+                                    }
+                                }
+                            }
+                            linhaFor(value, printArq, lex);
                             break;
-                        }
-                        // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
+                        } // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
                         else if (isFim(value.get(i))) {
                             printArq.print("}");
                             printArq.println();
+                            // se for um fim-para, tenho q liberar a variavel de controle
+                            if (value.get(i).getTipo().equals("endforloop")) {
+                                isFor = false;
+                                variaveis.add(For);
+                            }
                             break;
                         }
                     }

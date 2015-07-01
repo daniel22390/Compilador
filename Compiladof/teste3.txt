@@ -12,9 +12,8 @@ g = 50
 h = 60
 i = 70
 j = 80
-k = 90
-para po de 1 até 10 faça
-a = 20
+para poiu de 1 até 10 faça
+tyr = 20
 fim-para
 z = ak(100.1)
 se (a<3) então
