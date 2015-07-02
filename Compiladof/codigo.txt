@@ -1,0 +1,54 @@
+a1 = 5  *  3,2 ; 
+a3 = 8 + 7 ; 
+a2 = a3  *  4,1 ; 
+a5 = 3  *  2.4 ; 
+a4 = 91 - a5 ; 
+a7 = 4  /  2 ; 
+a6 = 41  /  a7 ; 
+a10 = a2  *  a4 ; 
+a9 = a10  /  a6 ; 
+a8 = a9  /  2 ; 
+a1 = a1  *  a8 ; 
+if (a1>10){
+alert("A é maior que 10");
+}
+if (a2<30){
+alert("B é menor que 30");
+}
+if ((a4 <= 40)){
+alert("C é menor ou igual a 40");
+}
+if ((a6 >= 20) && (a6 <= 60)){
+alert("D está entre 20 e 60");
+a2 = 70 ; 
+}
+if ((a1 <= 30,5) && (a1!=20)){
+alert("E é menor que 30 e meio, mas é diferente de 20");
+a2 = 32 ; 
+if ((a1==0)){
+alert("E é zero");
+
+} else {
+if ((a1<0)){
+alert("E é negativo");
+}
+}
+}
+a1 = 1 ; 
+for (a3 = 1; a3<=10; a3++){
+a1 = a1  *  a3 ; 
+}
+alert("10! = "+fat);
+a1 = 1 ; 
+a3 = 1 ; 
+while (a3 <= 5){
+a1 = a1  *  a3 ; 
+a3 = a3 + 1 ; 
+}
+alert("5! = "+fat);
+m = [];
+m[1][1] = 1.5 ; 
+m[1][2] = 3.2 ; 
+m[2][1] = 3,3 ; 
+m[2][i] = 2,9 ; 
+}

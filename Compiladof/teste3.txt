@@ -1,4 +1,4 @@
-﻿ak = 20
+ak = 20
 funcao ak(b) 
 ak = b
 bij = 90,3
@@ -10,20 +10,20 @@ d = 30
 vetor vet[2]
 vet[2] = 90
 f = 40
-g = 50
+g = 20
 h = 60
 i = 70
 j = 80
 para ak de 1 até 10 faça
-tyr = 20
-ak = 20
+tyr = "daniel"
+ak = vet[7]
 fim-para
 z = ak(100.1)
 se (a<3) então
 l = 10
 fim-se
 se (a<6) então
-m = 100
+m = 40
 n = 20
 fim-se
 a = 10
@@ -39,4 +39,5 @@ i = 70
 j = 80
 k = 90
 l = a + d + f + k
+tela.mensagem = 9
 fim

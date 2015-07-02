@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
@@ -49,6 +50,9 @@ public class Otimizacao {
             linha.add(dir.get(1));
             linha.add(dir.get(2));
         }
+        Lexema PontoVir = new Lexema();
+        PontoVir.setNome(";");
+        linha.add(PontoVir);
         return linha;
     }
 
@@ -83,7 +87,7 @@ public class Otimizacao {
                 variaveisAlocadas.remove(j);
                 return retorno;
             } else if (variaveisAlocadas.get(j).get(0).getLinhaAtual() < i) {
-                if (variaveisAlocadas.get(j).get(0).getTipo().equals("aux")) {
+                if (variaveisAlocadas.get(j).get(0).getNovoTipo().equals("aux")) {
                     Lexema retorno = variaveisAlocadas.get(j).get(0);
                     variaveisAlocadas.remove(j);
                     return retorno;
@@ -92,7 +96,7 @@ public class Otimizacao {
                     variaveisAlocadas.remove(j);
                     return retorno;
                 }
-            } else if (variaveisAlocadas.get(j).get(0).getTipo().equals("aux")) {
+            } else if (variaveisAlocadas.get(j).get(0).getNovoTipo().equals("aux")) {
                 Lexema retorno = variaveisAlocadas.get(j).get(0);
                 variaveisAlocadas.remove(j);
                 return retorno;
@@ -108,7 +112,7 @@ public class Otimizacao {
         ArrayList<Lexema> lista = new ArrayList<>();
         if (lex.getTipo().equals("id")) {
             for (ArrayList<Lexema> variavel : variaveisAlocadas) {
-                if (variavel.get(0).getNome().equals(lex.getNome())) {
+                if (!variavel.isEmpty() && variavel.get(0).getNome().equals(lex.getNome())) {
                     return variavel.get(1);
                 }
             }
@@ -123,16 +127,23 @@ public class Otimizacao {
         }
         if (variaveis.isEmpty()) {
             retorno = DesalocaVariavel(lex);
-            Lexema token = PesquisaListaTokens(lex);
+            Lexema token = new Lexema();
+            if (!Operador(lex)) {
+                token = PesquisaListaTokens(lex);
+            } else {
+                token = new Lexema();
+                token.setNovoTipo("aux");
+            }
             lista.add(token);
             lista.add(retorno);
             variaveisAlocadas.add(lista);
             return retorno;
         }
+
         retorno = variaveis.remove(0);
-        Lexema aux = lex;
-        aux.setNome(retorno.getNome());
-        aux.setTipo("aux");
+        Lexema aux = retorno;
+        aux.setNovoTipo("aux");
+        lista.add(lex);
         lista.add(aux);
         variaveisAlocadas.add(lista);
         return retorno;
@@ -164,9 +175,18 @@ public class Otimizacao {
             }
         }
         if (Operador(arvore.getNodo())) {
-            exp.add(arvore.getNodo());
+            Lexema lex = arvore.getNodo();
+            String nome = AnalisaSimbolo(arvore.getNodo());
+            if (nome != null) {
+                lex.setNome(nome);
+            }
+            exp.add(lex);
         } else if (arvore.getNodo().getTipo().equals("id")) {
             exp.add(LiberaVariavel(arvore.getNodo()));
+        } else if (arvore.getNodo().getTipo().equals("vetor")) {
+            Lexema vetor = arvore.getNodo();
+            vetor.setNome(arvore.getNodo().getNomeVar());
+            exp.add(vetor);
         } else {
             exp.add(arvore.getNodo());
         }
@@ -192,9 +212,10 @@ public class Otimizacao {
         return exp;
     }
 
-    public ArrayList<ArrayList<Lexema>> Otimiza(ArvoreBinaria<Lexema> arvore) {
+    public ArrayList<ArrayList<Lexema>> Otimiza(ArvoreBinaria<Lexema> arvore, int key) {
         Lexema a = new Lexema();
         ArrayList<Lexema> linha;
+        boolean var = false;
         if (arvore.getEsq().getNodo().getTipo().equals("vet")) {
             a = arvore.getEsq().getNodo();
         } else {
@@ -205,7 +226,7 @@ public class Otimizacao {
         return linhas;
     }
 
-    // verifica se akela linha contem uma atribução
+// verifica se akela linha contem uma atribução
     public boolean ContemAtrib(ArrayList<Lexema> tokens) {
         for (Lexema token : tokens) {
             if (token.getTipo().equals("atrib")) {
@@ -233,6 +254,24 @@ public class Otimizacao {
                 printArq.print(lex.getNome() + " ");
             }
         }
+    }
+
+    public String AnalisaSimbolo(Lexema lex) {
+        switch (lex.getTipo()) {
+            case "mult":
+                return " * ";
+            case "or":
+                return (" || ");
+            case "and":
+                return (" && ");
+            case "div":
+                return (" / ");
+            case "lte":
+                return (" <= ");
+            case "gte":
+                return (" >= ");
+        }
+        return null;
     }
 
     // escreve o simbolo de operação em javascript
@@ -273,8 +312,7 @@ public class Otimizacao {
             if (token.getTipo().equals("id")) {
                 Lexema lex = LiberaVariavel(token);
                 printArq.print(lex.getNome());
-            }
-            // se for mult, <=, etc, ele escreve o mesmo
+            } // se for mult, <=, etc, ele escreve o mesmo
             else if (AnalisaSimboloOper(token, printArq)) {
 
             } else {
@@ -312,7 +350,12 @@ public class Otimizacao {
         printArq.print("){");
         printArq.println("");
     }
-    
+
+    // quando declara vetor
+    public void linhaDecVetor(ArrayList<Lexema> tokens, PrintWriter printArq) {
+        printArq.println(tokens.get(1).getNome() + " = [];");
+    }
+
     // se for o fim de um bloco, retorna true
     public boolean isFim(Lexema lex) {
         return lex.getNome().equals("fim") || lex.getTipo().equals("endcond")
@@ -320,7 +363,7 @@ public class Otimizacao {
                 || lex.getTipo().equals("endfunction");
     }
 
-    public void GeraCodigo() throws IOException {
+    public void GeraCodigo() throws IOException, InterruptedException {
 
         for (int i = 1;
                 i < 11; i++) {
@@ -335,15 +378,25 @@ public class Otimizacao {
         boolean isVariaveis = false;
         boolean isVariaveisAlo = false;
         Lexema For = new Lexema();
-        ArrayList<Lexema> For2 = new ArrayList<Lexema>();
+        ArrayList<Lexema> For2 = new ArrayList<>();
         try (FileWriter arq = new FileWriter("codigo.txt")) {
             PrintWriter printArq = new PrintWriter(arq);
             for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
                 Integer key = entrySet.getKey();
                 ArrayList<Lexema> value = entrySet.getValue();
-                // se a linha contem atribuição, entao otimiza e da break na verificação
-                if (ContemAtrib(value)) {
-                    for (ArrayList<Lexema> value1 : Otimiza(arvore.get(cont))) {
+                String nome = value.get(0).getNome();
+                String split[] = nome.split("\\.");
+                if (split.length > 0 && split[0].equals("tela")) {
+                    printArq.print("alert(");
+                    for (int i = 2; !value.get(i).getTipo().equals("|n"); i++) {
+                        printArq.print(value.get(i).getNome());
+                    }
+                    printArq.print(");");
+                    printArq.println();
+                    cont++;
+                } // se a linha contem atribuição, entao otimiza e da break na verificação
+                else if (ContemAtrib(value)) {
+                    for (ArrayList<Lexema> value1 : Otimiza(arvore.get(cont), key)) {
                         for (Lexema value11 : value1) {
                             printArq.print(value11.getNome() + " ");
                         }
@@ -356,6 +409,12 @@ public class Otimizacao {
                         // se for um se, ele escreve apenas a linha da assinatura
                         if (value.get(i).getTipo().equals("cond")) {
                             linhaSe(value, printArq);
+                            break;
+                        } // se achar um senão escreve else
+                        else if (value.get(i).getTipo().equals("altcond")) {
+                            printArq.println();
+                            printArq.print("} else {");
+                            printArq.println();
                             break;
                         } // se for um para, ele analisa a linha
                         else if (value.get(i).getTipo().equals("forloop")) {
@@ -380,12 +439,15 @@ public class Otimizacao {
                             }
                             linhaFor(value, printArq, lex);
                             break;
-                        } 
-                        else if(value.get(i).getTipo().equals("whileloop")){
+                        } // se for um enquanto ele faz o while
+                        else if (value.get(i).getTipo().equals("whileloop")) {
                             linhaWhile(value, printArq);
                             break;
-                        }
-                        // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
+                        }// quando for uma declaração de vetor
+                        else if (value.get(i).getTipo().equals("vet")) {
+                            linhaDecVetor(value, printArq);
+                            break;
+                        } // se for um fim-se, fim-enquanto, fim-para, fim-funcao, ele coloca { 
                         else if (isFim(value.get(i))) {
                             printArq.print("}");
                             printArq.println();

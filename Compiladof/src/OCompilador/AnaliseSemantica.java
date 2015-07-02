@@ -628,6 +628,7 @@ public class AnaliseSemantica {
         while (tokens.get(i).getTipo().equals("(") || tokens.get(i).getTipo().equals("sub")) {
             i++;
         }
+
         // se o primeiro elemento for id, ou fun
         if (tokens.get(i).getTipo().equals("id")) {
             Lexema lista1 = PesquisaListaTokens(tokens.get(i), isFuncao);
@@ -643,6 +644,12 @@ public class AnaliseSemantica {
                     System.out.println("Erro: variavel " + tokens.get(i).getNome() + " inicializada como outro Id. Linha  " + tokens.get(i).getLinha());
                     System.exit(0);
                 }
+                tipoInicial = lista1.getTipo();
+                AtualizaLinhaToken(tokens.get(i), isFuncao, tokens.get(i));
+            }
+        } else if (tokens.get(i).getTipo().equals("vetor") || tokens.get(i).getTipo().equals("matriz")) {
+            Lexema lista1 = PesquisaListaTokens(tokens.get(i), isFuncao);
+            if (lista1 != null) {
                 tipoInicial = lista1.getTipo();
                 AtualizaLinhaToken(tokens.get(i), isFuncao, tokens.get(i));
             }

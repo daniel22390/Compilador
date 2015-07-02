@@ -136,7 +136,7 @@ public class AnaliseLexica {
                     }
                 } //Analisa Aspas
                 else if (codigo.charAt(i) == '"') {
-                    token = "";
+                    token = "\"";
                     i++;
                     while (i < codigo.length() && codigo.charAt(i) != '"') {
                         token = token + codigo.charAt(i);
@@ -147,6 +147,7 @@ public class AnaliseLexica {
                             i = 0;
                         }
                     }
+                    token = token + "\"";
                     if (comentario == false) {
                         simbolos.setTipo("String");
                         simbolos.setNome(token);

@@ -21,6 +21,7 @@ public class Lexema {
     private int linhaAtual;
     // se for vetor, matriz. id
     private String novoTipo;
+    private boolean declara = false;
     private ArrayList<Integer> escopo = new ArrayList<>();
     public Lexema() {
         this.novoTipo = "";
@@ -123,6 +124,21 @@ public class Lexema {
     public void setNomeVar(String nomeVar) {
         this.nomeVar = nomeVar;
     }
+
+    /**
+     * @return the declara
+     */
+    public boolean getDeclara() {
+        return declara;
+    }
+
+    /**
+     * @param declara the declara to set
+     */
+    public void setDeclara(boolean declara) {
+        this.declara = declara;
+    }
+
 
 
     

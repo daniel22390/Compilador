@@ -6,29 +6,30 @@ d = 41 : (4 / 2)
 a = (a * (((b x c) : d) / 2))
 
 se a > 10 então
-   telamensagem = "A é maior que 10"
+   tela.mensagem = "A é maior que 10"
 fim-se
 
 se b < 30 então
-   telamensagem2 = "B é menor que 30"
+   tela.mensagem2 = "B é menor que 30"
 fim-se
 
 se (c <= 40) então
-   telamensagem3 = "C é menor ou igual a 40"
+   tela.mensagem3 = "C é menor ou igual a 40"
 fim-se
 
 se (d >= 20) e (d =< 60) então
-   telamensagem4 = "D está entre 20 e 60"
+   tela.mensagem4 = "D está entre 20 e 60"
+   b = 70
 fim-se
 
 se (a =< 30,5) e (a != 20) então
-   telamensagem5 = "E é menor que 30 e meio, mas é diferente de 20"
-   z = "a"
+   tela.mensagem5 = "E é menor que 30 e meio, mas é diferente de 20"
+   z = 32
    se (a == 0) então
-     telamensagem5 = "E é zero"
+     tela.mensagem5 = "E é zero"
    senão
    se (a < 0) então
-     telamensagem5 = "E é negativo"
+     tela.mensagem5 = "E é negativo"
    fim-se
    fim-se
 fim-se
