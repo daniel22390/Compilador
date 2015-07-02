@@ -1045,7 +1045,7 @@ public class AnaliseSemantica {
 
     }
 
-    public void Analisa() throws IOException {
+    public void Analisa() throws IOException, InterruptedException {
         ArrayList<Lexema> escopoProg = new ArrayList<>();
         boolean isFuncao = false;
         boolean existeFuncao = false;

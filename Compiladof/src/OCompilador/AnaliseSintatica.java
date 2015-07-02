@@ -1151,7 +1151,7 @@ public class AnaliseSintatica {
         return arvores;
     }
 
-    public void Analisa() throws IOException {
+    public void Analisa() throws IOException, InterruptedException {
         LinkedHashSet<String> mensagens = new LinkedHashSet<String>();
         boolean programa = false;
         ArrayList<ArvoreBinaria<Lexema>> arvores = new ArrayList<ArvoreBinaria<Lexema>>();

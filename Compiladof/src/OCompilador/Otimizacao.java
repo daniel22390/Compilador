@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
@@ -350,6 +349,11 @@ public class Otimizacao {
         printArq.print("){");
         printArq.println("");
     }
+    
+    //quando for a linha de uma funcao
+    public void linhaFuncao(ArrayList<Lexema> tokens, PrintWriter printArq){
+        
+    }
 
     // quando declara vetor
     public void linhaDecVetor(ArrayList<Lexema> tokens, PrintWriter printArq) {
@@ -358,7 +362,7 @@ public class Otimizacao {
 
     // se for o fim de um bloco, retorna true
     public boolean isFim(Lexema lex) {
-        return lex.getNome().equals("fim") || lex.getTipo().equals("endcond")
+        return lex.getTipo().equals("endcond")
                 || lex.getTipo().equals("endwhileloop") || lex.getTipo().equals("endforloop")
                 || lex.getTipo().equals("endfunction");
     }
@@ -412,7 +416,6 @@ public class Otimizacao {
                             break;
                         } // se achar um senão escreve else
                         else if (value.get(i).getTipo().equals("altcond")) {
-                            printArq.println();
                             printArq.print("} else {");
                             printArq.println();
                             break;
@@ -462,6 +465,10 @@ public class Otimizacao {
                                     isVariaveisAlo = false;
                                 }
                             }
+                            break;
+                        }
+                        else if(value.get(i).getTipo().equals("function")){
+                            linhaFuncao(value, printArq);
                             break;
                         }
                     }

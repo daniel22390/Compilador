@@ -109,7 +109,7 @@ public class AnaliseLexica {
         }
     }
 
-    public void Analisar() throws IOException {
+    public void Analisar() throws IOException, InterruptedException {
         String token = "";
         int linha = 0;
         boolean comentario = false;
