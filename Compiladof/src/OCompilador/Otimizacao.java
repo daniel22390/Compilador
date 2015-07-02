@@ -19,6 +19,7 @@ public class Otimizacao {
     Stack<Integer> varDisponiveis;
     ArrayList<ArrayList<Lexema>> variaveisAlocadas;
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas;
+    boolean isFuncao = false;
 
     public Otimizacao(ArrayList<Lexema> TabTokensProg, ArrayList<Lexema> TabTokensFun, ArrayList<ArvoreBinaria<Lexema>> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) throws IOException {
         this.TabTokensFun = TabTokensFun;
@@ -349,10 +350,23 @@ public class Otimizacao {
         printArq.print("){");
         printArq.println("");
     }
-    
+
     //quando for a linha de uma funcao
-    public void linhaFuncao(ArrayList<Lexema> tokens, PrintWriter printArq){
+    public void linhaFuncao(ArrayList<Lexema> tokens, PrintWriter printArq) {
+        printArq.print("function " + tokens.get(1).getNome() + "(");
+        Stack<Integer> pilha = new Stack<>();
+        pilha.push(0);
         
+        for (int i = 3; !pilha.isEmpty(); i++) {
+            if (tokens.get(i).getTipo().equals(",")) {
+            } else if(tokens.get(i).getTipo().equals(")")){
+                pilha.pop();
+            } else if(tokens.get(i).getTipo().equals("(")){
+                pilha.push(0);
+            }
+        }
+        printArq.print("){");
+        printArq.println();
     }
 
     // quando declara vetor
@@ -466,8 +480,7 @@ public class Otimizacao {
                                 }
                             }
                             break;
-                        }
-                        else if(value.get(i).getTipo().equals("function")){
+                        } else if (value.get(i).getTipo().equals("function")) {
                             linhaFuncao(value, printArq);
                             break;
                         }

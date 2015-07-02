@@ -1,11 +1,11 @@
-ak = 20
-funcao ak(b) 
+﻿funcao ak(b) 
 ak = b
 bij = 90,3
 fim-funcao
+as = 20
 bij = 30
 a = 10
-b = 20
+b = ak(3)
 d = 30
 vetor vet[2]
 vet[2] = 90
@@ -14,9 +14,9 @@ g = 20
 h = 60
 i = 70
 j = 80
-para ak de 1 até 10 faça
+para as de 1 até 10 faça
 tyr = "daniel"
-ak = vet[7]
+as = vet[7]
 fim-para
 z = ak(100.1)
 se (a<3) então
