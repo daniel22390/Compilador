@@ -1027,12 +1027,14 @@ public class AnaliseSemantica {
                     salvaTokens(isFuncao, pai);
                 }
                 if (isFuncao) {
-                    for (ArrayList<Lexema> var : varEscopo) {
-                        for (Lexema var1 : var) {
-                            if (var1.getNome().equals(escopo.get(0).getNome())) {
-                                if (var1.getTipo().equals("")) {
+                    for (int k = 0; k < varEscopo.size(); k++) {
+                        for (int z = 0; z<varEscopo.get(k).size(); z++) {
+                            if (varEscopo.get(k).get(z).getNome().equals(escopo.get(0).getNome())) {
+                                if (varEscopo.get(k).get(z).getTipo().equals("")) {
                                     System.out.println("Erro: Funcao nao possui retorno. Linha  " + escopo.get(0).getLinha());
                                     System.exit(0);
+                                } else{
+                                    varEscopo.get(k).get(z).setRetorno(true);
                                 }
                             }
                         }
@@ -1092,7 +1094,7 @@ public class AnaliseSemantica {
             System.out.println("");
         }
 
-        Otimizacao otim = new Otimizacao(tabTokensProg, tabTokensFun, this.arvore, this.lexemas);
+        Otimizacao otim = new Otimizacao(tabTokensProg, this.arvore, this.lexemas);
         otim.GeraCodigo();
     }
 }

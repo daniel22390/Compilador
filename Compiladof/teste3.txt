@@ -1,11 +1,12 @@
-﻿funcao ak(b) 
+﻿funcao ak(b, c, d) 
 ak = b
-bij = 90,3
+bij = c
+kiu = d
 fim-funcao
 as = 20
 bij = 30
 a = 10
-b = ak(3)
+b = ak(3, 60, 30)
 d = 30
 vetor vet[2]
 vet[2] = 90
@@ -18,7 +19,7 @@ para as de 1 até 10 faça
 tyr = "daniel"
 as = vet[7]
 fim-para
-z = ak(100.1)
+z = ak(100.1, 50, 3)
 se (a<3) então
 l = 10
 fim-se

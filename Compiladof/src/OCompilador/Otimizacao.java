@@ -12,7 +12,6 @@ import java.util.Stack;
 public class Otimizacao {
 
     ArrayList<Lexema> TabTokensProg;
-    ArrayList<Lexema> TabTokensFun;
     ArrayList<ArvoreBinaria<Lexema>> arvore;
     ArrayList<ArrayList<Lexema>> linhas;
     ArrayList<Lexema> variaveis;
@@ -21,8 +20,8 @@ public class Otimizacao {
     LinkedHashMap<Integer, ArrayList<Lexema>> lexemas;
     boolean isFuncao = false;
 
-    public Otimizacao(ArrayList<Lexema> TabTokensProg, ArrayList<Lexema> TabTokensFun, ArrayList<ArvoreBinaria<Lexema>> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) throws IOException {
-        this.TabTokensFun = TabTokensFun;
+    public Otimizacao(ArrayList<Lexema> TabTokensProg, ArrayList<ArvoreBinaria<Lexema>> arvore, LinkedHashMap<Integer, ArrayList<Lexema>> listao) throws IOException {
+
         this.TabTokensProg = TabTokensProg;
         this.arvore = arvore;
         linhas = new ArrayList<>();
@@ -36,13 +35,17 @@ public class Otimizacao {
         return token;
     }
 
-    public ArrayList<Lexema> CriaExpr(Lexema esq, ArrayList<Lexema> dir) {
+    public ArrayList<Lexema> CriaExpr(Lexema esq, ArrayList<Lexema> dir, boolean retorno) {
         ArrayList<Lexema> linha = new ArrayList<>();
         Lexema atrib = new Lexema();
-        atrib.setNome("=");
-        atrib.setTipo("atrib");
+        if (!retorno) {
+            atrib.setNome("=");
+            atrib.setTipo("atrib");
+        }
         linha.add(esq);
-        linha.add(atrib);
+        if (!retorno) {
+            linha.add(atrib);
+        }
         if (dir.size() == 1) {
             linha.add(dir.get(0));
         } else if (dir.size() == 3) {
@@ -164,7 +167,7 @@ public class Otimizacao {
             } else if (Operador(esq)) {
                 varA = LiberaVariavel(esq);
                 exp.add(varA);
-                linha = CriaExpr(varA, Expr(arvore.getEsq()));
+                linha = CriaExpr(varA, Expr(arvore.getEsq()), false);
                 linhas.add(linha);
             } else if (esq.getTipo().equals("vetor")) {
                 Lexema vetor = esq;
@@ -199,7 +202,7 @@ public class Otimizacao {
             } else if (Operador(dir)) {
                 varB = LiberaVariavel(dir);
                 exp.add(varB);
-                linha = CriaExpr(varB, Expr(arvore.getDir()));
+                linha = CriaExpr(varB, Expr(arvore.getDir()), false);
                 linhas.add(linha);
             } else if (dir.getTipo().equals("vetor")) {
                 Lexema vetor = dir;
@@ -216,13 +219,21 @@ public class Otimizacao {
         Lexema a = new Lexema();
         ArrayList<Lexema> linha;
         boolean var = false;
+        boolean ret = false;
+        Lexema lex = PesquisaListaTokens(arvore.getEsq().getNodo());
         if (arvore.getEsq().getNodo().getTipo().equals("vet")) {
             a = arvore.getEsq().getNodo();
+        } else if (lex!=null && lex.isRetorno()) {
+            Lexema retorno = new Lexema();
+            retorno.setNome("return");
+            retorno.setTipo("retorno");
+            a = retorno;
+            ret = true;
         } else {
             a = LiberaVariavel(arvore.getEsq().getNodo());
         }
         a.setLinha(arvore.getEsq().getNodo().getLinha());
-        linhas.add(CriaExpr(a, Expr(arvore.getDir())));
+        linhas.add(CriaExpr(a, Expr(arvore.getDir()), ret));
         return linhas;
     }
 
@@ -356,16 +367,22 @@ public class Otimizacao {
         printArq.print("function " + tokens.get(1).getNome() + "(");
         Stack<Integer> pilha = new Stack<>();
         pilha.push(0);
-        
+
         for (int i = 3; !pilha.isEmpty(); i++) {
             if (tokens.get(i).getTipo().equals(",")) {
-            } else if(tokens.get(i).getTipo().equals(")")){
+                printArq.print(",");
+            } else if (tokens.get(i).getTipo().equals(")")) {
                 pilha.pop();
-            } else if(tokens.get(i).getTipo().equals("(")){
+                printArq.print(")");
+            } else if (tokens.get(i).getTipo().equals("(")) {
                 pilha.push(0);
+                printArq.print("(");
+            } else if (tokens.get(i).getTipo().equals("id")) {
+                Lexema lex = LiberaVariavel(tokens.get(i));
+                printArq.print(lex.getNome());
             }
         }
-        printArq.print("){");
+        printArq.print("{");
         printArq.println();
     }
 

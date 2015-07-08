@@ -22,6 +22,8 @@ public class Lexema {
     // se for vetor, matriz. id
     private String novoTipo;
     private boolean declara = false;
+    private boolean retorno;
+    private int linhaRet;
     private ArrayList<Integer> escopo = new ArrayList<>();
     public Lexema() {
         this.novoTipo = "";
@@ -138,6 +140,35 @@ public class Lexema {
     public void setDeclara(boolean declara) {
         this.declara = declara;
     }
+
+    /**
+     * @return the param
+     */
+    public boolean isRetorno() {
+        return retorno;
+    }
+
+    /**
+     * @param retorno
+     */
+    public void setRetorno(boolean retorno) {
+        this.retorno = retorno;
+    }
+
+    /**
+     * @return the linhaRet
+     */
+    public int getLinhaRet() {
+        return linhaRet;
+    }
+
+    /**
+     * @param linhaRet the linhaRet to set
+     */
+    public void setLinhaRet(int linhaRet) {
+        this.linhaRet = linhaRet;
+    }
+
 
 
 
