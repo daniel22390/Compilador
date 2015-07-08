@@ -223,7 +223,7 @@ public class Otimizacao {
         Lexema lex = PesquisaListaTokens(arvore.getEsq().getNodo());
         if (arvore.getEsq().getNodo().getTipo().equals("vet")) {
             a = arvore.getEsq().getNodo();
-        } else if (lex!=null && lex.isRetorno()) {
+        } else if (lex != null && lex.isRetorno()) {
             Lexema retorno = new Lexema();
             retorno.setNome("return");
             retorno.setTipo("retorno");
@@ -399,23 +399,24 @@ public class Otimizacao {
     }
 
     public void GeraCodigo() throws IOException, InterruptedException {
-
-        for (int i = 1;
-                i < 11; i++) {
-            Lexema lex = new Lexema();
-            lex.setNome("a" + i);
-            variaveis.add(lex);
-        }
-
-        varDisponiveis.push(10);
-        int cont = 0;
-        boolean isFor = false;
-        boolean isVariaveis = false;
-        boolean isVariaveisAlo = false;
-        Lexema For = new Lexema();
-        ArrayList<Lexema> For2 = new ArrayList<>();
         try (FileWriter arq = new FileWriter("codigo.txt")) {
             PrintWriter printArq = new PrintWriter(arq);
+            printArq.print("var ");
+            for (int i = 1; i < 11; i++) {
+                Lexema lex = new Lexema();
+                lex.setNome("a" + i);
+                printArq.print(lex.getNome()+" ");
+                variaveis.add(lex);
+            }
+            printArq.print(";");
+            printArq.println();
+            varDisponiveis.push(10);
+            int cont = 0;
+            boolean isFor = false;
+            boolean isVariaveis = false;
+            boolean isVariaveisAlo = false;
+            Lexema For = new Lexema();
+            ArrayList<Lexema> For2 = new ArrayList<>();
             for (Map.Entry<Integer, ArrayList<Lexema>> entrySet : lexemas.entrySet()) {
                 Integer key = entrySet.getKey();
                 ArrayList<Lexema> value = entrySet.getValue();
